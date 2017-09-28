@@ -24,7 +24,7 @@ private class Lane {
         else {
             this.vertices.add(initNode.getPosition());
             this.vertices.add(finalNode.getPosition());
-            this.vertices.add(type,(0,0));
+            this.vertices.add(type,prove);
         }
         distance = calcLength();
     }
@@ -41,13 +41,13 @@ private class Lane {
         return new ArrayList(vertices);
     }
     
-
     
     public float calcLength() {
         float dist = 0;
-        for(int i = 1; i < vertices.size(); i++) dist += vertices.get(i-1).dist( vertices.get(i) );
+        for(int i = 1; i < vertices.size()-1; i++) dist += vertices.get(i-1).dist( vertices.get(i) );
         return dist;
-    }  
+    }
+    
     public Lane findContrariwise() {
         for(Lane otherLane : finalNode.outboundLanes()) {
             if( otherLane.isContrariwise(this) ) return otherLane;
@@ -62,11 +62,12 @@ private class Lane {
         Collections.reverse(reversedVertices);
         return vertices.equals(reversedVertices);
     }
+    
    //Find the closest point to the POI in the lane selected 
     public PVector findClosestPoint(PVector position) {
         Float minDistance = Float.NaN;
         PVector closestPoint = null;
-        for(int i = 1; i < vertices.size(); i++) {
+        for(int i = 1; i < vertices.size()-1; i++) {
             PVector projectedPoint = Geometry.scalarProjection(position, vertices.get(i-1), vertices.get(i));
             float distance = PVector.dist(position, projectedPoint);
             if(minDistance.isNaN() || distance < minDistance) {
@@ -82,7 +83,8 @@ private class Lane {
         int i = vertices.indexOf(node.getPosition());
         if(i > 0 && i < vertices.size()-1) {
             ArrayList<PVector> dividedVertices = new ArrayList( vertices.subList(i, vertices.size()) );
-            node.connect(finalNode, dividedVertices, name, access);
+            PVector Type=vertices.get(2);
+            node.connect(finalNode, dividedVertices, name, access,(int)Type.z);
             vertices = new ArrayList( vertices.subList(0, i+1) );
             finalNode = node;
             distance = calcLength();
@@ -102,7 +104,7 @@ private class Lane {
                 ArrayList<PVector> splittedVertices = new ArrayList();
                 splittedVertices.add(node.getPosition());
                 splittedVertices.addAll( vertices.subList(i, vertices.size()) );
-                node.connect(finalNode, splittedVertices, name, access);
+                node.connect(finalNode, splittedVertices, name, access, 4);
                 
                 vertices = new ArrayList( vertices.subList(0, i) );
                 vertices.add(node.getPosition());
@@ -115,12 +117,23 @@ private class Lane {
     }    
     //
         public void draw(PGraphics canvas, int stroke, color c) {
-        color occupColor = lerpColor(c, #FF0000, occupancy);    // Lane occupancy color interpolation
-        canvas.stroke(occupColor, 127); canvas.strokeWeight(stroke);
-
         
-        for(int i = 1; i < vertices.size(); i++) {
-          
+        for(int i = 1; i < vertices.size()-1; i++) {
+          color occupColor=lerpColor(c, #FF0000, occupancy); 
+          PVector Type=vertices.get(i);
+          if(Type.z==1){
+            occupColor = color(204, 102, 0); 
+          }
+          else if(Type.z==2){
+            occupColor =color(204, 153, 0) ; 
+          }
+          else if(Type.z==3){
+            occupColor = color(153, 51, 0); 
+          }
+          else if(Type.z==4){
+            occupColor =color(255,0,0) ; 
+          }
+          canvas.stroke(occupColor, 127); canvas.strokeWeight(stroke);
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 

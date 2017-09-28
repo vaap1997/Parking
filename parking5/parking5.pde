@@ -34,7 +34,7 @@ void draw(){
     //canvas.translate(-width,-height);
     //canvas.scale(3);
     canvas.background(255);
-    roads.draw(canvas, 1, #000000);
+    roads.draw(canvas,1,);
     canvas.fill(0);
     if(millis()-timer >= 100){
       int maxIndice=timepark.getmax();

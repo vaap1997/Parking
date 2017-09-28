@@ -14,7 +14,7 @@ public class Roads extends Facade<Node>{
 
 
   //Conect POIs
-    private void connect(POI poi) {
+    private void connect(POI poi, int type) {
         
         Lane closestLane = findClosestLane(poi.getPosition());
         Lane closestLaneBack = closestLane.findContrariwise();
@@ -25,7 +25,7 @@ public class Roads extends Facade<Node>{
         if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
         this.add(connectionNode);
         
-        poi.connectBoth(connectionNode, null, "Access", poi.access);
+        poi.connectBoth(connectionNode, null, "Access", poi.access,type);
         add(poi);
         
     }
@@ -43,7 +43,7 @@ public class Roads extends Facade<Node>{
         if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
         this.add(connectionNode);
         
-        poi.connectBoth(connectionNode, null, "Access", poi.access);
+        poi.connectBoth(connectionNode, null, "Access", poi.access,4);
   }
   add(poi);
  }
