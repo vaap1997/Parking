@@ -1,7 +1,19 @@
+
 public class TimePark{
   ArrayList <TimeP> Park;
   ArrayList<String> chronometer;
   int totalTime;
+   int dayMin=Integer.MAX_VALUE;
+   int dayMax=-Integer.MAX_VALUE;
+   int monthMin=Integer.MAX_VALUE;
+   int monthMax=-Integer.MAX_VALUE;
+   int yearMin=Integer.MAX_VALUE;
+   int yearMax=-Integer.MAX_VALUE;
+   int hourMin=Integer.MAX_VALUE;
+   int hourMax=-Integer.MAX_VALUE;
+   int minMin=Integer.MAX_VALUE;
+   int minMax=-Integer.MAX_VALUE;
+  
   //Recognize if the file exist
   public TimePark(String path){
     chronometer = new ArrayList();
@@ -17,14 +29,30 @@ public class TimePark{
    Park=new ArrayList();
    
    Table table=loadTable(path,"header");
+
+   
    for(TableRow row:table.rows()){
      int DeviceNum=row.getInt("Device Number");
      int MovType=row.getInt("Movement Type");
      int Skidata=row.getInt("SKIDATA ticket Type");
-     String Time=row.getString("DateTime");
+     String Time0=row.getString("DateTime");
      int Passages=row.getInt("Passages");
+     String Time1=Time0.replace(" ","/");
+     String Time2=Time1.replace(":","/");
+     int[] Time=int(Time2.split("/")) ;
+     //print(Time[0],"\n");
+     dayMin=min(dayMin,Time[0]);
+     dayMax=max(dayMax,Time[0]);
+     monthMin=min(monthMin,Time[1]);
+     monthMax=max(monthMax,Time[1]);
+     yearMin=min(yearMin,Time[2]);
+     yearMax=max(yearMax,Time[2]);
+     hourMin=min(hourMin,Time[3]);
+     hourMax=max(hourMax,Time[3]);
+     minMin=min(minMin,Time[4]);
+     minMax=max(minMax,Time[4]);
      
-     Park.add(new TimeP(DeviceNum,MovType,Skidata,Time, Passages));
+     Park.add(new TimeP(DeviceNum,MovType,Skidata,Time0, Passages));
 
   }
    print("LOADED");
@@ -33,23 +61,23 @@ public class TimePark{
   //Create an array with all the dates in the range
   public ArrayList<String> Chronometer(){
   ArrayList<String> chronometer = new ArrayList();
-  
-    for(int year=16;year<17;year++){
-      for(int month=7;month<8;month++){
+  print(minMax);
+    for(int year=yearMin;year<=yearMax;year++){
+      for(int month=monthMin;month<=monthMax;month++){
         String monthstr = str(month);
         if(monthstr.length() == 1){
           monthstr = '0' + monthstr;
         }
         
-        for(int day=2;day<=31;day++){
+        for(int day=dayMin;day<=dayMax;day++){
           
-          for(int hour=0; hour<=23;hour++){
+          for(int hour=hourMin; hour<=hourMax;hour++){
             String hourstr=str(hour);
             if(hourstr.length()==1){
              hourstr="0"+hourstr; 
             }
             
-            for(int min=0;min<46;min=min+15){
+            for(int min=minMin;min<=minMax;min=min+15){
               String minstr=str(min);
               if(minstr.length()==1){
                minstr="0"+minstr; 
@@ -57,7 +85,6 @@ public class TimePark{
              //chronometer= append(chronometer,str(day)+"/"+str(month)+"/"+str(year)+" "+str(hour)+":"+str(min));
              String dia = str(day)+"/"+monthstr+"/"+str(year)+" "+hourstr+":"+minstr;
              chronometer.add(dia);
-             
             }
           } 
         }
@@ -67,7 +94,7 @@ public class TimePark{
   }
   
   public int getmax(){
-    totalTime=(17-16)*(8-7)*(31-1)*(24)*(4);
+    totalTime=(yearMax-yearMin+1)*(monthMax-monthMin+1)*(dayMax-dayMin+1)*(24)*(4);
     return totalTime;
   }
   

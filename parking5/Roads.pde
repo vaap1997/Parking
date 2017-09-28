@@ -1,5 +1,4 @@
 public PVector[] boundaries;
-public ArrayList<PVector> puntos = new ArrayList();
 
 public class Roads extends Facade<Node>{
 
@@ -118,8 +117,10 @@ public class RoadFactory extends Factory<Node>{
         JSONObject lane =lanes.getJSONObject(i);
         //JALAR PROPERTIES
         JSONObject props= lane.getJSONObject("properties");
-        Accessible access = props.isNull("type") ? Accessible.ALL : Accessible.create( props.getString("type") );
-        String name = props.isNull("name") ? "null" : props.getString("name");
+        Accessible access = props.isNull("type")? Accessible.ALL : Accessible.create( props.getString("type") );
+        int type=props.isNull("type")? 0: props.getString("type")=="primary"? 1: props.getString("type")=="secondary"? 2:3;
+        
+        String name = props.isNull("name")? "null" : props.getString("name");
         boolean oneWay=props.isNull("oneway")? false:props.getInt("oneway")==1? true:false;
         String direction=props.isNull("direction")? null: props.getString("direction");
         JSONArray points=lane.getJSONObject("geometry").getJSONArray("coordinates");
@@ -129,14 +130,14 @@ public class RoadFactory extends Factory<Node>{
         
          for(int j=0; j<points.size(); j++){
            PVector point=roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-           puntos.add(point);
+           
            vertices.add(point);
            
            Node currNode=getNodeIfVertex(roads,point);
            if(currNode != null) {
                         if(prevNode != null && j < points.size()-1) {
-                            if(oneWay) prevNode.connect(currNode, vertices, name, access);
-                            else prevNode.connectBoth(currNode, vertices, name, access);
+                            if(oneWay) prevNode.connect(currNode, vertices, name, access,type);
+                            else prevNode.connectBoth(currNode, vertices, name, access,type);
                             vertices = new ArrayList();
                             vertices.add(point);
                             prevNode = currNode;
@@ -147,8 +148,8 @@ public class RoadFactory extends Factory<Node>{
                         prevNode = currNode;
                         currNode.place(roads);
                     } else if(j == points.size()-1) {
-                        if(oneWay) prevNode.connect(currNode, vertices, name, access);
-                        else prevNode.connectBoth(currNode, vertices, name, access);
+                        if(oneWay) prevNode.connect(currNode, vertices, name, access,type);
+                        else prevNode.connectBoth(currNode, vertices, name, access,type);
                         currNode.place(roads);
                         if(direction != null) currNode.setDirection(direction);
                     }

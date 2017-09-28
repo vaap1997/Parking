@@ -58,14 +58,14 @@ private class Node implements Placeable{
         draw(canvas, 1, #F0F3F5);
    }
    
-   protected void connect(Node node, ArrayList<PVector> vertices, String name, Accessible access) {
-     lanes.add( new Lane(name, access, this, node, vertices) );
+   protected void connect(Node node, ArrayList<PVector> vertices, String name, Accessible access,int type) {
+     lanes.add( new Lane(name, access, this, node, vertices, type) );
    }
    
-   protected void connectBoth(Node node, ArrayList<PVector> vertices, String name, Accessible access) {
-        connect(node, vertices, name, access);
+   protected void connectBoth(Node node, ArrayList<PVector> vertices, String name, Accessible access, int type) {
+        connect(node, vertices, name, access,type);
         if(vertices != null) Collections.reverse(vertices); 
-        node.connect(this, vertices, name, access);
+        node.connect(this, vertices, name, access,type);
     }
     
     protected void setDirection(String direction) {

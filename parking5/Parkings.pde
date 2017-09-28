@@ -60,7 +60,7 @@ public class POIs extends Facade<POI>{
       
       int Occupancy=(int) map(occupancy.get(c),0,2000,0,100);
       //dibujar el occupancy
-      int use=(int) (occupancy.get(c)/poi.CAPACITY)*100;
+      int use=round(((float)occupancy.get(c) / (float)poi.CAPACITY)*100);
       color occColor = lerpColor(#77DD77, #FF6666,use);  
       canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);        
       canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy); 

@@ -5,6 +5,8 @@ private class Lane {
     
     private Node initNode;
     private Node finalNode;
+    private int type;
+    private PVector prove=new PVector(0,0);
     private float distance;
     private ArrayList<PVector> vertices = new ArrayList();
     private boolean open=true;
@@ -12,15 +14,17 @@ private class Lane {
     //private ArrayList<Agent> crowd= new ArrayList();
     private float occupancy;
     
-    public Lane(String name, Accessible access, Node initNode, Node finalNode, ArrayList<PVector> vertices) {
+    public Lane(String name, Accessible access, Node initNode, Node finalNode, ArrayList<PVector> vertices,int type) {
         this.name = name;
         this.access = access;
         this.initNode = initNode;
         this.finalNode = finalNode;
+        this.type=type;
         if(vertices!= null && vertices.size()!= 0) this.vertices = new ArrayList(vertices);
         else {
             this.vertices.add(initNode.getPosition());
             this.vertices.add(finalNode.getPosition());
+            this.vertices.add(type,(0,0));
         }
         distance = calcLength();
     }
