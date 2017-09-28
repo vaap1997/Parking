@@ -14,7 +14,7 @@ public class Roads extends Facade<Node>{
 
 
   //Conect POIs
-    private void connect(POI poi, int type) {
+    private void connect(POI poi) {
         
         Lane closestLane = findClosestLane(poi.getPosition());
         Lane closestLaneBack = closestLane.findContrariwise();
@@ -25,7 +25,7 @@ public class Roads extends Facade<Node>{
         if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
         this.add(connectionNode);
         
-        poi.connectBoth(connectionNode, null, "Access", poi.access,type);
+        poi.connectBoth(connectionNode, null, "Access", poi.access);
         add(poi);
         
     }
@@ -43,7 +43,7 @@ public class Roads extends Facade<Node>{
         if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
         this.add(connectionNode);
         
-        poi.connectBoth(connectionNode, null, "Access", poi.access,4);
+        poi.connectBoth(connectionNode, null, "Access", poi.access);
   }
   add(poi);
  }
@@ -136,8 +136,8 @@ public class RoadFactory extends Factory<Node>{
            Node currNode=getNodeIfVertex(roads,point);
            if(currNode != null) {
                         if(prevNode != null && j < points.size()-1) {
-                            if(oneWay) prevNode.connect(currNode, vertices, name, access,type);
-                            else prevNode.connectBoth(currNode, vertices, name, access,type);
+                            if(oneWay) prevNode.connect(currNode, vertices, name, access);
+                            else prevNode.connectBoth(currNode, vertices, name, access);
                             vertices = new ArrayList();
                             vertices.add(point);
                             prevNode = currNode;
@@ -148,8 +148,8 @@ public class RoadFactory extends Factory<Node>{
                         prevNode = currNode;
                         currNode.place(roads);
                     } else if(j == points.size()-1) {
-                        if(oneWay) prevNode.connect(currNode, vertices, name, access,type);
-                        else prevNode.connectBoth(currNode, vertices, name, access,type);
+                        if(oneWay) prevNode.connect(currNode, vertices, name, access);
+                        else prevNode.connectBoth(currNode, vertices, name, access);
                         currNode.place(roads);
                         if(direction != null) currNode.setDirection(direction);
                     }
