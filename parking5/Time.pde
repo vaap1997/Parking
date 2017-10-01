@@ -1,4 +1,8 @@
-
+/**
+* Roads - Class to manage the roadmap of simulation
+* @author        Vanesa Alcantara
+* @version       2.0
+*/
 public class TimePark{
   ArrayList <TimeP> Park;
   ArrayList<String> chronometer;

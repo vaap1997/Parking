@@ -1,3 +1,10 @@
+/**
+* Roads - Class to manage the roadmap of simulation
+* @author        Marc Vilella
+* @version       2.0
+*/
+
+
 private class Lane {
     
     private String name;

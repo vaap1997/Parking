@@ -1,3 +1,9 @@
+/**
+* Roads - Class to manage the roadmap of simulation
+* @author        Marc Vilella
+* @version       2.0
+*/
+
 public PVector[] boundaries;
 
 public class Roads extends Facade<Node>{

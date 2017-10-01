@@ -3,8 +3,11 @@ Roads roads;
 POIs pois;
 POI poi;
 TimePark timepark;
+boolean showBG=true;
+PImage BG;
 
 final String roadsPath= "roads.geojson";
+final String bgPath="orto_small.jpg";
 int simWidth = 1000;
 int simHeight = 847;
 int timer=millis();
@@ -14,7 +17,9 @@ ArrayList DeviceNumPark;
 IntList occupancy= new IntList();
 
 void setup(){
-  size(1000,847);
+  size(1000,745);
+  BG=loadImage(bgPath);
+  BG.resize(simWidth,simHeight);
   roads=new Roads(roadsPath,simWidth,simHeight);
   pois= new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
@@ -34,7 +39,8 @@ void draw(){
     //canvas.translate(-width,-height);
     //canvas.scale(3);
     canvas.background(255);
-    roads.draw(canvas,1,0);
+    if(showBG) canvas.image(BG,0,0);
+    else roads.draw(canvas,1,0);
     canvas.fill(0);
     if(millis()-timer >= 100){
       int maxIndice=timepark.getmax();
@@ -66,4 +72,12 @@ void draw(){
     canvas.endDraw();
     image(canvas, 0, 0);
 
+}
+
+void keyPressed(){
+  switch(key){
+    case 'b':
+    showBG= !showBG;
+    break;
+  }
 }

@@ -1,3 +1,8 @@
+/**
+* Roads - Class to manage the roadmap of simulation
+* @author        Marc Vilella and Vanesa Alcantara
+* @version       2.0
+*/
 public class POIs extends Facade<POI>{   
   
   // Create new factory<pois>
