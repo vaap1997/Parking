@@ -4,16 +4,15 @@
 * @version       2.0
 */
 
-
+public PVector[] boundaries;
 
 public class Roads extends Facade<Node>{
 
   private PVector window;
-  public PVector[] bounds;
+
   
-  public Roads(String file, int x, int y, PVector[] bounds){
+  public Roads(String file, int x, int y){
     window= new PVector(x,y);
-    this.bounds = bounds;
     factory = new RoadFactory();
     this.loadJSON(file,this);
   }
@@ -87,10 +86,11 @@ public class Roads extends Facade<Node>{
     }    
    //
     public PVector toXY(float lat, float lon){
-    return new PVector(
-    map(lat, bounds[0].x,bounds[1].x,0,width),
-    map(lon, bounds[0].y,bounds[1].y,height,0)
-    );
+      PVector projPoint= Projection.toUTM(lat, lon,Projection.Datum.WGS84);
+      return new PVector(
+      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,width),
+      map(projPoint.y, boundaries[0].y,boundaries[1].y,height,0)
+      );
   }
   
   public void add(Node node) {
@@ -119,7 +119,7 @@ public class RoadFactory extends Factory<Node>{
   public ArrayList<Node>  loadJSON(File file, Roads roads){
     JSONObject roadNetwork=loadJSONObject(file);
     JSONArray lanes =roadNetwork.getJSONArray("features");
-    //boundaries = findBound(lanes);
+    boundaries = findBound(lanes);
     for(int i=0; i<lanes.size();i++){
         JSONObject lane =lanes.getJSONObject(i);
         //JALAR PROPERTIES
@@ -205,9 +205,10 @@ public class RoadFactory extends Factory<Node>{
             maxLon=max(maxLon,lon);
         }
     }
-     PVector[] bound ={new PVector(minLat,minLon),new PVector(maxLat, maxLon)};
-     return bound;   
+     return new PVector[]{
+       Projection.toUTM(minLat, minLon, Projection.Datum.WGS84),
+       Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
+      };
   }
-}
   
-  
+}  

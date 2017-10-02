@@ -1,3 +1,9 @@
+/**
+* Roads - Class to manage the roadmap of simulation
+* @author        Marc Vilella
+* @version       2.0
+*/
+
 //Geometry class
 public static class Geometry{
   //Check if a point is contained in a line
