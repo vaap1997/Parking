@@ -19,6 +19,8 @@ IntList occupancy= new IntList();
 void setup(){
   fullScreen(P2D,1);
   //size(1000,800);
+  simWidth= width;
+  simHeight=height;
   pixelDensity(2);
   BG=loadImage(bgPath);
   BG.resize(width,height);
