@@ -38,8 +38,9 @@ void draw(){
     canvas.beginDraw();
     //canvas.translate(-width,-height);
     //canvas.scale(3);
+   // canvas.rotate();
     canvas.background(255);
-    if(showBG) canvas.image(BG,0,0);
+    if(showBG)canvas.image(BG,0,0); 
     else roads.draw(canvas,1,0);
     canvas.fill(0);
     if(millis()-timer >= 100){
@@ -49,7 +50,8 @@ void draw(){
       indice++; 
       timer=millis();
     }
-
+    
+    if(showBG) canvas.fill(255);
     canvas.text(FechaTexto, 80,80);
        //llamar al array de device y de movtype
        ArrayList deviceNum=timepark.getDeviceNum();
@@ -76,7 +78,7 @@ void draw(){
 
 void keyPressed(){
   switch(key){
-    case 'b':
+    case ' ':
     showBG= !showBG;
     break;
   }
