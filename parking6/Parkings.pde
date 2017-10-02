@@ -63,7 +63,7 @@ public class POIs extends Facade<POI>{
       }
       
       int Occupancy=(int) map(occupancy.get(c),0,2000,0,100);
-      boolean selected= abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs((Occupancy+2)*2);
+      boolean selected= abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4);
       if(selected){
            canvas.text("Parking: "+ poi.NAME,20,500);
          }

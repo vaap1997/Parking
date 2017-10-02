@@ -38,12 +38,12 @@ void setup(){
 }
 
 void draw(){  
-    background(255);   
+    
     canvas.beginDraw();
     //canvas.translate(-width,-height);
     //canvas.scale(3);
    // canvas.rotate();
-    canvas.background(255);
+    canvas.background(150);
     if(showBG)canvas.image(BG,0,0); 
     else roads.draw(canvas,1,0);
     canvas.fill(0);
