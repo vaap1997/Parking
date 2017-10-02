@@ -38,7 +38,6 @@ public class POIs extends Facade<POI>{
    return CapacityPark;
   }
   
-
     
   public void draw(ArrayList DeviceNum, ArrayList MovType,String FechaTexto,ArrayList time, ArrayList Passages){
     int c=0;
@@ -64,6 +63,11 @@ public class POIs extends Facade<POI>{
       }
       
       int Occupancy=(int) map(occupancy.get(c),0,2000,0,100);
+      boolean selected= abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs((Occupancy+2)*2);
+      if(selected){
+           canvas.text("Parking: "+ poi.NAME,20,500);
+         }
+      
       //dibujar el occupancy
       int use=round(((float)occupancy.get(c) / (float)poi.CAPACITY)*100);
       color occColor = lerpColor(#77DD77, #FF6666,use);  
@@ -161,6 +165,7 @@ public class POIFactory extends Factory {
         
     }    
     //
+    
 }
   
 public class POI extends Node{
@@ -202,12 +207,7 @@ public class POI extends Node{
         
        canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);
        canvas.rect(POSITION.x,POSITION.y,size,size);
-      
-       boolean selected=select(mouseX, mouseY);
-         if(selected){
-           
-           canvas.text("Parking: "+ NAME,20,500);
-         }
+     
       } 
       
     

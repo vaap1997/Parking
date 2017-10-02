@@ -17,10 +17,11 @@ ArrayList DeviceNumPark;
 IntList occupancy= new IntList();
 
 void setup(){
-  size(1000,800);
+  fullScreen(P2D,1);
+  //size(1000,800);
   pixelDensity(2);
   BG=loadImage(bgPath);
-  BG.resize(1000,800);
+  BG.resize(width,height);
   roads=new Roads(roadsPath,simWidth,simHeight);
   pois= new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
