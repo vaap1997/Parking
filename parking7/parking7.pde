@@ -7,9 +7,9 @@ boolean showBG=true;
 PImage BG;
 
 final String roadsPath= "ANDroads.geojson";
-final String bgPath="earth_blurred.jpg";
-int simWidth = 1000;
-int simHeight = 1000;
+final String bgPath="earth.png";
+int simWidth = 970;
+int simHeight = 550;
 int timer=millis();
 int indice=0;
 String FechaTexto = "hola";
@@ -18,32 +18,29 @@ IntList occupancy= new IntList();
 
 void setup(){
   fullScreen(P2D,1);
-  simWidth=width;
-  simHeight=height;
   //size(1000,800);
-
+  pixelDensity(2);
   BG=loadImage(bgPath);
-  BG.resize(width,height);
+  BG.resize(simWidth,simHeight);
   roads=new Roads(roadsPath,simWidth,simHeight);
   pois= new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timepark= new TimePark("Aparcaments_julio.csv"); 
-  canvas = createGraphics(simWidth, simHeight);
+  canvas = createGraphics(width, height);
   
   for(int a=0;a<pois.count();a++){
     occupancy.set(a,0);
   }
-  
-
 }
 
 void draw(){  
-    background(255);   
+    background(0);
+    
     canvas.beginDraw();
-    //canvas.translate(-width,-height);
+    canvas.translate(210,130);
     //canvas.scale(3);
    // canvas.rotate();
-    canvas.background(255);
+    canvas.background(180);
     if(showBG)canvas.image(BG,0,0); 
     else roads.draw(canvas,1,0);
     canvas.fill(0);

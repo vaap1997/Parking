@@ -5,12 +5,10 @@
 */
 
 public PVector[] boundaries;
-public PVector size;
-public float scale;
 
 public class Roads extends Facade<Node>{
 
-  private PVector window; 
+  private PVector window;
 
   
   public Roads(String file, int x, int y){
@@ -88,18 +86,13 @@ public class Roads extends Facade<Node>{
     }    
    //
    
-  // CONVERT TO WEBMERCATOR PROJECTION
-   public PVector toWebMercator( float lat, float lon ) {
-    float RADIUS = 6378137f; // Earth Radius
-    float sin = sin( radians(lat) );
-    return new PVector(lon * radians(RADIUS), ( RADIUS / 2 ) * log( ( 1.0 + sin ) / ( 1.0 - sin ) ));
-  }
-    
+   
+   
     public PVector toXY(float lat, float lon){
-      PVector projPoint= toWebMercator(lat, lon);
+      PVector projPoint= Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
-      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,size.x),
-      map(projPoint.y, boundaries[0].y,boundaries[1].y,size.y,0)
+      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,simWidth),
+      map(projPoint.y, boundaries[0].y,boundaries[1].y,simHeight,0)
       );
   }
   
@@ -126,18 +119,16 @@ public class Roads extends Facade<Node>{
 
 public class RoadFactory extends Factory<Node>{
   
-   
-  
   public ArrayList<Node>  loadJSON(File file, Roads roads){
     JSONObject roadNetwork=loadJSONObject(file);
     JSONArray lanes =roadNetwork.getJSONArray("features");
-    findBound(lanes);
+    boundaries = findBound(lanes);
     for(int i=0; i<lanes.size();i++){
         JSONObject lane =lanes.getJSONObject(i);
         //JALAR PROPERTIES
         JSONObject props= lane.getJSONObject("properties");
         Accessible access = props.isNull("type")? Accessible.ALL : Accessible.create( props.getString("type") );
-        String type=props.isNull("type")? null: props.getString("type");
+        int type=props.isNull("type")? 0: props.getString("type")=="primary"? 1: props.getString("type")=="secondary"? 2:3;
         
         String name = props.isNull("name")? "null" : props.getString("name");
         boolean oneWay=props.isNull("oneway")? false:props.getBoolean("oneway");
@@ -198,10 +189,9 @@ public class RoadFactory extends Factory<Node>{
         return null;
     }
  
-
  //Crear funcion de fronteras de mapas 
   
-  public void findBound(JSONArray lanes){
+  public PVector[] findBound(JSONArray lanes){
     float minLat = Float.MAX_VALUE;
     float maxLat=-(Float.MAX_VALUE);
     float minLon=Float.MAX_VALUE;
@@ -218,13 +208,10 @@ public class RoadFactory extends Factory<Node>{
             maxLon=max(maxLon,lon);
         }
     }
-     PVector coordsTL= roads.toWebMercator(minLat,minLon);
-     PVector coordsBR= roads.toWebMercator(maxLat, maxLon);
-     boundaries= new PVector[]{coordsTL,coordsBR};
-     
-     float mapRatio =(coordsBR.x-coordsTL.x)/(coordsBR.y-coordsTL.y);
-     size = mapRatio<1? new PVector(height*mapRatio, height): new PVector(width,width/mapRatio);
-     scale=(coordsBR.x-coordsTL.x)/size.x; 
+     return new PVector[]{
+       Projection.toUTM(minLat, minLon, Projection.Datum.WGS84),
+       Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
+      };
   }
   
 }  
