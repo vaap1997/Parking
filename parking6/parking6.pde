@@ -8,8 +8,8 @@ PImage BG;
 
 final String roadsPath= "roads.geojson";
 final String bgPath="ortoEPSG3857lowRes.jpg";
-int simWidth = 1000;
-int simHeight = 847;
+int simWidth = 970;
+int simHeight = 550;
 int timer=millis();
 int indice=0;
 String FechaTexto = "hola";
@@ -19,16 +19,16 @@ IntList occupancy= new IntList();
 void setup(){
   fullScreen(P2D,1);
   //size(1000,800);
-  simWidth= width;
-  simHeight=height;
+  //simWidth= width;
+  //simHeight=height;
   pixelDensity(2);
   BG=loadImage(bgPath);
-  BG.resize(width,height);
+  BG.resize(simWidth,simHeight);
   roads=new Roads(roadsPath,simWidth,simHeight);
   pois= new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timepark= new TimePark("Aparcaments_julio.csv"); 
-  canvas = createGraphics(simWidth, simHeight);
+  canvas = createGraphics(width, height);
   
   for(int a=0;a<pois.count();a++){
     occupancy.set(a,0);
