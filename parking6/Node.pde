@@ -1,5 +1,5 @@
 /**
-* Roads - Class to manage the roadmap of simulation
+* Node - Class to manage nodes
 * @author        Marc Vilella
 * @version       2.0
 */
@@ -15,23 +15,17 @@ private class Node implements Placeable{
   private String direction = null;
     
   public Node(PVector position){
-    id=-1;
-    this.POSITION=position;
+    id = -1;
+    this.POSITION = position;
   }
   
-    /**
-    * Set node ID
-    * @param id    ID of the node
-    */
+    //Set node ID
     public void setID(int id) {
         this.id = id;
     }
     
  
-    /**
-    * Get node ID
-    * @return node ID
-    */
+    //Ser node ID
     public int getID() {
         return id;
     }
@@ -51,11 +45,9 @@ private class Node implements Placeable{
   }
   
   public void draw(PGraphics canvas, int stroke, color c) {
-
            for(Lane lane : lanes) {
             lane.draw(canvas, stroke, c);
         }
-    
   }
   
    public void draw(PGraphics canvas) {
