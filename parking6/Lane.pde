@@ -14,9 +14,9 @@ private class Lane {
     private Node finalNode;
     private float distance;
     private ArrayList<PVector> vertices = new ArrayList();
-    private boolean open=true;
+
     
-    //private ArrayList<Agent> crowd= new ArrayList();
+    //private ArrayList<Agent> crowd = new ArrayList();
     private float occupancy;
     
     public Lane(String name, Accessible access, Node initNode, Node finalNode, ArrayList<PVector> vertices) {
@@ -25,7 +25,7 @@ private class Lane {
         this.initNode = initNode;
         this.finalNode = finalNode;
         
-        if(vertices!= null && vertices.size()!= 0) this.vertices = new ArrayList(vertices);
+        if(vertices != null && vertices.size()!= 0) this.vertices = new ArrayList(vertices);
         else {
             this.vertices.add(initNode.getPosition());
             this.vertices.add(finalNode.getPosition());
@@ -35,14 +35,15 @@ private class Lane {
     }
     
 
-        public Node getEnd() {
+   public Node getEnd() {
         return finalNode;
     }
     
-        public boolean contains(PVector vertex) {
+   public boolean contains(PVector vertex) {
         return vertices.indexOf(vertex) >= 0;
     }
-        public ArrayList<PVector> getVertices() {
+    
+   public ArrayList<PVector> getVertices() {
         return new ArrayList(vertices);
     }
     
@@ -82,15 +83,14 @@ private class Lane {
         }
         return closestPoint;
     }
-    //
     
-      protected boolean divide(Node node) {
+   protected boolean divide(Node node) {
         int i = vertices.indexOf(node.getPosition());
         if(i > 0 && i < vertices.size()-1) {
             ArrayList<PVector> dividedVertices = new ArrayList( vertices.subList(i, vertices.size()) );
-            PVector Type=vertices.get(2);
+            PVector type = vertices.get(2);
             node.connect(finalNode, dividedVertices, name, access);
-            vertices = new ArrayList( vertices.subList(0, i+1) );
+            vertices = new ArrayList( vertices.subList(0,i+1) );
             finalNode = node;
             distance = calcLength();
             return true;
@@ -120,11 +120,10 @@ private class Lane {
         }
         return null;
     }    
-    //
-        public void draw(PGraphics canvas, int stroke, color c) {
-        
+   
+   public void draw(PGraphics canvas, int stroke, color c) {        
         for(int i = 1; i < vertices.size(); i++) {
-          color occupColor=lerpColor(c, #FF0000, occupancy);        
+          color occupColor = lerpColor(c, #FF0000, occupancy);        
           canvas.stroke(occupColor, 127); canvas.strokeWeight(stroke);
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);

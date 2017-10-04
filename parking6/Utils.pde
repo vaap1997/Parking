@@ -13,7 +13,7 @@ public static class Geometry{
         PVector line = PVector.sub(l2, l1);
         return PVector.angleBetween(l1p, line) <= EPSILON && l1p.mag() < line.mag();
     }
-   //
+   
    //find the perpendicular projection of the point over a line (find closest line, connect)
     public static PVector scalarProjection(PVector point, PVector l1, PVector l2) {
         PVector l1p = PVector.sub(point, l1);
@@ -24,5 +24,5 @@ public static class Geometry{
         line.mult( dotProd );
         return line.mag() > lineLength ? l2 : dotProd < 0 ? l1 : PVector.add(l1, line);
     }
-    //
+   
 }
