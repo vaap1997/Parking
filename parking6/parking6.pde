@@ -40,6 +40,7 @@ void setup(){
 void draw(){  
     
     canvas.beginDraw();
+    canvas.translate(210,130);
     //canvas.translate(-width,-height);
     //canvas.scale(3);
    // canvas.rotate();
