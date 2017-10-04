@@ -1,3 +1,5 @@
+import deadpixel.keystone.*;
+
 PGraphics canvas;
 Roads roads;
 POIs pois;
@@ -5,6 +7,8 @@ POI poi;
 TimePark timePark;
 boolean showBG = true;
 PImage BG;
+Keystone ks;
+CornerPinSurface keyStone;
 
 //Model coords
 //lat: 42.505086, long: 1.509961
@@ -34,16 +38,20 @@ void setup(){
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
-  canvas = createGraphics(simWidth, simHeight);
+  
+  canvas = createGraphics(simWidth, simHeight,P2D);
   
   for(int a = 0; a < pois.count(); a++){
     occupancy.set(a,0);
   }
   
+  ks=new Keystone(this);
+  keyStone=ks.createCornerPinSurface(simWidth,simHeight,20);
+  
 }
 
 void draw(){  
-    
+    background(180);
     canvas.beginDraw();
     //canvas.translate(-width,-height);
     //canvas.scale(3);
@@ -82,8 +90,8 @@ void draw(){
     }
     
     canvas.endDraw();
-    image(canvas, 0, 0);
-
+    image(canvas,0,0);
+    keyStone.render(canvas);
 }
 
 void keyPressed(){
@@ -91,5 +99,17 @@ void keyPressed(){
     case ' ':
     showBG = !showBG;
     break;
-  }
+    
+    case 'k':
+    ks.toggleCalibration();
+    break;
+    
+    case 's':
+    ks.save();
+    break;
+    
+    case 'l':
+    ks.load();
+    break;
+  } 
 }
