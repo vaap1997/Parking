@@ -1,5 +1,6 @@
 import deadpixel.keystone.*;
-
+Keystone ks;
+CornerPinSurface keyStone;
 PGraphics canvas;
 Roads roads;
 POIs pois;
@@ -7,15 +8,12 @@ POI poi;
 TimePark timePark;
 boolean showBG = true;
 PImage BG;
-Keystone ks;
-CornerPinSurface keyStone;
 
 //Model coords
 //lat: 42.505086, long: 1.509961
 //lat: 42.517066, long: 1.544024
 //lat: 42.508161, long: 1.549798
 //lat: 42.496164, long: 1.515728
-
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "ortoEPSG3857lowRes.jpg";
@@ -28,10 +26,12 @@ ArrayList deviceNumPark;
 IntList occupancy = new IntList();
 
 void setup(){
-  fullScreen(P2D,1);
+  fullScreen(P3D,1);
   //size(1000,800);
   simWidth = width;
-  simHeight = height;
+  simHeight = height;  
+  ks=new Keystone(this);
+  keyStone=ks.createCornerPinSurface(simWidth,simHeight,20);
   BG = loadImage(bgPath);
   BG.resize(width,height);
   roads = new Roads(roadsPath,simWidth,simHeight);
@@ -39,15 +39,12 @@ void setup(){
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
   
-  canvas = createGraphics(simWidth, simHeight,P2D);
+  canvas = createGraphics(simWidth, simHeight,P3D);
   
   for(int a = 0; a < pois.count(); a++){
     occupancy.set(a,0);
   }
-  
-  ks=new Keystone(this);
-  keyStone=ks.createCornerPinSurface(simWidth,simHeight,20);
-  
+
 }
 
 void draw(){  
