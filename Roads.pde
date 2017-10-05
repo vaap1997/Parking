@@ -5,6 +5,9 @@
 */
 
 public PVector[] boundaries;
+ //buscar pois que estan dentro del shape
+//dibujar solo si estan dentro del shape
+
 
 public class Roads extends Facade<Node>{
       private PVector window;
@@ -73,10 +76,7 @@ public class Roads extends Facade<Node>{
         return closestLane;
     }
     
-    //Check if point is on the canvas
-    public boolean contains(PVector point) {
-        return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
-    }    
+
    
    //Scale the roads
     public PVector toXY(float lat, float lon){
@@ -103,7 +103,56 @@ public class Roads extends Facade<Node>{
           node.draw(canvas, stroke, c);}
         } 
     }
+
+  public boolean contains(PVector point) {
+        return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
+    }
    
+  //Take model boundaries and check if the point is inside this shade  
+  public String pointInPolygon(PVector point){
+
+      ArrayList<PVector> vertices = new ArrayList();
+      vertices.add(toXY(42.496164,1.515728));
+      vertices.add(toXY(42.508161,1.549798));
+      vertices.add(toXY(42.517066,1.544024));
+      vertices.add(toXY(42.505086,1.509961));
+      vertices.add(toXY(42.496164,1.515728));
+      
+      int boundaries=0;
+      
+      for( PVector vertex : vertices){
+       if((vertex.x == point.x) || (vertex.y == point.y)) boundaries++;
+      }
+      
+      int intersections=0;
+      
+      for(int i=1; i<vertices.size(); i++){
+        PVector vertex1= vertices.get(i-1);
+        PVector vertex2=vertices.get(i);
+        
+        if( (vertex1.y == vertex2.y) && (vertex1.y == point.y) && (point.x > min(vertex1.x,vertex2.x)) && (point.x < max(vertex1.x, vertex2.x))){
+          boundaries++;
+        }
+        
+        if( (point.y > min(vertex1.y,vertex2.y)) && (point.y <= max(vertex1.y,vertex2.y)) && (point.x <= max(vertex1.x,vertex2.x)) && (vertex1.y != vertex2.y) ){
+          float xinters = (point.y - vertex1.y) * (vertex2.x - vertex1.x) / (vertex2.y - vertex1.y) + vertex1.x;
+          if(xinters == point.x){
+            boundaries++;
+          }
+          if( (vertex1.x == vertex2.x) || (point.x <=xinters)){
+            intersections++;
+          } 
+        } 
+      }
+    
+      if((intersections%2 != 0) || (boundaries > 0)){
+       return "inside"; 
+      } else {
+       return "outside"; 
+      }
+  
+  }
+  
 }
 
 public class RoadFactory extends Factory<Node>{
@@ -128,29 +177,31 @@ public class RoadFactory extends Factory<Node>{
         ArrayList vertices = new ArrayList();
         
          for(int j = 0; j < points.size(); j++){
-             PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-             vertices.add(point);
-             Node currNode = getNodeIfVertex(roads,point);
-             if(currNode != null) {
-                   if(prevNode != null && j < points.size()-1) {
+            PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
+              if(roads.pointInPolygon(point) == "inside"){           
+                 vertices.add(point);
+                 Node currNode = getNodeIfVertex(roads,point);
+                 if(currNode != null) {
+                       if(prevNode != null && j < points.size()-1) {
+                           if(oneWay) prevNode.connect(currNode, vertices, name, access);
+                           else prevNode.connectBoth(currNode, vertices, name, access);
+                           vertices = new ArrayList();
+                           vertices.add(point);
+                           prevNode = currNode;
+                        }
+                } else currNode = new Node(point);
+                        
+                if(prevNode == null) {
+                       prevNode = currNode;
+                       currNode.place(roads);
+                } else if(j == points.size()-1) {
                        if(oneWay) prevNode.connect(currNode, vertices, name, access);
                        else prevNode.connectBoth(currNode, vertices, name, access);
-                       vertices = new ArrayList();
-                       vertices.add(point);
-                       prevNode = currNode;
-                    }
-            } else currNode = new Node(point);
-                    
-            if(prevNode == null) {
-                   prevNode = currNode;
-                   currNode.place(roads);
-            } else if(j == points.size()-1) {
-                   if(oneWay) prevNode.connect(currNode, vertices, name, access);
-                   else prevNode.connectBoth(currNode, vertices, name, access);
-                   currNode.place(roads);
-                   if(direction != null) currNode.setDirection(direction);
-            }
-        }
+                       currNode.place(roads);
+                       if(direction != null) currNode.setDirection(direction);
+                }
+              }
+         }
     }   
     println("LOADED");
     return new ArrayList();

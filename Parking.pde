@@ -9,6 +9,8 @@ TimePark timePark;
 boolean showBG = true;
 PImage BG;
 
+
+
 //Model coords
 //lat: 42.505086, long: 1.509961
 //lat: 42.517066, long: 1.544024
@@ -31,7 +33,7 @@ void setup(){
   simWidth = width;
   simHeight = height;  
   ks=new Keystone(this);
-  keyStone=ks.createCornerPinSurface(simWidth,simHeight,20);
+  keyStone=ks.createCornerPinSurface(width,height,20);
   BG = loadImage(bgPath);
   BG.resize(width,height);
   roads = new Roads(roadsPath,simWidth,simHeight);
