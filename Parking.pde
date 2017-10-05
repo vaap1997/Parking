@@ -9,8 +9,6 @@ TimePark timePark;
 boolean showBG = true;
 PImage BG;
 
-
-
 //Model coords
 //lat: 42.505086, long: 1.509961
 //lat: 42.517066, long: 1.544024
@@ -18,7 +16,7 @@ PImage BG;
 //lat: 42.496164, long: 1.515728
 
 final String roadsPath = "roads.geojson";
-final String bgPath = "ortoEPSG3857lowRes.jpg";
+final String bgPath = "orto_small.jpg";
 int simWidth = 1000;
 int simHeight = 847;
 int timer = millis();
@@ -50,13 +48,13 @@ void setup(){
 }
 
 void draw(){  
-    background(180);
+    background(0);
     canvas.beginDraw();
-    //canvas.translate(-width,-height);
-    //canvas.scale(3);
+    canvas.translate(-width/3,-height/2);
+    canvas.scale(1.8);
    // canvas.rotate();
     canvas.background(180);
-    if(showBG)canvas.image(BG,0,0); 
+      if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,1,0);
     canvas.fill(0);
     
@@ -90,6 +88,7 @@ void draw(){
     
     canvas.endDraw();
     image(canvas,0,0);
+    
     keyStone.render(canvas);
 }
 
