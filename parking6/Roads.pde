@@ -5,6 +5,9 @@
 */
 
 public PVector[] boundaries;
+ //buscar pois que estan dentro del shape
+//dibujar solo si estan dentro del shape
+
 
 public class Roads extends Facade<Node>{
       private PVector window;
@@ -73,10 +76,7 @@ public class Roads extends Facade<Node>{
         return closestLane;
     }
     
-    //Check if point is on the canvas
-    public boolean contains(PVector point) {
-        return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
-    }    
+
    
    //Scale the roads
     public PVector toXY(float lat, float lon){
@@ -104,6 +104,25 @@ public class Roads extends Facade<Node>{
         } 
     }
    
+    //Check if point is on the canvas
+    public boolean contains(PVector point) {
+      PVector p1=toXY(42.505086,1.509961);
+      PVector p2=toXY(42.517066,1.544024);
+      PVector p3=toXY(42.508161,1.549798);
+      PVector p4=toXY(42.496164,1.515728);
+      
+      PShape model=createShape();
+      beginShape();
+      vertex(p1.x,p1.y);
+      vertex(p2.x,p2.y);
+      vertex(p3.x,p3.y);
+      vertex(p4.x,p4.y);
+      endShape(CLOSE); 
+      if(model.contains(point.x,point.y)) return true;
+      else return false;
+    }    
+   
+   
 }
 
 public class RoadFactory extends Factory<Node>{
@@ -128,29 +147,31 @@ public class RoadFactory extends Factory<Node>{
         ArrayList vertices = new ArrayList();
         
          for(int j = 0; j < points.size(); j++){
-             PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-             vertices.add(point);
-             Node currNode = getNodeIfVertex(roads,point);
-             if(currNode != null) {
-                   if(prevNode != null && j < points.size()-1) {
+            PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
+            if(roads.contains(point)){             
+                 vertices.add(point);
+                 Node currNode = getNodeIfVertex(roads,point);
+                 if(currNode != null) {
+                       if(prevNode != null && j < points.size()-1) {
+                           if(oneWay) prevNode.connect(currNode, vertices, name, access);
+                           else prevNode.connectBoth(currNode, vertices, name, access);
+                           vertices = new ArrayList();
+                           vertices.add(point);
+                           prevNode = currNode;
+                        }
+                } else currNode = new Node(point);
+                        
+                if(prevNode == null) {
+                       prevNode = currNode;
+                       currNode.place(roads);
+                } else if(j == points.size()-1) {
                        if(oneWay) prevNode.connect(currNode, vertices, name, access);
                        else prevNode.connectBoth(currNode, vertices, name, access);
-                       vertices = new ArrayList();
-                       vertices.add(point);
-                       prevNode = currNode;
-                    }
-            } else currNode = new Node(point);
-                    
-            if(prevNode == null) {
-                   prevNode = currNode;
-                   currNode.place(roads);
-            } else if(j == points.size()-1) {
-                   if(oneWay) prevNode.connect(currNode, vertices, name, access);
-                   else prevNode.connectBoth(currNode, vertices, name, access);
-                   currNode.place(roads);
-                   if(direction != null) currNode.setDirection(direction);
+                       currNode.place(roads);
+                       if(direction != null) currNode.setDirection(direction);
+                }
             }
-        }
+         }
     }   
     println("LOADED");
     return new ArrayList();
