@@ -103,26 +103,56 @@ public class Roads extends Facade<Node>{
           node.draw(canvas, stroke, c);}
         } 
     }
+
+  public boolean contains(PVector point) {
+        return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
+    }
    
-    //Check if point is on the canvas
-    public boolean contains(PVector point) {
-      PVector p1=toXY(42.505086,1.509961);
-      PVector p2=toXY(42.517066,1.544024);
-      PVector p3=toXY(42.508161,1.549798);
-      PVector p4=toXY(42.496164,1.515728);
+  //Take model boundaries and check if the point is inside this shade  
+  public String pointInPolygon(PVector point){
+
+      ArrayList<PVector> vertices = new ArrayList();
+      vertices.add(toXY(42.496164,1.515728));
+      vertices.add(toXY(42.508161,1.549798));
+      vertices.add(toXY(42.517066,1.544024));
+      vertices.add(toXY(42.505086,1.509961));
+      vertices.add(toXY(42.496164,1.515728));
       
-      PShape model=createShape();
-      beginShape();
-      vertex(p1.x,p1.y);
-      vertex(p2.x,p2.y);
-      vertex(p3.x,p3.y);
-      vertex(p4.x,p4.y);
-      endShape(CLOSE); 
-      if(model.contains(point.x,point.y)) return true;
-      else return false;
-    }    
-   
-   
+      int boundaries=0;
+      
+      for( PVector vertex : vertices){
+       if((vertex.x == point.x) || (vertex.y == point.y)) boundaries++;
+      }
+      
+      int intersections=0;
+      
+      for(int i=1; i<vertices.size(); i++){
+        PVector vertex1= vertices.get(i-1);
+        PVector vertex2=vertices.get(i);
+        
+        if( (vertex1.y == vertex2.y) && (vertex1.y == point.y) && (point.x > min(vertex1.x,vertex2.x)) && (point.x < max(vertex1.x, vertex2.x))){
+          boundaries++;
+        }
+        
+        if( (point.y > min(vertex1.y,vertex2.y)) && (point.y <= max(vertex1.y,vertex2.y)) && (point.x <= max(vertex1.x,vertex2.x)) && (vertex1.y != vertex2.y) ){
+          float xinters = (point.y - vertex1.y) * (vertex2.x - vertex1.x) / (vertex2.y - vertex1.y) + vertex1.x;
+          if(xinters == point.x){
+            boundaries++;
+          }
+          if( (vertex1.x == vertex2.x) || (point.x <=xinters)){
+            intersections++;
+          } 
+        } 
+      }
+    
+      if((intersections%2 != 0) || (boundaries > 0)){
+       return "inside"; 
+      } else {
+       return "outside"; 
+      }
+  
+  }
+  
 }
 
 public class RoadFactory extends Factory<Node>{
@@ -148,7 +178,7 @@ public class RoadFactory extends Factory<Node>{
         
          for(int j = 0; j < points.size(); j++){
             PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-            if(roads.contains(point)){             
+              if(roads.pointInPolygon(point) == "inside"){           
                  vertices.add(point);
                  Node currNode = getNodeIfVertex(roads,point);
                  if(currNode != null) {
@@ -170,7 +200,7 @@ public class RoadFactory extends Factory<Node>{
                        currNode.place(roads);
                        if(direction != null) currNode.setDirection(direction);
                 }
-            }
+              }
          }
     }   
     println("LOADED");
