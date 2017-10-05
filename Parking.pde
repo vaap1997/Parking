@@ -88,7 +88,7 @@ void draw(){
     
     canvas.endDraw();
     image(canvas,0,0);
-    
+    background(180);
     keyStone.render(canvas);
 }
 
