@@ -62,7 +62,6 @@ public class TimePark{
   //Create an array with all the dates in the range
   public ArrayList<String> Chronometer(){
     ArrayList<String> chronometer = new ArrayList();
-    print(minMax);
       for(int year = yearMin; year <= yearMax; year++){
         
         for(int month = monthMin; month <= monthMax; month++){
