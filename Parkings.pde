@@ -63,8 +63,8 @@ public class POIs extends Facade<POI>{
         float use =(float)occupancy.get(c) / (float)poi.CAPACITY;
         color occColor = lerpColor(#77DD77, #FF6666,use);
         if(legends){
-          legend.text((int) occupancy.get(c),250,100+13*c);
-          legend.text(str(use)+"%",280,100+13*c); 
+          legend.text((int) occupancy.get(c),180,60+13*c);
+          legend.text(str(use)+"%",220,60+13*c); 
         }else{
           canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);        
           canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy); 
@@ -72,31 +72,6 @@ public class POIs extends Facade<POI>{
         c++;
     }
   }    
-  
-
-  
-  public void getOccupancy(ArrayList deviceNum, ArrayList movType,String dateS,ArrayList time, ArrayList passages, POI poi, int c){
-      ArrayList devices = poi.DEVICENUM;
-      
-      for(int j = 0; j<devices.size(); j++){
-        
-          for(int i = 0; i<deviceNum.size(); i++){
-            
-            if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){
-              
-              if((int)movType.get(i) == 0){ 
-                occupancy.set(c,(int)occupancy.get(c)+(int)passages.get(i)); 
-                //occupancy.add(c,(int)passages.get(i));
-              }
-              
-              if((int)movType.get(i) == 1){
-                occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
-              }  
-            }    
-         }       
-      }
-  }
- 
  
 }
   

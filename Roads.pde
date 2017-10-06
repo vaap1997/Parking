@@ -82,8 +82,8 @@ public class Roads extends Facade<Node>{
     public PVector toXY(float lat, float lon){
       PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
-      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,width),
-      map(projPoint.y, boundaries[0].y,boundaries[1].y,height,0)
+      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,simWidth),
+      map(projPoint.y, boundaries[0].y,boundaries[1].y,simHeight,0)
       );
     }
   

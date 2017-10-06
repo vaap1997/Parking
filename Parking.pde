@@ -1,9 +1,10 @@
-//TODO: Fix legend
+//TODO:implement Mark's warp layer
 import deadpixel.keystone.*;
 Keystone ks;
 CornerPinSurface keyStone1;
 CornerPinSurface keyStone2;
 PGraphics canvas;
+PGraphics canvas1;
 PGraphics legend;
 boolean showBG = true;
 PImage BG;
@@ -13,8 +14,8 @@ POI poi;
 TimePark timePark;
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
-int simWidth = 1000;
-int simHeight = 847;
+int simWidth;
+int simHeight;
 int timer = millis();
 int indice = 0;
 String dateS = " ";
@@ -30,15 +31,16 @@ IntList occupancy = new IntList();
 void setup(){
   fullScreen(P3D,1);
   //size(1000,800);
-  simWidth = width;
-  simHeight = height;  
+  simWidth = width-200;
+  simHeight = height-200;  
   ks=new Keystone(this);
-  keyStone1=ks.createCornerPinSurface(width,height,20);
+  keyStone1=ks.createCornerPinSurface(simWidth,simHeight,20);
   keyStone2=ks.createCornerPinSurface(500,200,20);
   canvas = createGraphics(simWidth, simHeight,P3D);
+  canvas1 = createGraphics(simWidth, simHeight,P3D);
   legend= createGraphics(500,800,P3D);
   BG = loadImage(bgPath);
-  BG.resize(width,height);
+  BG.resize(simWidth,simHeight);
   roads = new Roads(roadsPath,simWidth,simHeight);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
@@ -49,14 +51,13 @@ void setup(){
 }
 
 void draw(){  
-    background(0);
-
- //--------------------MAP-----------------------
+    background(0);   
+  //--------------------MAP-----------------------
     canvas.beginDraw(); 
     /*get closer the part we are interesting in */
-    canvas.translate(-width/3,-height/2);
+    canvas.translate(-width/4,-height/2);
     canvas.scale(1.8);
-    // canvas.rotate();
+    canvas.rotate(PI/18.0);
     canvas.background(180);
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,1,0);
@@ -64,27 +65,44 @@ void draw(){
     ArrayList movType = timePark.getMovType();
     ArrayList time = timePark.getTime();
     ArrayList passages = timePark.getPassages();
-    pois.draw(deviceNum,movType,dateS,time, passages,false); 
+    pois.draw(deviceNum,movType,dateS,time, passages,false);
+    int dimension = simWidth * simHeight;
+    canvas.loadPixels();
+    canvas1.beginDraw();
+    canvas1.loadPixels();
+    for (int i = 0; i < dimension; i ++) {
+      canvas1.pixels[i] = canvas.pixels[i];
+    }
+    canvas1.updatePixels();
+    canvas1.endDraw();
+
+    for (int i = 0; i < dimension; i ++) { 
+    canvas.pixels[i] = canvas1.pixels[dimension-i-1]; 
+    } 
+    canvas.updatePixels();
     canvas.endDraw();
+    
     
   //----------------LEGEND-----------------------  
     legend.beginDraw();
     legend.fill(255);
-    if(millis()-timer >= 100){
+    legend.rect(0,0,500,800);
+    legend.fill(0);
+    if(millis() - timer >= 100){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice) indice = 0;
       dateS = timePark.chronometer.get(indice);
       indice++; 
       timer = millis();
     }  
-    legend.text(dateS, 80,80);
+    legend.text(dateS, 80,20);
     ArrayList namepark = pois.getPOInames();
     ArrayList capacitypark = pois.getCapacity();
     for(int i = 0; i < namepark.size(); i++){
      int number = (int)capacitypark.get(i);
      String mostrar = (String)namepark.get(i);
-     legend.text(mostrar,20,100+13*i);
-     legend.text(str(number),200,100+13*i); 
+     legend.text(mostrar,20,60+13*i);
+     legend.text(str(number),130,60+13*i); 
     }
     pois.draw(deviceNum,movType,dateS,time, passages,true);
     legend.endDraw();

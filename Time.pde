@@ -1,5 +1,5 @@
 /**
-* Roads - Class to manage the roadmap of simulation
+* Time: chronometer simulation
 * @author        Vanesa Alcantara
 * @version       2.0
 */
