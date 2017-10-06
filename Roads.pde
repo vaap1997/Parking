@@ -108,7 +108,7 @@ public class Roads extends Facade<Node>{
         return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
     }
    
-  //Take model boundaries and check if the point is inside this shade  
+  //Take model boundaries to createa shape and check if the point is inside this shade  
   public String pointInPolygon(PVector point){
 
       ArrayList<PVector> vertices = new ArrayList();
