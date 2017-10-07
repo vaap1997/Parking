@@ -80,7 +80,7 @@ public class Roads extends Facade<Node>{
    
    //Scale the roads
     public PVector toXY(float lat, float lon){
-      PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
+      PVector projPoint = Projection.toUTM(lat, lon,GeoDatum.WGS84);
       return new PVector(
       map(projPoint.x, boundaries[0].x,boundaries[1].x,0,simWidth),
       map(projPoint.y, boundaries[0].y,boundaries[1].y,simHeight,0)
@@ -160,6 +160,7 @@ public class RoadFactory extends Factory<Node>{
   public ArrayList<Node>  loadJSON(File file, Roads roads){
     JSONObject roadNetwork = loadJSONObject(file);
     JSONArray lanes = roadNetwork.getJSONArray("features");
+    //xboundaries = canvas.BOUNDARIES;     
     boundaries = findBound(lanes);
     for(int i = 0; i < lanes.size(); i++){
         JSONObject lane =lanes.getJSONObject(i);
@@ -245,8 +246,8 @@ public class RoadFactory extends Factory<Node>{
         }
     }
      return new PVector[]{
-       Projection.toUTM(minLat, minLon, Projection.Datum.WGS84),
-       Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
+       Projection.toUTM(minLat, minLon, GeoDatum.WGS84),
+       Projection.toUTM(maxLat, maxLon, GeoDatum.WGS84) 
       };
     }
   

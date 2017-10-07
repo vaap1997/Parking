@@ -83,7 +83,7 @@ public class TimePark{
                         if(minstr.length() == 1){
                          minstr = "0" + minstr; 
                         }
-                       String dia = str(day) + "/"+monthstr + "/"+str(year) + " "+hourstr + ":" + minstr;
+                       String dia = str(day) + "/"+ monthstr + "/" + str(year) + " "+ hourstr + ":" + minstr;
                        chronometer.add(dia);
                     } 
                 } 

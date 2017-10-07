@@ -1,8 +1,6 @@
 //TODO:implement Mark's warp layer
-import deadpixel.keystone.*;
-Keystone ks;
-CornerPinSurface keyStone1;
-CornerPinSurface keyStone2;
+
+WarpSurface suface;
 PGraphics canvas;
 PGraphics canvas1;
 PGraphics legend;
@@ -10,17 +8,17 @@ boolean showBG = true;
 PImage BG;
 Roads roads;
 POIs pois;
-POI poi;
-TimePark timePark;
 final String roadsPath = "roads.geojson";
-final String bgPath = "orto_small.jpg";
+final String bgPath = "orto_epsg3857.jpg";
 int simWidth;
 int simHeight;
-int timer = millis();
-int indice = 0;
 String dateS = " ";
 ArrayList deviceNumPark;
 IntList occupancy = new IntList();
+
+TimePark timePark;
+int timer = millis();
+int indice = 0;
 
 //Model coords
 //lat: 42.505086, long: 1.509961
@@ -28,19 +26,35 @@ IntList occupancy = new IntList();
 //lat: 42.508161, long: 1.549798
 //lat: 42.496164, long: 1.515728
 
+
+final LatLon[] ROI = new LatLon[] {
+    new LatLon(42.505085,1.509961),
+    new LatLon(42.517067,1.544024),
+    new LatLon(42.508160,1.549798),
+    new LatLon(42.496162,1.515728)
+};
+
+final LatLon[] bounds = new LatLon[] {
+    new LatLon(42.5181, 1.50803),
+    new LatLon(42.495, 1.55216)
+};
+
 void setup(){
-  fullScreen(P3D,1);
-  //size(1000,800);
-  simWidth = width-200;
-  simHeight = height-200;  
-  ks=new Keystone(this);
-  keyStone1=ks.createCornerPinSurface(simWidth,simHeight,20);
-  keyStone2=ks.createCornerPinSurface(500,200,20);
-  canvas = createGraphics(simWidth, simHeight,P3D);
-  canvas1 = createGraphics(simWidth, simHeight,P3D);
-  legend= createGraphics(500,800,P3D);
+  size(900,700,P2D);
+  smooth();
+  simWidth = width;
+  simHeight = height; 
   BG = loadImage(bgPath);
-  BG.resize(simWidth,simHeight);
+  //BG.resize(simWidth,simHeight);
+  
+  canvas = createGraphics(BG.width, BG.height,P3D);
+  canvas1 = createGraphics(BG.width, BG.width,P3D);
+  legend= createGraphics(500,800,P3D);
+  
+  canvas = new Canvas(this, canvas, "orto_epsg3857.jpg" , bounds);
+  surface = new WarpSurface(this, 700, 300, 6, 3, ROI);
+  surface.loadConfig();
+ 
   roads = new Roads(roadsPath,simWidth,simHeight);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
@@ -48,6 +62,7 @@ void setup(){
   for(int a = 0; a < pois.count(); a++){
     occupancy.set(a,0);
   }
+
 }
 
 void draw(){  
@@ -55,9 +70,9 @@ void draw(){
   //--------------------MAP-----------------------
     canvas.beginDraw(); 
     /*get closer the part we are interesting in */
-    canvas.translate(-width/4,-height/2);
-    canvas.scale(1.8);
-    canvas.rotate(PI/18.0);
+    //canvas.translate(-width/4,-height/2);
+    //canvas.scale(1.8);
+    //canvas.rotate(PI/18.0);
     canvas.background(180);
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,1,0);
@@ -83,7 +98,7 @@ void draw(){
     canvas.endDraw();
     
     
-  //----------------LEGEND-----------------------  
+  ////----------------LEGEND-----------------------  
     legend.beginDraw();
     legend.fill(255);
     legend.rect(0,0,500,800);
@@ -94,7 +109,8 @@ void draw(){
       dateS = timePark.chronometer.get(indice);
       indice++; 
       timer = millis();
-    }  
+    }
+      
     legend.text(dateS, 80,20);
     ArrayList namepark = pois.getPOInames();
     ArrayList capacitypark = pois.getCapacity();
@@ -108,9 +124,24 @@ void draw(){
     legend.endDraw();
    
     background(0);
-    keyStone1.render(canvas);
-    keyStone2.render(legend);
+    surface.draw(canvas);
+
 }
+
+void mousePressed() {
+
+    LatLon loc = surface.unmapPoint(mouseX, mouseY);
+    println(loc);
+    if(loc != null) {
+        PVector pos = canvas.toScreen(loc.getLat(), loc.getLon());
+        canvas.beginDraw();
+        canvas.fill(#FF0000);
+        canvas.ellipse(pos.x, pos.y, 10, 10);
+        canvas.endDraw();
+    }
+
+}
+
 
 void keyPressed(){
   switch(key){
@@ -119,15 +150,15 @@ void keyPressed(){
     break;
     
     case 'k':
-    ks.toggleCalibration();
+    surface.toggleCalibration();
     break;
     
     case 's':
-    ks.save();
+    surface.saveConfig("surface.xml");
     break;
     
     case 'l':
-    ks.load();
+    surface.loadConfig("surface.xml");
     break;
   } 
 }
