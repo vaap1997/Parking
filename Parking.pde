@@ -40,7 +40,8 @@ final LatLon[] bounds = new LatLon[] {
 };
 
 void setup(){
-  size(900,700,P2D);
+  fullScreen(P3D,1);
+  //size(900,700,P2D);
   smooth();
   simWidth = width;
   simHeight = height; 
@@ -81,7 +82,7 @@ void draw(){
     ArrayList time = timePark.getTime();
     ArrayList passages = timePark.getPassages();
     pois.draw(deviceNum,movType,dateS,time, passages,false);
-    int dimension = simWidth * simHeight;
+    int dimension = BG.width * BG.height;
     canvas.loadPixels();
     canvas1.beginDraw();
     canvas1.loadPixels();
