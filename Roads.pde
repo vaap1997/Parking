@@ -11,11 +11,13 @@ public PVector[] boundaries;
 
 public class Roads extends Facade<Node>{
       private PVector window;
+      private PVector[] bounds;
 
-      public Roads(String file, int x, int y){
+      public Roads(String file, int x, int y, PVector[] bounds){
         window = new PVector(x,y);
         factory = new RoadFactory();
         this.loadJSON(file,this);
+        this.bounds = bounds;
       }
     
       //Conect POIs
@@ -80,10 +82,10 @@ public class Roads extends Facade<Node>{
    
    //Scale the roads
     public PVector toXY(float lat, float lon){
-      PVector projPoint = Projection.toUTM(lat, lon,GeoDatum.WGS84);
+      PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
-      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,simWidth),
-      map(projPoint.y, boundaries[0].y,boundaries[1].y,simHeight,0)
+      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,window.x),
+      map(projPoint.y, boundaries[0].y,boundaries[1].y,window.y,0)
       );
     }
   
@@ -108,7 +110,7 @@ public class Roads extends Facade<Node>{
         return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
     }
    
-  //Take model boundaries to createa shape and check if the point is inside this shade  
+  //Take model boundaries and check if the point is inside this shade  
   public String pointInPolygon(PVector point){
 
       ArrayList<PVector> vertices = new ArrayList();
@@ -160,7 +162,6 @@ public class RoadFactory extends Factory<Node>{
   public ArrayList<Node>  loadJSON(File file, Roads roads){
     JSONObject roadNetwork = loadJSONObject(file);
     JSONArray lanes = roadNetwork.getJSONArray("features");
-    //xboundaries = canvas.BOUNDARIES;     
     boundaries = findBound(lanes);
     for(int i = 0; i < lanes.size(); i++){
         JSONObject lane =lanes.getJSONObject(i);
@@ -179,7 +180,7 @@ public class RoadFactory extends Factory<Node>{
         
          for(int j = 0; j < points.size(); j++){
             PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-              if(roads.pointInPolygon(point) == "inside"){           
+                      
                  vertices.add(point);
                  Node currNode = getNodeIfVertex(roads,point);
                  if(currNode != null) {
@@ -201,7 +202,7 @@ public class RoadFactory extends Factory<Node>{
                        currNode.place(roads);
                        if(direction != null) currNode.setDirection(direction);
                 }
-              }
+              
          }
     }   
     println("LOADED");
@@ -246,8 +247,8 @@ public class RoadFactory extends Factory<Node>{
         }
     }
      return new PVector[]{
-       Projection.toUTM(minLat, minLon, GeoDatum.WGS84),
-       Projection.toUTM(maxLat, maxLon, GeoDatum.WGS84) 
+       Projection.toUTM(minLat, minLon, Projection.Datum.WGS84),
+       Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
       };
     }
   

@@ -1,5 +1,5 @@
 /**
-* Time: chronometer simulation
+* Roads - Class to manage the roadmap of simulation
 * @author        Vanesa Alcantara
 * @version       2.0
 */
@@ -33,11 +33,11 @@ public class TimePark{
      Table table = loadTable(path,"header");
      for(TableRow row:table.rows()){
        
-       int deviceNum = row.getInt("Device Number");
+       int DeviceNum = row.getInt("Device Number");
        int movType = row.getInt("Movement Type");
        int skiData = row.getInt("SKIDATA ticket Type");
        String time0 = row.getString("DateTime");
-       int passages = row.getInt("Passages");
+       int Passages = row.getInt("Passages");
        String time1 = time0.replace(" ","/");
        String time2 = time1.replace(":","/");
        int[] Time = int(time2.split("/")) ;
@@ -53,7 +53,7 @@ public class TimePark{
        minMin = min(minMin,Time[4]);
        minMax = max(minMax,Time[4]);
        
-       Park.add(new TimeP(deviceNum,movType,skiData,time0, passages));
+       Park.add(new TimeP(DeviceNum,movType,skiData,time0, Passages));
   
     }
      print("LOADED");
@@ -83,7 +83,7 @@ public class TimePark{
                         if(minstr.length() == 1){
                          minstr = "0" + minstr; 
                         }
-                       String dia = str(day) + "/"+ monthstr + "/" + str(year) + " "+ hourstr + ":" + minstr;
+                       String dia = str(day) + "/"+monthstr + "/"+str(year) + " "+hourstr + ":" + minstr;
                        chronometer.add(dia);
                     } 
                 } 
@@ -141,11 +141,11 @@ public class TimeP{
   protected final int PASSAGES;
   
   
-  public TimeP(int deviceNum,int movType,int skiData,String time, int passages){
-    DEVICENUM = deviceNum;
+  public TimeP(int DeviceNum,int movType,int skiData,String time, int Passages){
+    DEVICENUM = DeviceNum;
     MOVTYPE = movType;
     SKIDATA = skiData;
     TIME = time;
-    PASSAGES = passages;
+    PASSAGES = Passages;
   } 
 }
