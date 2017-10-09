@@ -80,10 +80,10 @@ public class Roads extends Facade<Node>{
    
    //Scale the roads
     public PVector toXY(float lat, float lon){
-      PVector projPoint = Projection.toUTM(lat, lon,GeoDatum.WGS84);
+      PVector projPoint = Projection.toUTM(lat,lon,GeoDatum.WGS84);
       return new PVector(
-      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,simWidth),
-      map(projPoint.y, boundaries[0].y,boundaries[1].y,simHeight,0)
+      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,BG.width),
+      map(projPoint.y, boundaries[0].y,boundaries[1].y,BG.width,0)
       );
     }
   
@@ -112,11 +112,11 @@ public class Roads extends Facade<Node>{
   public String pointInPolygon(PVector point){
 
       ArrayList<PVector> vertices = new ArrayList();
-      vertices.add(toXY(42.496164,1.515728));
-      vertices.add(toXY(42.508161,1.549798));
-      vertices.add(toXY(42.517066,1.544024));
-      vertices.add(toXY(42.505086,1.509961));
-      vertices.add(toXY(42.496164,1.515728));
+      vertices.add(roads.toXY(42.496164,1.515728));
+      vertices.add(roads.toXY(42.508161,1.549798));
+      vertices.add(roads.toXY(42.517066,1.544024));
+      vertices.add(roads.toXY(42.505086,1.509961));
+      vertices.add(roads.toXY(42.496164,1.515728));
       
       int boundaries=0;
       
@@ -227,7 +227,7 @@ public class RoadFactory extends Factory<Node>{
         return null;
     }
  
- //Find Andorra's boundaries 
+ //Find Andorra's boundaries (model boundaries)
   public PVector[] findBound(JSONArray lanes){
     float minLat =  Float.MAX_VALUE;
     float maxLat = -Float.MAX_VALUE;
@@ -237,12 +237,15 @@ public class RoadFactory extends Factory<Node>{
         JSONObject lane = lanes.getJSONObject(i);
         JSONArray points = lane.getJSONObject("geometry").getJSONArray("coordinates");
         for(int j = 0; j < points.size(); j++){
-          float lat = points.getJSONArray(j).getFloat(1);
-          float lon = points.getJSONArray(j).getFloat(0);
-            minLat = min(minLat,lat);
-            maxLat = max(maxLat,lat);
-            minLon = min(minLon,lon);
-            maxLon = max(maxLon,lon);
+          PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
+          if(roads.pointInPolygon(point) == "inside"){
+              float lat = point.x;
+              float lon = point.y;
+                minLat = min(minLat,lat);
+                maxLat = max(maxLat,lat);
+                minLon = min(minLon,lon);
+                maxLon = max(maxLon,lon);
+          }
         }
     }
      return new PVector[]{

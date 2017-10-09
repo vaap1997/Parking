@@ -64,7 +64,8 @@ public class POIs extends Facade<POI>{
         color occColor = lerpColor(#77DD77, #FF6666,use);
         if(legends){
           legend.text((int) occupancy.get(c),180,60+13*c);
-          legend.text(str(use)+"%",220,60+13*c); 
+          int USE= (int) use;
+          legend.text(str(USE)+"%",220,60+13*c); 
         }else{
           canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);        
           canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy); 

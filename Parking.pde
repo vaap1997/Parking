@@ -44,17 +44,18 @@ void setup(){
   fullScreen(P3D,1);
   //size(900,700,P2D);
   smooth();
-  simWidth = width;
-  simHeight = height; 
   BG = loadImage(bgPath);
+  simWidth = BG.width;
+  simHeight =BG.height; 
   //BG.resize(simWidth,simHeight);
   
-  canvas = createGraphics(BG.width, BG.height,P3D);
+  canvas = createGraphics(BG.width, BG.width,P3D);
   canvas1 = createGraphics(BG.width, BG.width,P3D);
   legend= createGraphics(500,800,P3D);
   
   CANVAS = new Canvas(this, canvas, "orto_epsg3857.jpg" , bounds);
   surface = new WarpSurface(this, 700, 300, 6, 3, ROI);
+  //surface = new WarpSurface(this, "surface.xml");
  
   roads = new Roads(roadsPath,BG.width,BG.height);
   pois = new POIs();
@@ -140,7 +141,6 @@ void mousePressed() {
         canvas.ellipse(pos.x, pos.y, 10, 10);
         canvas.endDraw();
     }
-
 }
 
 
