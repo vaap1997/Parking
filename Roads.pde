@@ -12,10 +12,9 @@ public PVector[] boundaries;
 public class Roads extends Facade<Node>{
       private PVector window;
 
-      public Roads(String file, int x, int y){
+      public Roads(int x, int y){
         window = new PVector(x,y);
         factory = new RoadFactory();
-        this.loadJSON(file,this);
       }
     
       //Conect POIs
@@ -157,7 +156,7 @@ public class Roads extends Facade<Node>{
 
 public class RoadFactory extends Factory<Node>{
   
-  public ArrayList<Node>  loadJSON(File file, Roads roads){
+  public ArrayList<Node> loadJSON(File file, Roads roads){
     JSONObject roadNetwork = loadJSONObject(file);
     JSONArray lanes = roadNetwork.getJSONArray("features");
     //xboundaries = canvas.BOUNDARIES;     

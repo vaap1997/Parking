@@ -57,7 +57,8 @@ void setup(){
   surface = new WarpSurface(this, 700, 300, 6, 3, ROI);
   //surface = new WarpSurface(this, "surface.xml");
  
-  roads = new Roads(roadsPath,BG.width,BG.height);
+  roads = new Roads(BG.width,BG.height);
+  roads.loadJSON(roadsPath, roads);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
