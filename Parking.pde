@@ -1,6 +1,7 @@
 //TODO:implement Mark's warp layer
 
-WarpSurface suface;
+WarpSurface surface;
+Canvas CANVAS;
 PGraphics canvas;
 PGraphics canvas1;
 PGraphics legend;
@@ -52,11 +53,10 @@ void setup(){
   canvas1 = createGraphics(BG.width, BG.width,P3D);
   legend= createGraphics(500,800,P3D);
   
-  canvas = new Canvas(this, canvas, "orto_epsg3857.jpg" , bounds);
+  CANVAS = new Canvas(this, canvas, "orto_epsg3857.jpg" , bounds);
   surface = new WarpSurface(this, 700, 300, 6, 3, ROI);
-  surface.loadConfig();
  
-  roads = new Roads(roadsPath,simWidth,simHeight);
+  roads = new Roads(roadsPath,BG.width,BG.height);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
@@ -125,7 +125,7 @@ void draw(){
     legend.endDraw();
    
     background(0);
-    surface.draw(canvas);
+    surface.draw(CANVAS);
 
 }
 
@@ -134,7 +134,7 @@ void mousePressed() {
     LatLon loc = surface.unmapPoint(mouseX, mouseY);
     println(loc);
     if(loc != null) {
-        PVector pos = canvas.toScreen(loc.getLat(), loc.getLon());
+        PVector pos = CANVAS.toScreen(loc.getLat(), loc.getLon());
         canvas.beginDraw();
         canvas.fill(#FF0000);
         canvas.ellipse(pos.x, pos.y, 10, 10);
