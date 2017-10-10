@@ -38,37 +38,15 @@ public class POIs extends Facade<POI>{
   }
   
   // Draw parking occupancy for the chronometer time
-public void draw(ArrayList deviceNum, ArrayList movType,String dateS,ArrayList time, ArrayList passages,boolean legendB){
+public void draw(IntList occupancy,boolean legendB){
     int c = 0;
-    
     for(POI poi:pois.getAll()){ 
-      
-      ArrayList devices = poi.DEVICENUM;
-      
-      for(int j = 0; j<devices.size(); j++){
-        
-          for(int i = 0; i<deviceNum.size(); i++){
-              //ArrayList parkK = park.size();
-            if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){
-              
-              if((int)movType.get(i) == 0){ 
-                //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
-                occupancy.add(c,(int)passages.get(i));
-              }
-              
-              if((int)movType.get(i) == 1){
-                occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
-              }  
-            }    
-          }       
-        }   
-        
         int Occupancy = (int) map(occupancy.get(c),0,3000,0,150);
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#77DD77, #FF6666,use);
         if( legendB == true){
             legend.stroke(255);
-            if(abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(8)) {
+            if(abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4)) {
               legend.text("Parking: "+ poi.NAME,50,50);
             }
             int useI = round(use * 100);
@@ -79,12 +57,37 @@ public void draw(ArrayList deviceNum, ArrayList movType,String dateS,ArrayList t
             canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
             int cap = (int) map(poi.CAPACITY,0,3000,0,150);
             canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap); 
-        }
-        
+        }  
         c++;
     }
+    
   }
   
+  public IntList getOccupancy(ArrayList deviceNum, ArrayList movType,String dateS, ArrayList time, ArrayList passages){
+    int c=0;
+      for(POI poi:pois.getAll()){ 
+        ArrayList devices = poi.DEVICENUM;
+        for(int j = 0; j<devices.size(); j++){
+            for(int i = 0; i<deviceNum.size(); i++){
+                //ArrayList parkK = park.size();
+              if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){
+                
+                if((int)movType.get(i) == 0){ 
+                  //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
+                  occupancy.add(c,(int)passages.get(i));
+                }
+                
+                if((int)movType.get(i) == 1){
+                  occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
+                }  
+              }    
+            }       
+          }
+          print("\n"+occupancy.get(c));
+          c++;          
+        }
+    return occupancy;
+  }
 }
   
 public class POIFactory extends Factory {

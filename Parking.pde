@@ -34,8 +34,9 @@ int simWidth = 1000;
 int simHeight = 847;
 
 int timer = millis();
-int indice = 0;
-String datesS = " ";
+int indice = 1;
+String datesS;
+String dateS1;
 ArrayList deviceNumPark;
 IntList occupancy = new IntList();
 
@@ -72,35 +73,40 @@ void setup(){
 
 void draw(){  
     background(180);
+    
+    ArrayList deviceNum = timePark.getDeviceNum();
+    ArrayList movType = timePark.getMovType();
+    ArrayList time = timePark.getTime();
+    ArrayList passages = timePark.getPassages();
+    
+    if( millis() - timer >= 1000){
+      int maxIndice = timePark.getmax();
+      if(indice >= maxIndice) indice = 0;
+      datesS = timePark.chronometer.get(indice);
+      occupancy = pois.getOccupancy(deviceNum, movType, datesS, time, passages);
+      if(run) indice++; 
+      timer = millis();
+    }
+    
     //-------------MAP---------------
     canvas.beginDraw();
     canvas.background(180);
     if(showBG)canvas.image(BG,0,0); 
-      else roads.draw(canvas,1,0); 
-     ArrayList deviceNum = timePark.getDeviceNum();
-     ArrayList movType = timePark.getMovType();
-     ArrayList time = timePark.getTime();
-     ArrayList passages = timePark.getPassages(); 
-    if(run) pois.draw( deviceNum, movType, datesS, time, passages,false); 
-    canvas.endDraw();
-    
+      else roads.draw(canvas,1,0);  
+    pois.draw( occupancy,false); 
+    canvas.endDraw(); 
     if(surfaceMode) surface.draw((Canvas) canvas);
     else image(canvas,0,0);
-    
     //---------- LEGEND----------------------------
     legend.beginDraw();
     
     legend.background(0);
     legend.fill(255);
-    canvas.fill(0);
-    if( millis() - timer >= 100){
-      int maxIndice = timePark.getmax();
-      if(indice >= maxIndice) indice = 0;
-      datesS = timePark.chronometer.get(indice);
-      if(run) indice++; 
-      timer = millis();
-    }
+    legend.fill(0);
+
+    pois.draw(occupancy, true);
     legend.text("Date:\n" + datesS,600,50);
+    
     ArrayList namepark = pois.getPOInames();
     ArrayList capacitypark = pois.getCapacity();
     for(int i = 0; i < namepark.size(); i++){
@@ -120,7 +126,7 @@ void draw(){
     }
     
 
-    pois.draw( deviceNum, movType, datesS, time, passages, true);
+    
     
     legend.endDraw();
     keyStone.render(legend);
