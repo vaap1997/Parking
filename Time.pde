@@ -1,10 +1,10 @@
 /**
-* Time: chronometer simulation
+* Roads - Class to manage the roadmap of simulation
 * @author        Vanesa Alcantara
 * @version       2.0
 */
 public class TimePark{
-  ArrayList <TimeP> Park;
+  ArrayList <TimeP> park;
   ArrayList<String> chronometer;
   int totalTime;
   int dayMin =  Integer.MAX_VALUE;
@@ -29,32 +29,31 @@ public class TimePark{
   //Load CSV file
   public void loadCSV(String path){
      print("Loading time...");
-     Park = new ArrayList();   
+     park = new ArrayList();   
      Table table = loadTable(path,"header");
      for(TableRow row:table.rows()){
-       
-       int deviceNum = row.getInt("Device Number");
        int movType = row.getInt("Movement Type");
-       int skiData = row.getInt("SKIDATA ticket Type");
-       String time0 = row.getString("DateTime");
        int passages = row.getInt("Passages");
-       String time1 = time0.replace(" ","/");
-       String time2 = time1.replace(":","/");
-       int[] Time = int(time2.split("/")) ;
-      
-       dayMin = min(dayMin,Time[0]);
-       dayMax = max(dayMax,Time[0]);
-       monthMin = min(monthMin,Time[1]);
-       monthMax = max(monthMax,Time[1]);
-       yearMin = min(yearMin,Time[2]);
-       yearMax = max(yearMax,Time[2]);
-       hourMin = min(hourMin,Time[3]);
-       hourMax = max(hourMax,Time[3]);
-       minMin = min(minMin,Time[4]);
-       minMax = max(minMax,Time[4]);
-       
-       Park.add(new TimeP(deviceNum,movType,skiData,time0, passages));
-  
+       if( movType != 2 && passages != 0){
+           int deviceNum = row.getInt("Device Number");
+           String time0 = row.getString("DateTime");       
+           String time1 = time0.replace(" ","/");
+           String time2 = time1.replace(":","/");
+           int[] Time = int(time2.split("/")) ;
+          
+           dayMin = min(dayMin,Time[0]);
+           dayMax = max(dayMax,Time[0]);
+           monthMin = min(monthMin,Time[1]);
+           monthMax = max(monthMax,Time[1]);
+           yearMin = min(yearMin,Time[2]);
+           yearMax = max(yearMax,Time[2]);
+           hourMin = min(hourMin,Time[3]);
+           hourMax = max(hourMax,Time[3]);
+           minMin = min(minMin,Time[4]);
+           minMax = max(minMax,Time[4]);
+           
+           park.add(new TimeP(deviceNum,movType,time0, passages));
+       }
     }
      print("LOADED");
   }
@@ -101,7 +100,7 @@ public class TimePark{
     
   public ArrayList getDeviceNum(){
     ArrayList deviceNum = new ArrayList();
-    for(TimeP park : Park){
+    for(TimeP park : park){
       deviceNum.add(park.DEVICENUM);
     }
     return deviceNum;
@@ -109,7 +108,7 @@ public class TimePark{
   
   public ArrayList getMovType(){
     ArrayList movType = new ArrayList();
-    for(TimeP park : Park){
+    for(TimeP park : park){
      movType.add(park.MOVTYPE); 
     }
     return movType;
@@ -117,7 +116,7 @@ public class TimePark{
   
   public ArrayList getTime(){
    ArrayList time = new ArrayList();
-   for(TimeP park : Park){
+   for(TimeP park : park){
     time.add(park.TIME);
    }
    return time;
@@ -125,7 +124,7 @@ public class TimePark{
   
   public ArrayList getPassages(){
    ArrayList passages = new ArrayList();
-   for(TimeP park : Park){
+   for(TimeP park : park){
     passages.add(park.PASSAGES);
    }
    return passages;
@@ -136,15 +135,13 @@ public class TimePark{
 public class TimeP{
   protected final int DEVICENUM;
   protected final int MOVTYPE;
-  protected final int SKIDATA;
   protected final String TIME;
   protected final int PASSAGES;
   
   
-  public TimeP(int deviceNum,int movType,int skiData,String time, int passages){
+  public TimeP(int deviceNum,int movType,String time, int passages){
     DEVICENUM = deviceNum;
     MOVTYPE = movType;
-    SKIDATA = skiData;
     TIME = time;
     PASSAGES = passages;
   } 
