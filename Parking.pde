@@ -32,7 +32,7 @@ int timer = millis();
 int indice = 0;
 String datesS = " ";
 ArrayList deviceNumPark;
-ArrayList<ArrayList> totalOccupancy;
+IntList occupancy = new IntList();
 
 
 void setup(){
@@ -56,7 +56,9 @@ void setup(){
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
 
-  totalOccupancy = pois.getOccupancy();
+  for(int a = 0; a < pois.count(); a++){
+    occupancy.set(a,0);
+  }
   
   legend = createGraphics(100,100);
 
@@ -80,7 +82,11 @@ void draw(){
     
     if(showBG) canvas.fill(255);
     canvas.text(datesS,0,0);
-    pois.draw(datesS, totalOccupancy); 
+     ArrayList deviceNum = timePark.getDeviceNum();
+     ArrayList movType = timePark.getMovType();
+     ArrayList time = timePark.getTime();
+     ArrayList passages = timePark.getPassages(); 
+    pois.draw(deviceNum,movType,datesS,time, passages); 
         
     ArrayList namepark = pois.getPOInames();
     ArrayList capacitypark = pois.getCapacity();
