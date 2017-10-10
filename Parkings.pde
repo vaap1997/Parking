@@ -38,45 +38,82 @@ public class POIs extends Facade<POI>{
   }
   
   // Draw parking occupancy for the chronometer time
-  public void draw(ArrayList DeviceNum, ArrayList movType,String dateS,ArrayList time, ArrayList Passages){
-    int c = 0;
-    
+  public void draw(String datesS, ArrayList<ArrayList> totalOccupancy){
+    int c = 0;  
     for(POI poi:pois.getAll()){ 
-      
-      ArrayList devices = poi.DEVICENUM;
-      
-      for(int j = 0; j<devices.size(); j++){
-        
-          for(int i = 0; i<DeviceNum.size(); i++){
-            
-            if(((int)devices.get(j) == (int) DeviceNum.get(i))&&(dateS.equals(time.get(i)))){
-              
-              if((int)movType.get(i) == 0){ 
-                //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
-                occupancy.add(c,(int)Passages.get(i));
-              }
-              
-              if((int)movType.get(i) == 1){
-                occupancy.set(c,(int)occupancy.get(c)-(int)Passages.get(i)); 
-              }  
-            }    
-          }       
-        }   
-        
-        int Occupancy = (int) map(occupancy.get(c),0,3000,0,150);
-        boolean selected = abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4);
-        
-        if(selected) canvas.text("Parking: "+ poi.NAME,20,500);
-        
-        int use = round(((float)occupancy.get(c) / (float)poi.CAPACITY)*100);
-        color occColor = lerpColor(#77DD77, #FF6666,use);  
-        canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);        
-        canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy); 
-        canvas.text((int) occupancy.get(c),250,100+13*c);
-        canvas.text(str(use)+"%",280,100+13*c);
+        for(int i = 0; i < totalOccupancy.size(); i++){
+          ArrayList totalOcc = totalOccupancy.get(i);
+          if( poi.NAME == totalOcc.get(0)){
+            ArrayList totalOcc2 = (ArrayList) totalOcc.get(1);
+            for(int j=0; j < totalOcc2.size(); j++){
+                ArrayList totalOcc3 = (ArrayList) totalOcc2.get(j);
+                if(totalOcc3.get(0) == datesS){
+                  boolean selected = abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4);
+                  if(selected) canvas.text("Parking: "+ poi.NAME,20,500);
+                  int occupancy = (int) map((float)totalOcc3.get(1),0,3000,0,150);
+                  float use = ((float)occupancy / (float)poi.CAPACITY);
+                  color occColor = lerpColor(#77DD77, #FF6666,use);
+                  int useI = round(use);
+                  canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); canvas.fill(occColor);       
+                  canvas.rect(poi.POSITION.x,poi.POSITION.y,2+occupancy,2+ occupancy); 
+                  canvas.text((int) occupancy,250,100+13*c);
+                  canvas.text(str(useI)+"%",280,100+13*c); 
+                }
+            }
+          }
+        }
         c++;
     }
   }
+  
+    public ArrayList<ArrayList> getOccupancy(){
+     ArrayList deviceNum = timePark.getDeviceNum();
+     ArrayList movType = timePark.getMovType();
+     ArrayList time = timePark.getTime();
+     ArrayList passages = timePark.getPassages();      
+    ArrayList<ArrayList> totalOccupancy = new ArrayList();
+        for(POI poi:pois.getAll()){ 
+          float occupancy = 0;
+          float entries = 0;
+          float departures = 0;
+          ArrayList transition2 = new ArrayList();
+            for(  String dateS: timePark.Chronometer() )  { 
+              ArrayList transition = new ArrayList();
+                ArrayList devices = poi.DEVICENUM;
+                //for(int k = 0; j < time.getmax();
+                for(int j = 0; j < devices.size(); j++){
+                   for(int i = 0; i < deviceNum.size(); i++){
+                      if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){  
+                          if((int)movType.get(i) == 0){ 
+                            occupancy = occupancy + (int) passages.get(i);
+                            entries = entries + (int) passages.get(i);
+                            //occupancy.set(c,(int)occupancy.get(c)+(int)passages.get(i)); 
+                            //occupancy.add(c,(int)passages.get(i));
+                            //entries.add(c,(int)passages.get(i));
+                          }
+                          if((int)movType.get(i) == 1){
+                            occupancy = occupancy - (int) passages.get(i);
+                            departures = departures + (int) passages.get(i);
+                            //occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
+                            //departures.set(c, (int)occupancy.get(c)-(int)passages.get(i));
+                          }  
+                       }
+                    }
+                }
+                transition.add(dateS);
+                transition.add(occupancy);
+                transition.add(entries);
+                transition.add(departures);     
+                transition2.add(transition);     
+          }
+          ArrayList transition3 = new ArrayList();
+          transition3.add(poi.NAME);
+          transition3.add(transition2);
+          totalOccupancy.add(transition3);
+      }
+      println(totalOccupancy);
+      return totalOccupancy;     
+     }
 }
   
 public class POIFactory extends Factory {
@@ -104,16 +141,16 @@ public class POIFactory extends Factory {
             float[] io_coords = float(split(coords3," "));
             PVector[] coords = new PVector[io_coords.length];
             //ArrayList[] DeviceNum = new ArrayList[io_coords.length];
-            ArrayList DeviceNum = new ArrayList();
+            ArrayList deviceNum = new ArrayList();
             
             for(int j = 0 ; j <= io_coords.length; i++){
               coords[j] = roads.toXY(io_coords[0],io_coords[1]);
-              DeviceNum.add((int)io_coords[2]);
+              deviceNum.add((int)io_coords[2]);
               
             }
                 
             if( roads.contains(location) ) {
-                pois.add( new POI(roads, str(count), name, type, location, capacity, coords, DeviceNum) );
+                pois.add( new POI(roads, str(count), name, type, location, capacity, coords, deviceNum) );
                 counter.increment(type);
                 count++;
             }
@@ -142,24 +179,22 @@ public class POIFactory extends Factory {
             String io = row.getString("IO");
             String[] io_coords = trim(split(io,"|")); 
             PVector[] coords = new PVector[io_coords.length];
-            ArrayList DeviceNum = new ArrayList();
+            ArrayList deviceNum = new ArrayList();
             
             for(int i = 0; i < io_coords.length; i++){
               float[] latlonIO = float(split(io_coords[i]," "));
               coords[i] = roads.toXY(latlonIO[0],latlonIO[1]);
-              DeviceNum.add(((int)latlonIO[2]));
+              deviceNum.add(((int)latlonIO[2]));
             }
                      
             if( roads.contains(location) ) {
-                pois.add( new POI(roads, str(count), name, type, location, capacity,coords, DeviceNum) );
+                pois.add( new POI(roads, str(count), name, type, location, capacity,coords, deviceNum) );
                 counter.increment(path); 
                 count++;
-            } 
-            
+            }           
         }
         println("LOADED");
-        return pois;
-        
+        return pois;     
     }    
     
 }
@@ -173,8 +208,9 @@ public class POI extends Node{
  protected final PVector[] COORDS;
  protected final ArrayList<Integer> DEVICENUM;
 
-
  protected float occupancy;
+ protected float entries;
+ protected float departures;
  private float size = 2;
  
      //Asign values

@@ -7,6 +7,7 @@ boolean surfaceMode = true;
 boolean run = true;
 WarpSurface surface;
 PGraphics canvas;
+PGraphics legend;
 PImage BG;
 
 
@@ -26,11 +27,13 @@ final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
 int simWidth = 1000;
 int simHeight = 847;
+
 int timer = millis();
 int indice = 0;
-String dateS = " ";
+String datesS = " ";
 ArrayList deviceNumPark;
-IntList occupancy = new IntList();
+ArrayList<ArrayList> totalOccupancy;
+
 
 void setup(){
   fullScreen(P2D,1);
@@ -52,11 +55,10 @@ void setup(){
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
+
+  totalOccupancy = pois.getOccupancy();
   
-  
-  for(int a = 0; a < pois.count(); a++){
-    occupancy.set(a,0);
-  }
+  legend = createGraphics(100,100);
 
 }
 
@@ -68,24 +70,17 @@ void draw(){
       else roads.draw(canvas,1,0);
     canvas.fill(0);
     
-    if(millis()-timer >= 100){
+    if( millis() - timer >= 100){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice) indice = 0;
-      dateS = timePark.chronometer.get(indice);
+      datesS = timePark.chronometer.get(indice);
       if (run) indice++; 
       timer = millis();
     }
     
     if(showBG) canvas.fill(255);
-    canvas.text(dateS, 80,80);
-       //llamar al array de device y de movtype
-       ArrayList deviceNum = timePark.getDeviceNum();
-       ArrayList movType = timePark.getMovType();
-       ArrayList time = timePark.getTime();
-       ArrayList passages = timePark.getPassages();
-       //dibujar el occupancy 
-       
-       pois.draw(deviceNum,movType,dateS,time, passages); 
+    canvas.text(datesS,0,0);
+    pois.draw(datesS, totalOccupancy); 
         
     ArrayList namepark = pois.getPOInames();
     ArrayList capacitypark = pois.getCapacity();
@@ -100,13 +95,27 @@ void draw(){
     
     if(surfaceMode) surface.draw((Canvas) canvas);
     else image(canvas,0,0);
-
+    
+    legend.beginDraw();
+    
+    legend.endDraw();
+    
+    
+    
 }
 
 void keyPressed(){
   switch(key){
     case ' ':
     showBG = !showBG;
+    break;
+    
+    case 'r':
+    run = !run;
+    break;
+    
+    case 'z':
+    surfaceMode = !surfaceMode;
     break;
     
     case 'f':
