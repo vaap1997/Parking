@@ -1,7 +1,12 @@
+import deadpixel.keystone.*;
+Keystone ks;
+CornerPinSurface keyStone;
+
 Roads roads;
 POIs pois;
 POI poi;
 TimePark timePark;
+TimeP timeP;
 boolean showBG = true;
 boolean surfaceMode = true;
 boolean run = true;
@@ -36,7 +41,7 @@ IntList occupancy = new IntList();
 
 
 void setup(){
-  fullScreen(P2D,1);
+  fullScreen(P3D,1);
   smooth(); 
   BG = loadImage(bgPath);
   if(surfaceMode){
@@ -60,52 +65,65 @@ void setup(){
     occupancy.set(a,0);
   }
   
-  legend = createGraphics(100,100);
-
+  legend = createGraphics(700,height);
+  ks = new Keystone(this);
+  keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
 }
 
 void draw(){  
     background(180);
+    //-------------MAP---------------
     canvas.beginDraw();
     canvas.background(180);
     if(showBG)canvas.image(BG,0,0); 
-      else roads.draw(canvas,1,0);
-    canvas.fill(0);
-    
-    if( millis() - timer >= 100){
-      int maxIndice = timePark.getmax();
-      if(indice >= maxIndice) indice = 0;
-      datesS = timePark.chronometer.get(indice);
-      if (run) indice++; 
-      timer = millis();
-    }
-    
-    if(showBG) canvas.fill(255);
-    canvas.text(datesS,0,0);
+      else roads.draw(canvas,1,0); 
      ArrayList deviceNum = timePark.getDeviceNum();
      ArrayList movType = timePark.getMovType();
      ArrayList time = timePark.getTime();
      ArrayList passages = timePark.getPassages(); 
-    pois.draw(deviceNum,movType,datesS,time, passages); 
-        
-    ArrayList namepark = pois.getPOInames();
-    ArrayList capacitypark = pois.getCapacity();
-    for(int i = 0; i < namepark.size(); i++){
-     int number = (int)capacitypark.get(i);
-     String mostrar = (String)namepark.get(i);
-     canvas.text(mostrar,20,100+13*i);
-     canvas.text(str(number),200,100+13*i);
-    }
-    
+    if(run) pois.draw( deviceNum, movType, datesS, time, passages,false); 
     canvas.endDraw();
     
     if(surfaceMode) surface.draw((Canvas) canvas);
     else image(canvas,0,0);
     
+    //---------- LEGEND----------------------------
     legend.beginDraw();
     
-    legend.endDraw();
+    legend.background(0);
+    legend.fill(255);
+    canvas.fill(0);
+    if( millis() - timer >= 100){
+      int maxIndice = timePark.getmax();
+      if(indice >= maxIndice) indice = 0;
+      datesS = timePark.chronometer.get(indice);
+      if(run) indice++; 
+      timer = millis();
+    }
+    legend.text("Date:\n" + datesS,600,50);
+    ArrayList namepark = pois.getPOInames();
+    ArrayList capacitypark = pois.getCapacity();
+    for(int i = 0; i < namepark.size(); i++){
+     int number = (int)capacitypark.get(i);
+     String mostrar = (String)namepark.get(i);
+     legend.text(mostrar,20,100+13*i);
+     legend.text(str(number),200,100+13*i);
+    }
     
+    legend.text("Parking's occupancy ratios",20,20);
+    legend.text("Size",150,40); legend.noFill();
+    legend.rect( 150,50,20,20);
+    for(int i = 0; i < 6; i++){
+     legend.fill(lerpColor(#77DD77, #FF6666,0.2*i)); legend.noStroke();
+     legend.text(str(int(0.2*i*100)),10+20*i,40);
+     legend.rect(10+20*i,50,20,20);
+    }
+    
+
+    pois.draw( deviceNum, movType, datesS, time, passages, true);
+    
+    legend.endDraw();
+    keyStone.render(legend);
     
     
 }
@@ -130,10 +148,16 @@ void keyPressed(){
     
     case 'k':
     surface.toggleCalibration();
+    ks.toggleCalibration();
+    break;
+    
+    case 's':
+    ks.save();
     break;
     
     case 'l':
     if( surface.isCalibrating() ) surface.loadConfig();
+    ks.load();
     break;
   } 
 }

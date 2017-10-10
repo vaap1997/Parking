@@ -38,7 +38,7 @@ public class POIs extends Facade<POI>{
   }
   
   // Draw parking occupancy for the chronometer time
-public void draw(ArrayList DeviceNum, ArrayList movType,String dateS,ArrayList time, ArrayList Passages){
+public void draw(ArrayList deviceNum, ArrayList movType,String dateS,ArrayList time, ArrayList passages,boolean legendB){
     int c = 0;
     
     for(POI poi:pois.getAll()){ 
@@ -47,33 +47,40 @@ public void draw(ArrayList DeviceNum, ArrayList movType,String dateS,ArrayList t
       
       for(int j = 0; j<devices.size(); j++){
         
-          for(int i = 0; i<DeviceNum.size(); i++){
-            
-            if(((int)devices.get(j) == (int) DeviceNum.get(i))&&(dateS.equals(time.get(i)))){
+          for(int i = 0; i<deviceNum.size(); i++){
+              //ArrayList parkK = park.size();
+            if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){
               
               if((int)movType.get(i) == 0){ 
                 //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
-                occupancy.add(c,(int)Passages.get(i));
+                occupancy.add(c,(int)passages.get(i));
               }
               
               if((int)movType.get(i) == 1){
-                occupancy.set(c,(int)occupancy.get(c)-(int)Passages.get(i)); 
+                occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
               }  
             }    
           }       
         }   
         
         int Occupancy = (int) map(occupancy.get(c),0,3000,0,150);
-        boolean selected = abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4);
+        float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
+        color occColor = lerpColor(#77DD77, #FF6666,use);
+        if( legendB == true){
+            legend.stroke(255);
+            if(abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(8)) {
+              legend.text("Parking: "+ poi.NAME,50,50);
+            }
+            int useI = round(use * 100);
+            legend.text((int) occupancy.get(c),250,100+13*c);
+            legend.text(str(useI)+"%",280,100+13*c);      
+        }else{canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);        
+            canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
+            canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
+            int cap = (int) map(poi.CAPACITY,0,3000,0,150);
+            canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap); 
+        }
         
-        if(selected) canvas.text("Parking: "+ poi.NAME,20,500);
-        
-        int use = round(((float)occupancy.get(c) / (float)poi.CAPACITY)*100);
-        color occColor = lerpColor(#77DD77, #FF6666,use);  
-        canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);        
-        canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy); 
-        canvas.text((int) occupancy.get(c),250,100+13*c);
-        canvas.text(str(use)+"%",280,100+13*c);
         c++;
     }
   }
@@ -195,10 +202,7 @@ public class POI extends Node{
     }
         
     public void draw(PGraphics canvas, int stroke, color c){      
-      color occColor = lerpColor(#77DD77, #FF6666, occupancy);        
-      canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2);
-      int cap = (int) map(CAPACITY,0,3000,0,150);
-      canvas.rect(POSITION.x,POSITION.y,cap,cap);    
+  
     } 
       
     @Override
