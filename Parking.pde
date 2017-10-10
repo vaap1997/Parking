@@ -79,11 +79,11 @@ void draw(){
     ArrayList time = timePark.getTime();
     ArrayList passages = timePark.getPassages();
     
-    if( millis() - timer >= 1000){
+    if( millis() - timer >= 100){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice) indice = 0;
       datesS = timePark.chronometer.get(indice);
-      occupancy = pois.getOccupancy(deviceNum, movType, datesS, time, passages);
+      if(run) occupancy = pois.getOccupancy(deviceNum, movType, datesS, time, passages);
       if(run) indice++; 
       timer = millis();
     }
@@ -146,10 +146,6 @@ void keyPressed(){
     
     case 'z':
     surfaceMode = !surfaceMode;
-    break;
-    
-    case 'f':
-    run = !run;
     break;
     
     case 'k':

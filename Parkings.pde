@@ -41,18 +41,21 @@ public class POIs extends Facade<POI>{
 public void draw(IntList occupancy,boolean legendB){
     int c = 0;
     for(POI poi:pois.getAll()){ 
-        int Occupancy = (int) map(occupancy.get(c),0,3000,0,150);
+        int Occupancy = (int) map(occupancy.get(c),0,1000,0,100);
+        
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#77DD77, #FF6666,use);
+        
         if( legendB == true){
             legend.stroke(255);
+            legend.fill(255);
             if(abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4)) {
               legend.text("Parking: "+ poi.NAME,50,50);
             }
             int useI = round(use * 100);
             legend.text((int) occupancy.get(c),250,100+13*c);
             legend.text(str(useI)+"%",280,100+13*c);      
-        }else{canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);        
+        }else{canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
             canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
             canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
             int cap = (int) map(poi.CAPACITY,0,3000,0,150);
@@ -83,7 +86,7 @@ public void draw(IntList occupancy,boolean legendB){
               }    
             }       
           }
-          print("\n"+occupancy.get(c));
+          
           c++;          
         }
     return occupancy;
