@@ -50,7 +50,7 @@ public class Roads extends Facade<Node>{
               if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
               this.add(connectionNode);
               
-              poi.connectBoth(connectionNode, null, "Access", poi.access);
+              //poi.connectBoth(connectionNode, null, "Access", poi.access);
         }
         add(poi);
      }

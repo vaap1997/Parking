@@ -17,8 +17,7 @@ public class POIs extends Facade<POI>{
     if( !file.exists() ) println("ERROR! CSV file does not exist");
     else items.addAll( ((POIFactory)factory).loadCSV(path, roadmap) );
   } 
-     
-  
+      
   //Create an array with parking names
   public ArrayList getPOInames(){
     ArrayList<String> namePark = new ArrayList();
@@ -36,61 +35,50 @@ public class POIs extends Facade<POI>{
      }
    return CapacityPark;
   }
+   
+  public int count(){
+    int i=0;
+    for(POI poi : pois.getAll()){
+      i++;
+    }
+    return i;
+  }
   
   // Draw parking occupancy for the chronometer time
 public void draw(IntList occupancy,boolean legendB){
     int c = 0;
     for(POI poi:pois.getAll()){ 
-        int Occupancy = (int) map(occupancy.get(c),0,1000,0,100);
-        
+        int Occupancy = (int) map(occupancy.get(c),0,2500,0,100);        
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
-        color occColor = lerpColor(#77DD77, #FF6666,use);
-        
+        color occColor = lerpColor(#4DFF00, #E60000,use);
         if( legendB == true){
-            legend.stroke(255);
-            legend.fill(255);
-            if(abs(dist(poi.POSITION.x, poi.POSITION.y, mouseX, mouseY) )<= abs(4)) {
-              legend.text("Parking: "+ poi.NAME,50,50);
-            }
+            chart.stroke(255);
+            chart.fill(255);          
             int useI = round(use * 100);
-            legend.text((int) occupancy.get(c),250,100+13*c);
-            legend.text(str(useI)+"%",280,100+13*c);      
+            chart.text((int) occupancy.get(c),250,100+13*c);
+            chart.text(str(useI)+"%",280,100+13*c);      
         }else{canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
             canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
             canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
-            int cap = (int) map(poi.CAPACITY,0,3000,0,150);
+            int cap = (int) map(poi.CAPACITY,0,2500,0,100);
             canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap); 
+            if(name) {
+              
+              canvas.pushMatrix();
+              canvas.translate(poi.POSITION.x, poi.POSITION.y);
+              canvas.rotate(PI);
+              canvas.textSize(10);
+              canvas.textAlign(CENTER);
+              canvas.fill(#ff9f10);
+              canvas.text("Parking: "+ poi.NAME,0,0);
+              canvas.popMatrix();
+              
+          }
         }  
         c++;
-    }
-    
+    } 
   }
-  
-  public IntList getOccupancy(ArrayList deviceNum, ArrayList movType,String dateS, ArrayList time, ArrayList passages){
-    int c=0;
-      for(POI poi:pois.getAll()){ 
-        ArrayList devices = poi.DEVICENUM;
-        for(int j = 0; j<devices.size(); j++){
-            for(int i = 0; i<deviceNum.size(); i++){
-                //ArrayList parkK = park.size();
-              if(((int)devices.get(j) == (int) deviceNum.get(i))&&(dateS.equals(time.get(i)))){
-                
-                if((int)movType.get(i) == 0){ 
-                  //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
-                  occupancy.add(c,(int)passages.get(i));
-                }
-                
-                if((int)movType.get(i) == 1){
-                  occupancy.set(c,(int)occupancy.get(c)-(int)passages.get(i)); 
-                }  
-              }    
-            }       
-          }
-          
-          c++;          
-        }
-    return occupancy;
-  }
+   
 }
   
 public class POIFactory extends Factory {
@@ -206,15 +194,5 @@ public class POI extends Node{
     public void place(Roads roads){
       roads.connectP(this, COORDS); 
     }
-        
-    public void draw(PGraphics canvas, int stroke, color c){      
-  
-    } 
-      
-    @Override
-    public boolean select(int mouseX, int mouseY) {
-        selected = abs(dist(POSITION.x, POSITION.y, mouseX, mouseY) ) <= abs(size*2);
-        return selected;
-    } 
     
 }
