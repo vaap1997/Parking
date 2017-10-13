@@ -30,6 +30,8 @@ public class WarpSurface {
         
         float initX = parent.width / 2 - width / 2;
         float initY = parent.height / 2 - height / 2;
+        
+        
         float dX = width / (cols - 1);
         float dY = height / (rows - 1);
         
@@ -39,6 +41,10 @@ public class WarpSurface {
                 points[y][x] = new PVector(initX + x * dX, initY + y * dY);
             }
         }
+    }
+    
+    public WarpSurface() {
+       loadConfig();
     }
 
     
@@ -126,7 +132,7 @@ public class WarpSurface {
         println("Warp configuration saved");
     }
     
-    
+   
     /**
     * Mouse event handler to perform control point dragging
     * @param e    the mouse event
@@ -158,6 +164,16 @@ public class WarpSurface {
         }
     }
     
+    protected void move(int dX, int dY) {
+     
+      
+      for(int c = 0; c < cols; c++) {
+            for(int r = 0; r < rows; r++) {
+                points[r][c].x += dX;
+                points[r][c].y += dY;
+            }
+        }
+    }
 }
 
 

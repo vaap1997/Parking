@@ -71,7 +71,7 @@ public class TimePark{
             }
             
             for(int day = dayMin; day <= dayMax; day++){
-              
+         
                 for(int hour = hourMin; hour <= hourMax; hour++){
                     String hourstr = str(hour);
                     if(hourstr.length() == 1){
@@ -92,42 +92,79 @@ public class TimePark{
      return chronometer;
   }
   
+    public IntList getOccupancy(String dateS){
+    int c=0;
+      for(POI poi:pois.getAll()){ 
+        ArrayList devices = poi.DEVICENUM;
+        for(int j = 0; j<devices.size(); j++){
+            for(TimeP park : park){
+              
+                //ArrayList parkK = park.size();
+              if(((int)devices.get(j) == park.DEVICENUM)&&(dateS.equals(park.TIME))){
+                
+                if(park.MOVTYPE == 0){ 
+                  //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
+                  occupancy.add(c,park.PASSAGES);
+                }
+                
+                if(park.MOVTYPE == 1){
+                  occupancy.set(c,(int)occupancy.get(c)-park.PASSAGES); 
+                }  
+              }    
+            }       
+          }
+          c++;          
+        }
+    return occupancy;
+  }
+  
+  
+  
+  public ArrayList<FloatList> occupancyPerHour(){
+   ArrayList<FloatList> promParkHour = new ArrayList();
+   FloatList parkingPerHour = new FloatList(); 
+    int x=0;
+    for( POI poi:pois.getAll()){
+      parkingPerHour.set(x,(int)poi.CAPACITY * 0.1);
+      x++;
+    }
+   for( int i = 0; i <24; i++){
+         int c=0;
+         for( POI poi:pois.getAll()){
+           for(TimeP park:park){
+               int place = park.TIME.indexOf(":"); 
+               int dayToCompare = int( park.TIME.substring(place-2,place));
+               if( dayToCompare == i){
+                  ArrayList devices = poi.DEVICENUM;
+                  for(int j = 0; j < devices.size(); j++){
+                    if( park.DEVICENUM == (int) devices.get(j)){
+                        if(park.MOVTYPE == 0){ 
+                        parkingPerHour.add(c,park.PASSAGES);
+                        }
+                       if(park.MOVTYPE == 1){
+                          parkingPerHour.add(c,-park.PASSAGES); 
+                       }     
+                    }
+                  }
+              }
+           }
+            c++;
+         }
+         int k=0;
+         for(POI poi:pois.getAll()){
+           parkingPerHour.set(k,parkingPerHour.get(k));
+            k++;
+         }
+     promParkHour.add(i, parkingPerHour);
+     }
+     //print(promParkHour);
+     return promParkHour;
+   }
+  
   //Total time in seconds
   public int getmax(){
     totalTime = (yearMax - yearMin+1) * (monthMax - monthMin +1) * (dayMax - dayMin + 1) * (24) * (4);
     return totalTime;
-  }
-    
-  public ArrayList getDeviceNum(){
-    ArrayList deviceNum = new ArrayList();
-    for(TimeP park : park){
-      deviceNum.add(park.DEVICENUM);
-    }
-    return deviceNum;
-  }
-  
-  public ArrayList getMovType(){
-    ArrayList movType = new ArrayList();
-    for(TimeP park : park){
-     movType.add(park.MOVTYPE); 
-    }
-    return movType;
-  }  
-  
-  public ArrayList getTime(){
-   ArrayList time = new ArrayList();
-   for(TimeP park : park){
-    time.add(park.TIME);
-   }
-   return time;
-  }
-  
-  public ArrayList getPassages(){
-   ArrayList passages = new ArrayList();
-   for(TimeP park : park){
-    passages.add(park.PASSAGES);
-   }
-   return passages;
   }
    
 }
