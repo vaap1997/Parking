@@ -92,75 +92,90 @@ public class TimePark{
      return chronometer;
   }
   
-    public IntList getOccupancy(String dateS){
-    int c=0;
-      for(POI poi:pois.getAll()){ 
-        ArrayList devices = poi.DEVICENUM;
-        for(int j = 0; j<devices.size(); j++){
-            for(TimeP park : park){
-              
-                //ArrayList parkK = park.size();
-              if(((int)devices.get(j) == park.DEVICENUM)&&(dateS.equals(park.TIME))){
-                
-                if(park.MOVTYPE == 0){ 
-                  //occupancy.set(c,(int)occupancy.get(c)+(int)Passages.get(i)); 
-                  occupancy.add(c,park.PASSAGES);
-                }
-                
-                if(park.MOVTYPE == 1){
-                  occupancy.set(c,(int)occupancy.get(c)-park.PASSAGES); 
-                }  
-              }    
-            }       
-          }
-          c++;          
-        }
-    return occupancy;
-  }
-  
-  
-  
-  public ArrayList<FloatList> occupancyPerHour(){
-   ArrayList<FloatList> promParkHour = new ArrayList();
-   FloatList parkingPerHour = new FloatList(); 
-    int x=0;
-    for( POI poi:pois.getAll()){
-      parkingPerHour.set(x,(int)poi.CAPACITY * 0.1);
-      x++;
+  public ArrayList getTotalOccupancy(){
+    ArrayList occPerDate = new ArrayList(); 
+    IntList occPerPoi = new IntList();
+    for(int a = 0; a < chronometer.size(); a++){
+    occPerPoi.set(a,0);
     }
-   for( int i = 0; i <24; i++){
-         int c=0;
-         for( POI poi:pois.getAll()){
-           for(TimeP park:park){
-               int place = park.TIME.indexOf(":"); 
-               int dayToCompare = int( park.TIME.substring(place-2,place));
-               if( dayToCompare == i){
-                  ArrayList devices = poi.DEVICENUM;
+    for(int i=0; i <chronometer.size(); i++){ 
+        for(TimeP park:park){
+          if(park.TIME.equals(chronometer.get(i))){
+            int c=0;
+             for( POI poi:pois.getAll()){
+             ArrayList devices = poi.DEVICENUM;
                   for(int j = 0; j < devices.size(); j++){
                     if( park.DEVICENUM == (int) devices.get(j)){
                         if(park.MOVTYPE == 0){ 
-                        parkingPerHour.add(c,park.PASSAGES);
+                          occPerPoi.add(c,park.PASSAGES);
                         }
                        if(park.MOVTYPE == 1){
-                          parkingPerHour.add(c,-park.PASSAGES); 
-                       }     
+                          occPerPoi.set(c,(int)occPerPoi.get(c)-park.PASSAGES);
+                       }
                     }
                   }
-              }
-           }
-            c++;
-         }
-         int k=0;
+             c++; 
+          }
+        }
+      }
+     ArrayList occTemporal = new ArrayList();
+         occTemporal.add(0,chronometer.get(i));
+         int k=1;
          for(POI poi:pois.getAll()){
-           parkingPerHour.set(k,parkingPerHour.get(k));
+           occTemporal.add(k,occPerPoi.get(k-1));
             k++;
          }
-     promParkHour.add(i, parkingPerHour);
-     }
-     //print(promParkHour);
-     return promParkHour;
-   }
+     //print(occTemporal, chronometer.get(i));
+     occPerDate.add(occTemporal);    
+    }
+   return occPerDate;
+  }
+    
+  public IntList getOccupancy(String dateS){
+      IntList occupancy = new IntList(pois.count());
+      for(int i = 0; i < occPerDate.size(); i++){
+       ArrayList temporal = (ArrayList) occPerDate.get(i);
+       if(dateS.equals(temporal.get(0))){
+          for(int c = 1; c < temporal.size(); c++){
+            occupancy.set(c-1,(int)temporal.get(c));
+          }
+       }
+      }
+    return occupancy;
+  }
   
+  public ArrayList<FloatList> occupancyPerHour(){
+   ArrayList<FloatList> promParkHour = new ArrayList();
+   for( int i = 0; i <24; i++){
+         FloatList parkingPerHour = new FloatList(); 
+         int x=0;
+         for( POI poi:pois.getAll()){
+            parkingPerHour.set(x,0);
+            x++;
+         } 
+         for(int c=0; c <occPerDate.size(); c++){
+           ArrayList temporal = (ArrayList) occPerDate.get(c);
+           String date = (String) temporal.get(0);
+           int place = date.indexOf(":"); 
+           int dayToCompare = int( date.substring(place-2,place));
+           if( dayToCompare == i){
+             for(int j = 1; j < temporal.size(); j++){                            
+               parkingPerHour.add(j-1,(int)temporal.get(j));                                 
+             }
+           }
+         }
+        int k=0;
+        FloatList parkingTemporal = new FloatList();
+        for(POI poi:pois.getAll()){
+           parkingTemporal.set(k,(parkingPerHour.get(k)/120)/poi.CAPACITY);
+           k++;
+        }
+         promParkHour.add(i, parkingTemporal);
+        }
+         //print("\n"+promParkHour);
+         return promParkHour;
+       }
+      
   //Total time in seconds
   public int getmax(){
     totalTime = (yearMax - yearMin+1) * (monthMax - monthMin +1) * (dayMax - dayMin + 1) * (24) * (4);
