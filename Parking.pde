@@ -1,12 +1,12 @@
 import deadpixel.keystone.*;
 Keystone ks;
 CornerPinSurface keyStone;
+CornerPinSurface KeyStoneChart;
 
 Roads roads;
 POIs pois;
 POI poi;
 TimePark timePark;
-TimeP timeP;
 boolean showBG = true;
 boolean surfaceMode = true;
 boolean run = true;
@@ -30,7 +30,6 @@ PVector[] roi = new PVector[] {
     new PVector(42.496164, 1.515728)
 };
 
-int[] angles = { 30, 10, 45, 35, 60, 38, 55, 37, 50 };
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
@@ -44,8 +43,10 @@ String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
 ArrayList promParkHour;
+ArrayList occPerDate;
 IntList occupancy = new IntList();
 
+PieChart pieChart;
 
 void setup(){
   fullScreen(P3D,SPAN);
@@ -56,8 +57,6 @@ void setup(){
   if(surfaceMode){
     simWidth = BG.width;
     simHeight = BG.height;
-    
-    //surface = new WarpSurface(this,1500,600,10,5);
     surface = new WarpSurface(this, 1500, 550, 20, 10);
     surface.loadConfig();
     canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
@@ -70,25 +69,28 @@ void setup(){
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
-
-  for(int a = 0; a < pois.count(); a++){
-    occupancy.set(a,0);
-  }
+ 
+  chart = createGraphics(500,height);
+  ks = new Keystone(this);
+  KeyStoneChart = ks.createCornerPinSurface(chart.width, chart.height,20);
+  occPerDate=timePark.getTotalOccupancy();
+  promParkHour = timePark.occupancyPerHour();
   
   legend = createGraphics(700, 80);
   ks = new Keystone(this);
   keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
   ks.load();
-  chart = createGraphics(800,height);
-  promParkHour = timePark.occupancyPerHour();
+
+  pieChart =  new PieChart();
 }
 
 void draw(){  
     background(0);
-    //if(key == 'n'){println("true";)}
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
-      if(indice >= maxIndice) indice = 0;
+      if(indice >= maxIndice){
+        indice = 0;
+      }
       datesS = timePark.chronometer.get(indice);
       actualDate = split(datesS, ' ');
       if(run) {
@@ -118,7 +120,7 @@ void draw(){
     legend.text("Parking's occupancy ratios",20,20);
     legend.textSize(9);
     legend.text("Size",150,40); legend.noFill();
-    legend.rect( 150,50,20,20);
+    legend.rect(150,50,20,20);
     for(int i = 0; i < 6; i++){
      legend.fill(lerpColor(#4DFF00, #E60000,0.2*i)); legend.noStroke();
      legend.text(str(int(0.2*i*100)),10+20*i,40);
@@ -130,24 +132,9 @@ void draw(){
     //--------------PIE----------------------
     chart.beginDraw();
     chart.background(0);
-    for(int k=0; k < promParkHour.size(); k++){
-     pieChart(360 - 15*k, angles,(FloatList) promParkHour.get(k));
-    }
-
-    pois.draw(occupancy, true);
-    chart.text("Date:\n" + datesS,600,40);
-    
-    ArrayList namepark = pois.getPOInames();
-    ArrayList capacitypark = pois.getCapacity();
-    for(int i = 0; i < namepark.size(); i++){
-     int number = (int)capacitypark.get(i);
-     String mostrar = (String)namepark.get(i);
-     chart.text(mostrar,20,100+13*i);
-     chart.text(str(number),200,100+13*i);
-    }
-    
+    pieChart.draw();
     chart.endDraw();
-    image(chart,0,0);
+    KeyStoneChart.render(chart);
 }
 
 void keyPressed(KeyEvent e){
@@ -162,7 +149,6 @@ void keyPressed(KeyEvent e){
     
     case 'n':
     name = !name;
-    println("true");
     break;
     
    /* case 'z':
@@ -205,17 +191,7 @@ void keyPressed(KeyEvent e){
     surface.move(5,0);
     break;
   } 
-}
-
-
-
-void pieChart(float diameter, int[] angles, FloatList data) {
-  float lastAngle = 0;
-  for (int i = 0; i < data.size(); i++) {  
-    color colorR= lerpColor(#77DD77, #FF6666, data.get(i));
-    chart.fill(colorR);
-    chart.stroke(1);
-    chart.arc(chart.width/2, chart.height/3, diameter, diameter, lastAngle, lastAngle+radians(angles[i]),PIE);
-    lastAngle += radians(angles[i]);
-  }
+  
+  
+  
 }

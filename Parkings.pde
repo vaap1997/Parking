@@ -137,7 +137,7 @@ public class POIFactory extends Factory {
         for(TableRow row : table.rows()) {
             
             String name = row.getString("Name");
-            String description = row.getString("Description");
+            String   description = row.getString("Description");
             String type = row.getString("Type");
             int capacity = row.getInt("Capacity");
             PVector location = roads.toXY(row.getFloat("Latitude"),row.getFloat("Longitude"));
