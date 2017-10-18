@@ -107,7 +107,7 @@ public class TimePark{
                   for(int j = 0; j < devices.size(); j++){
                     if( park.DEVICENUM == (int) devices.get(j)){
                         if(park.MOVTYPE == 0){ 
-                          occPerPoi.add(c,park.PASSAGES);
+                          occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
                         }
                        if(park.MOVTYPE == 1){
                           occPerPoi.set(c,(int)occPerPoi.get(c)-park.PASSAGES);
@@ -160,7 +160,7 @@ public class TimePark{
            int dayToCompare = int( date.substring(place-2,place));
            if( dayToCompare == i){
              for(int j = 1; j < temporal.size(); j++){                            
-               parkingPerHour.add(j-1,(int)temporal.get(j));                                 
+               parkingPerHour.set(j-1,parkingPerHour.get(j-1)+(int)temporal.get(j));                                 
              }
            }
          }
