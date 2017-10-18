@@ -1,7 +1,11 @@
 import deadpixel.keystone.*;
 Keystone ks;
+Keystone ks1;
+Keystone ks2;
+
 CornerPinSurface keyStone;
 CornerPinSurface KeyStoneChart;
+CornerPinSurface keyStoneLine;
 
 Roads roads;
 POIs pois;
@@ -15,6 +19,8 @@ WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
+PGraphics linearGraphic;
+int indiceLine = 0;
 PImage BG;
 
 
@@ -38,7 +44,7 @@ int simHeight = 847;
 
 int timer = millis();
 int speed = 200;
-int indice = 1;
+int indice = 0;
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
@@ -46,7 +52,9 @@ ArrayList promParkHour;
 ArrayList occPerDate;
 IntList occupancy = new IntList();
 
+
 PieChart pieChart;
+ArrayList<PVector> lastCoord = new ArrayList();
 
 void setup(){
   fullScreen(P3D,SPAN);
@@ -70,22 +78,34 @@ void setup(){
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
-  chart = createGraphics(500,height);
-  ks = new Keystone(this);
-  KeyStoneChart = ks.createCornerPinSurface(chart.width, chart.height,20);
+  chart = createGraphics(1440,height);
+  ks1 = new Keystone(this);
+  KeyStoneChart = ks1.createCornerPinSurface(chart.width, chart.height,20);
   occPerDate=timePark.getTotalOccupancy();
   promParkHour = timePark.occupancyPerHour();
-  
+
   legend = createGraphics(700, 80);
   ks = new Keystone(this);
   keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
   ks.load();
-
+  
+  linearGraphic = createGraphics(1440, 480);
+  ks2 = new Keystone(this);
+  keyStoneLine = ks2.createCornerPinSurface(linearGraphic.width, linearGraphic.height,20);
   pieChart =  new PieChart();
+  
+  int j=0;
+  for(POI poi : pois.getAll()){
+     lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
+     //lastCoord.add(j,new PVector(pieChart.borderX,pieChart.borderY)); 
+     j++;
+  }
 }
 
 void draw(){  
+
     background(0);
+    //print(indice, timePark.chronometer.get((indice-1)*96));
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice){
@@ -97,6 +117,7 @@ void draw(){
         indice++;
         occupancy = timePark.getOccupancy(datesS);
       }
+      
       timer = millis();
     }
     
@@ -135,6 +156,14 @@ void draw(){
     pieChart.draw();
     chart.endDraw();
     KeyStoneChart.render(chart);
+    
+    //------------LINEAR GRAPHIC---------------
+    linearGraphic.beginDraw();
+    pieChart.drawLineGraph();
+    
+    linearGraphic.endDraw();
+    keyStoneLine.render(linearGraphic);
+    
 }
 
 void keyPressed(KeyEvent e){
