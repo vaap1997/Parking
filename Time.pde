@@ -34,7 +34,7 @@ public class TimePark{
      for(TableRow row:table.rows()){
        int movType = row.getInt("Movement Type");
        int passages = row.getInt("Passages");
-       if( movType != 2 && passages != 0){
+       if( passages != 0){
            int deviceNum = row.getInt("Device Number");
            String time0 = row.getString("DateTime");       
            String time1 = time0.replace(" ","/");
@@ -106,7 +106,7 @@ public class TimePark{
              ArrayList devices = poi.DEVICENUM;
                   for(int j = 0; j < devices.size(); j++){
                     if( park.DEVICENUM == (int) devices.get(j)){
-                        if(park.MOVTYPE == 0){ 
+                        if( (park.MOVTYPE == 0) | (park.MOVTYPE == 2)){ 
                           occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
                         }
                        if(park.MOVTYPE == 1){

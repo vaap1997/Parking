@@ -1,20 +1,14 @@
 import deadpixel.keystone.*;
 Keystone ks;
-Keystone ks1;
-Keystone ks2;
-
 CornerPinSurface keyStone;
-CornerPinSurface KeyStoneChart;
-CornerPinSurface keyStoneLine;
-
 Roads roads;
 POIs pois;
 POI poi;
 TimePark timePark;
 boolean showBG = true;
-boolean surfaceMode = true;
-boolean run = true;
-boolean name = false;
+boolean freeze = true;
+boolean names = false;
+boolean roadsType = false;
 WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
@@ -22,6 +16,7 @@ PGraphics chart;
 PGraphics linearGraphic;
 int indiceLine = 0;
 PImage BG;
+PImage speedometer;
 
 
 final PVector[] bounds = new PVector[] {
@@ -39,73 +34,71 @@ PVector[] roi = new PVector[] {
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
+final String speedPath = "speedometer.png";
 int simWidth = 1000;
 int simHeight = 847;
-
 int timer = millis();
 int speed = 200;
 int indice = 0;
+int lastIndice = 0;
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
 ArrayList promParkHour;
 ArrayList occPerDate;
 IntList occupancy = new IntList();
-
-
 PieChart pieChart;
 ArrayList<PVector> lastCoord = new ArrayList();
+int lastNamex = 600 ;
+int lastNamey = 600 ;
 
 void setup(){
   fullScreen(P3D,SPAN);
   //fullScreen(P3D, 2);
   background(0);
   smooth(); 
+  speedometer = loadImage(speedPath);
+  speedometer.resize((int)(speedometer.width*0.48),(int)(speedometer.height*0.45));
   BG = loadImage(bgPath);
-  if(surfaceMode){
     simWidth = BG.width;
     simHeight = BG.height;
     surface = new WarpSurface(this, 1500, 550, 20, 10);
     surface.loadConfig();
     canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
-  } else {
-   BG.resize(simWidth, simHeight);
-   canvas = createGraphics(simWidth, simHeight);
-  }
+
   
   roads = new Roads(roadsPath,simWidth,simHeight,bounds);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
-  chart = createGraphics(1440,height);
-  ks1 = new Keystone(this);
-  KeyStoneChart = ks1.createCornerPinSurface(chart.width, chart.height,20);
+  chart = createGraphics(500,height);
   occPerDate=timePark.getTotalOccupancy();
   promParkHour = timePark.occupancyPerHour();
-
+ 
+  
   legend = createGraphics(700, 80);
   ks = new Keystone(this);
   keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
-  ks.load();
+  //ks.load();
   
-  linearGraphic = createGraphics(1440, 480);
-  ks2 = new Keystone(this);
-  keyStoneLine = ks2.createCornerPinSurface(linearGraphic.width, linearGraphic.height,20);
+  linearGraphic = createGraphics(800, 480);
+  
   pieChart =  new PieChart();
+  
   
   int j=0;
   for(POI poi : pois.getAll()){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
-     //lastCoord.add(j,new PVector(pieChart.borderX,pieChart.borderY)); 
      j++;
   }
 }
 
 void draw(){  
-
+    
     background(0);
-    //print(indice, timePark.chronometer.get((indice-1)*96));
+
+    if(indice > 0) lastIndice = indice;
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice){
@@ -113,14 +106,12 @@ void draw(){
       }
       datesS = timePark.chronometer.get(indice);
       actualDate = split(datesS, ' ');
-      if(run) {
+      if(freeze) {
         indice++;
         occupancy = timePark.getOccupancy(datesS);
-      }
-      
+      }  
       timer = millis();
     }
-    
     //-------------MAP---------------
     canvas.beginDraw();
     canvas.background(0);
@@ -128,8 +119,7 @@ void draw(){
       else roads.draw(canvas,1,#cacfd6);  
     pois.draw( occupancy,false); 
     canvas.endDraw(); 
-    if(surfaceMode) surface.draw((Canvas) canvas);
-    else image(canvas,0,0);
+    surface.draw((Canvas) canvas);
     //---------- LEGEND----------------------------
     legend.beginDraw();
     legend.background(0);
@@ -155,14 +145,103 @@ void draw(){
     chart.background(0);
     pieChart.draw();
     chart.endDraw();
-    KeyStoneChart.render(chart);
+    image(chart,(0.6)*1440,0);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
-    pieChart.drawLineGraph();
-    
+    if(freeze) pieChart.drawLineGraph();
     linearGraphic.endDraw();
-    keyStoneLine.render(linearGraphic);
+    image(linearGraphic,0,0);
+    
+    //-------------SPEEDOMETER-----------------
+    pushMatrix();
+    for(int i = 0; i < 5; i++){
+    color rectName = color(180,50);
+    fill(rectName);
+    rect(60 + speedometer.width*i, 530 + speedometer.height, speedometer.width - 80 , 50,7);
+    rect(60 + speedometer.width*i, 590 + speedometer.height, speedometer.width - 80 , 100,7);
+    
+    image(speedometer,20 + speedometer.width*i,530);
+    textFont(createFont("Georgia",15)); textAlign(CENTER); fill(255);
+    if(i == 0) {
+      text( "Fener 1 - Fener 2", 20 + speedometer.width*i+speedometer.width/2, 520);
+    }
+    if(i == 1) {
+      text( "Parc Central 1 - Parc Central 2", 20 + speedometer.width*i+speedometer.width/2, 520);
+    }
+    if(i == 2){
+      text( "Centre Historic - Prat de la Creu", 20 + speedometer.width*i+speedometer.width/2, 520);
+    }
+    if(i == 3) {
+      text( "Trilla - Prada Casadet", 20 + speedometer.width*i+speedometer.width/2, 520);
+    }
+    if(i == 4) {
+      text( "Serradells - Antic Cami Ral", 20 + speedometer.width*i+speedometer.width/2, 520);
+    }
+   }
+  
+  textFont(createFont("Georgia",12));
+  ArrayList namepark = pois.getPOInames();
+  ArrayList capacitypark = pois.getCapacity(); 
+  pois.draw(occupancy, true);
+  for(int i = 0; i < namepark.size(); i++){
+     int number = (int)capacitypark.get(i);
+     String mostrar = (String)namepark.get(i);
+     if(i % 2 == 0){
+       textAlign(CENTER);
+       text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height );
+       text("capacity", 180 + speedometer.width*(i/2), 545 + speedometer.height );
+       textAlign(LEFT);
+       text(mostrar,70 + speedometer.width*(i/2), 560 + speedometer.height);
+       lastNamex = 180 + speedometer.width*(i/2);
+       lastNamey = 560 + speedometer.height ;
+     }else{
+       textAlign(CENTER);
+       text(str(number), lastNamex, lastNamey+13);
+       textAlign(LEFT);
+       text(mostrar, lastNamex-110, lastNamey+13);
+     }
+     
+     
+     //if(c % 2 == 0){
+     //         text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 550 + speedometer.height);
+     //         text(str(useI)+"%",280 + speedometer.width*(c/2) , 550 + speedometer.height);
+     //         lastNamex = 280 + speedometer.width*(c/2);
+     //         lastNamey = 550 + speedometer.height ;
+     //       }else{
+     //         text((int) occupancy.get(c),lastNamex - 50 , lastNamey+18);
+     //         text(str(useI)+"%",lastNamex , lastNamey+18);
+     //       }
+     
+     
+    }
+  
+    //continuing drawing
+    //pois.draw(occupancy, true);
+    //ArrayList namepark = pois.getPOInames();
+    //ArrayList capacitypark = pois.getCapacity();
+    //for(int i = 0; i < namepark.size(); i++){
+    //  int lastCoordx = 600;
+    //  int lastCoordy = 600;
+    //  String mostrar = (String)namepark.get(i);
+    //  int number = (int)capacitypark.get(i);
+    //  if( i % 2 == 0){
+    //    textAlign(CENTER);
+    //    text(str(number),60 + speedometer.width*(i/2),530 + speedometer.height);
+    //    textAlign(LEFT);
+    //    text(mostrar,60 + speedometer.width*(i/2),530 + speedometer.height);
+    //    lastCoordx = 60 + speedometer.width*(i/2);
+    //    lastCoordy = 530 + speedometer.height;
+    //  }else{
+    //    textAlign(CENTER);
+    //    text(str(number),lastCoordx,lastCoordy + 13);
+    //    textAlign(LEFT);
+    //    text(mostrar,lastCoordx,lastCoordy + 13);
+    //  }
+    //}
+ 
+   
+    popMatrix();
     
 }
 
@@ -172,25 +251,26 @@ void keyPressed(KeyEvent e){
     showBG = !showBG;
     break;
     
-    case 'r':
-    run = !run;
+    case 'f':
+    freeze = !freeze;
     break;
     
     case 'n':
-    name = !name;
+    names = !names;
     break;
-    
-   /* case 'z':
-    surfaceMode = !surfaceMode;
-    break;*/
-    
+      
     case 'k':
     surface.toggleCalibration();
     ks.toggleCalibration();
     break;
     
+    case 'r':
+    roadsType = !roadsType;
+    break;
+    
     case 's':
     ks.save();
+    ks.load();
     break;
     
     case 'g':

@@ -13,6 +13,7 @@ private class Node implements Placeable{
   protected boolean selected;
   protected ArrayList<Lane> lanes = new ArrayList();
   private String direction = null;
+  public String typeRoad;
     
   public Node(PVector position){
     id = -1;
@@ -45,9 +46,9 @@ private class Node implements Placeable{
   }
   
   public void draw(PGraphics canvas, int stroke, color c) {
-           for(Lane lane : lanes) {
-            lane.draw(canvas, stroke, c);
-        }
+         for(Lane lane : lanes) {
+           lane.draw(canvas, stroke, c);
+         }
   }
   
    public void draw(PGraphics canvas) {
@@ -56,14 +57,15 @@ private class Node implements Placeable{
         draw(canvas, 1, #F0F3F5);
    }
    
-   protected void connect(Node node, ArrayList<PVector> vertices, String name, Accessible access) {
+   protected void connect(Node node, ArrayList<PVector> vertices, String name, String access) {
      lanes.add( new Lane(name, access, this, node, vertices) );
    }
    
-   protected void connectBoth(Node node, ArrayList<PVector> vertices, String name, Accessible access) {
+   protected void connectBoth(Node node, ArrayList<PVector> vertices, String name, String access) {
         connect(node, vertices, name, access);
         if(vertices != null) Collections.reverse(vertices); 
         node.connect(this, vertices, name, access);
+        
     }
     
     protected void setDirection(String direction) {
