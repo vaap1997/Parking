@@ -18,7 +18,7 @@ public class PieChart{
   **Draw a pieChart for every hour
   **Draw every name and fit it to the pieChart
   */
-  public void draw(){
+  public void drawPie(){
     textFont(f);
     smooth();
     chart.translate(chart.width / 2, 250);
@@ -73,7 +73,7 @@ public class PieChart{
   **Refresh with every chronometer complete
   */
   public void drawLineGraph(){
-     int coLine;
+     color coLine = 255;
      linearGraphic.textSize(10);
      linearGraphic.fill(255); linearGraphic.stroke(255);
      //linearGraphic
@@ -127,8 +127,7 @@ public class PieChart{
             if(i == 8) coLine = color(#00bc6c);  //dark green
             if(i == 9) coLine = color(#e5a68e);  //pink
             linearGraphic.fill(255); linearGraphic.stroke(255);
-            color linea=lerpColor(#FF8300,#006699,i/10.00);
-            linearGraphic.fill(linea); linearGraphic.stroke(linea);
+            linearGraphic.fill(coLine); linearGraphic.stroke(coLine);
             if(lastIndice != indice){
               if(indice >= 4) linearGraphic.line(lastCoord.get(i).x, lastCoord.get(i).y,x,y);
               lastCoord.set(i, new PVector(x,y));

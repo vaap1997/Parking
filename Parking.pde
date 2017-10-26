@@ -34,7 +34,7 @@ PVector[] roi = new PVector[] {
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
-final String speedPath = "speedometer.png";
+final String speedPath = "speedometer2.png";
 int simWidth = 1000;
 int simHeight = 847;
 int timer = millis();
@@ -143,7 +143,7 @@ void draw(){
     //--------------PIE----------------------
     chart.beginDraw();
     chart.background(0);
-    pieChart.draw();
+    pieChart.drawPie();
     chart.endDraw();
     image(chart,(0.6)*1440,0);
     
@@ -158,25 +158,34 @@ void draw(){
     for(int i = 0; i < 5; i++){
     color rectName = color(180,50);
     fill(rectName);
+    /*first rect every 15 min*/
     rect(60 + speedometer.width*i, 530 + speedometer.height, speedometer.width - 80 , 50,7);
-    rect(60 + speedometer.width*i, 590 + speedometer.height, speedometer.width - 80 , 100,7);
-    
-    image(speedometer,20 + speedometer.width*i,530);
+    /*second block max - min - prom day*/
+    rect(60 + speedometer.width*i, 595 + speedometer.height, speedometer.width/2.5 , 30,7);
+    rect(60 + speedometer.width*i, 630 + speedometer.height, speedometer.width/2.5 , 30,7);
+    rect(60 + speedometer.width*i, 665 + speedometer.height, speedometer.width/2.5 , 30,7);
+    rectName = color(220,80);
+    fill(rectName);
+    rect(80 + speedometer.width*i + speedometer.width/2.5, 595 + speedometer.height, speedometer.width/5 , 30,7);
+    rect(80 + speedometer.width*i + speedometer.width/2.5, 630 + speedometer.height, speedometer.width/5 , 30,7);
+    rect(80 + speedometer.width*i + speedometer.width/2.5, 665 + speedometer.height, speedometer.width/5 , 30,7);    
+        
+    image(speedometer,26 + speedometer.width*i,530);
     textFont(createFont("Georgia",15)); textAlign(CENTER); fill(255);
     if(i == 0) {
-      text( "Fener 1 - Fener 2", 20 + speedometer.width*i+speedometer.width/2, 520);
+      text( "Fener 1 - Fener 2", 26 + speedometer.width*i+speedometer.width/2, 520);
     }
     if(i == 1) {
-      text( "Parc Central 1 - Parc Central 2", 20 + speedometer.width*i+speedometer.width/2, 520);
+      text( "Parc Central 1 - Parc Central 2", 26 + speedometer.width*i+speedometer.width/2, 520);
     }
     if(i == 2){
-      text( "Centre Historic - Prat de la Creu", 20 + speedometer.width*i+speedometer.width/2, 520);
+      text( "Centre Historic - Prat de la Creu", 26 + speedometer.width*i+speedometer.width/2, 520);
     }
     if(i == 3) {
-      text( "Trilla - Prada Casadet", 20 + speedometer.width*i+speedometer.width/2, 520);
+      text( "Trilla - Prada Casadet", 26 + speedometer.width*i+speedometer.width/2, 520);
     }
     if(i == 4) {
-      text( "Serradells - Antic Cami Ral", 20 + speedometer.width*i+speedometer.width/2, 520);
+      text( "Serradells - Antic Cami Ral", 26 + speedometer.width*i+speedometer.width/2, 520);
     }
    }
   
@@ -187,10 +196,14 @@ void draw(){
   for(int i = 0; i < namepark.size(); i++){
      int number = (int)capacitypark.get(i);
      String mostrar = (String)namepark.get(i);
+     textAlign(CENTER);
+     text("capacity", 180 + speedometer.width*i, 545 + speedometer.height );
+     text("Max per day", 120 + speedometer.width*i, 615 + speedometer.height );
+     text("Min per day", 120 + speedometer.width*i, 650 + speedometer.height );
+     text("Average per day", 120 + speedometer.width*i, 685 + speedometer.height );
      if(i % 2 == 0){
        textAlign(CENTER);
-       text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height );
-       text("capacity", 180 + speedometer.width*(i/2), 545 + speedometer.height );
+       text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height ); 
        textAlign(LEFT);
        text(mostrar,70 + speedometer.width*(i/2), 560 + speedometer.height);
        lastNamex = 180 + speedometer.width*(i/2);
@@ -201,46 +214,7 @@ void draw(){
        textAlign(LEFT);
        text(mostrar, lastNamex-110, lastNamey+13);
      }
-     
-     
-     //if(c % 2 == 0){
-     //         text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 550 + speedometer.height);
-     //         text(str(useI)+"%",280 + speedometer.width*(c/2) , 550 + speedometer.height);
-     //         lastNamex = 280 + speedometer.width*(c/2);
-     //         lastNamey = 550 + speedometer.height ;
-     //       }else{
-     //         text((int) occupancy.get(c),lastNamex - 50 , lastNamey+18);
-     //         text(str(useI)+"%",lastNamex , lastNamey+18);
-     //       }
-     
-     
     }
-  
-    //continuing drawing
-    //pois.draw(occupancy, true);
-    //ArrayList namepark = pois.getPOInames();
-    //ArrayList capacitypark = pois.getCapacity();
-    //for(int i = 0; i < namepark.size(); i++){
-    //  int lastCoordx = 600;
-    //  int lastCoordy = 600;
-    //  String mostrar = (String)namepark.get(i);
-    //  int number = (int)capacitypark.get(i);
-    //  if( i % 2 == 0){
-    //    textAlign(CENTER);
-    //    text(str(number),60 + speedometer.width*(i/2),530 + speedometer.height);
-    //    textAlign(LEFT);
-    //    text(mostrar,60 + speedometer.width*(i/2),530 + speedometer.height);
-    //    lastCoordx = 60 + speedometer.width*(i/2);
-    //    lastCoordy = 530 + speedometer.height;
-    //  }else{
-    //    textAlign(CENTER);
-    //    text(str(number),lastCoordx,lastCoordy + 13);
-    //    textAlign(LEFT);
-    //    text(mostrar,lastCoordx,lastCoordy + 13);
-    //  }
-    //}
- 
-   
     popMatrix();
     
 }
