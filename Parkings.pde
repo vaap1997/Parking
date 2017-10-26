@@ -1,6 +1,7 @@
 /**
 * Roads - Class to manage the roadmap of simulation
-* @author        Marc Vilella and Vanesa Alcantara
+* @author        Marc Vilella
+* @modifier      Vanesa Alcantara
 * @version       2.0
 */
 public class POIs extends Facade<POI>{   
@@ -46,23 +47,37 @@ public class POIs extends Facade<POI>{
   
   // Draw parking occupancy for the chronometer time
 public void draw(IntList occupancy,boolean legendB){
+
     int c = 0;
     for(POI poi:pois.getAll()){ 
         int Occupancy = (int) map(occupancy.get(c),0,2500,0,100);        
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#4DFF00, #E60000,use);
         if( legendB == true){
-            chart.stroke(255);
-            chart.fill(255);          
+            stroke(255);
+            fill(255);          
             int useI = round(use * 100);
-            chart.text((int) occupancy.get(c),250,100+13*c);
-            chart.text(str(useI)+"%",280,100+13*c);      
-        }else{canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
+            //chart.text(str(useI)+"%",280,100+13*c); 
+            if(c % 2 == 0){
+              text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 560 + speedometer.height);
+              text("use",230 + speedometer.width*(c/2) , 545 + speedometer.height);
+              text(str(useI)+"%",280 + speedometer.width*(c/2) , 560 + speedometer.height);
+              lastNamex = 280 + speedometer.width*(c/2);
+              lastNamey = 560 + speedometer.height ;
+            }else{
+              text((int) occupancy.get(c),lastNamex - 50 , lastNamey+13);
+              text(str(useI)+"%",lastNamex , lastNamey+13);
+            }
+            
+        }else{
+            if(!roadsType){
+            canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
             canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
             canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
             int cap = (int) map(poi.CAPACITY,0,2500,0,100);
-            canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap); 
-            if(name) {
+            canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap);     
+            }
+            if(names) {
               
               canvas.pushMatrix();
               canvas.translate(poi.POSITION.x, poi.POSITION.y);
@@ -169,7 +184,7 @@ public class POI extends Node{
  protected final String ID;
  protected final String NAME;
  protected final int CAPACITY;
- protected final Accessible access;
+ protected final String access;
  protected final PVector[] COORDS;
  protected final ArrayList<Integer> DEVICENUM;
 
@@ -184,7 +199,7 @@ public class POI extends Node{
             ID = id;
             NAME = name;
             CAPACITY = capacity;
-            access = Accessible.create(type);
+            access = type;
             COORDS = coords;
             DEVICENUM = deviceNum;
             place(roads);       

@@ -1,6 +1,7 @@
 /**
 * Roads - Class to manage the roadmap of simulation
-* @author        Marc Vilella
+* @author        Marc Vilella 
+* @modifier      Vanesa Alcantara
 * @version       2.0
 */
 
@@ -8,8 +9,8 @@
 private class Lane {
     
     private String name;
-    private Accessible access;
-    
+    private String access;
+    public color co;
     private Node initNode;
     private Node finalNode;
     private float distance;
@@ -19,7 +20,7 @@ private class Lane {
     //private ArrayList<Agent> crowd = new ArrayList();
     private float occupancy;
     
-    public Lane(String name, Accessible access, Node initNode, Node finalNode, ArrayList<PVector> vertices) {
+    public Lane(String name, String access, Node initNode, Node finalNode, ArrayList<PVector> vertices) {
         this.name = name;
         this.access = access;
         this.initNode = initNode;
@@ -28,10 +29,19 @@ private class Lane {
         if(vertices != null && vertices.size()!= 0) this.vertices = new ArrayList(vertices);
         else {
             this.vertices.add(initNode.getPosition());
-            this.vertices.add(finalNode.getPosition());
-            
+            this.vertices.add(finalNode.getPosition());   
         }
         distance = calcLength();
+        
+        if(access.equals("primary")) {
+           co = color(#002ADA); 
+         }else if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
+           co = color(#E82200); 
+         }else if( access.equals("secondary")){
+           co = color(#C168F2);
+         }else{
+          co=color(#CC68FF); 
+         } 
     }
     
 
@@ -121,13 +131,17 @@ private class Lane {
         return null;
     }    
    
-   public void draw(PGraphics canvas, int stroke, color c) {        
-        for(int i = 1; i < vertices.size(); i++) {
-          color occupColor = lerpColor(c, #FF0000, occupancy);        
-          canvas.stroke(occupColor, 127); canvas.strokeWeight(stroke);
+   //Draw and color line
+   public void draw(PGraphics canvas, int stroke, color c) {  
+     for(int i = 1; i < vertices.size(); i++) { 
+          if(roadsType){
+            canvas.stroke(co, 127); canvas.strokeWeight(stroke);
+          }else{
+            canvas.stroke(c, 127); canvas.strokeWeight(stroke);
+          }
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
-        }
-    }   
+     }
+   }   
 }

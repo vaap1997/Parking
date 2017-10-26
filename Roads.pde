@@ -1,6 +1,7 @@
 /**
 * Roads - Class to manage the roadmap of simulation
 * @author        Marc Vilella
+* @modifier      Vanesa Alcantara
 * @version       2.0
 */
 
@@ -32,7 +33,7 @@ public class Roads extends Facade<Node>{
             if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
             this.add(connectionNode);
             
-            poi.connectBoth(connectionNode, null, "Access", poi.access);
+            poi.connectBoth(connectionNode, null, "footway", poi.access);
             add(poi);
            
       }
@@ -50,7 +51,7 @@ public class Roads extends Facade<Node>{
               if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
               this.add(connectionNode);
               
-              //poi.connectBoth(connectionNode, null, "Access", poi.access);
+              //poi.connectBoth(connectionNode, null, "footway", poi.access);
         }
         add(poi);
      }
@@ -99,10 +100,7 @@ public class Roads extends Facade<Node>{
     
     public void draw(PGraphics canvas, int stroke, color c) {
         for(Node node : items){
-          if(node instanceof POI){
-            node.draw(canvas, stroke, color(255,0,0));
-          }else{
-          node.draw(canvas, stroke, c);}
+          node.draw(canvas, stroke, c);
         } 
     }
 
@@ -167,9 +165,7 @@ public class RoadFactory extends Factory<Node>{
         JSONObject lane =lanes.getJSONObject(i);
         //JALAR PROPERTIES
         JSONObject props = lane.getJSONObject("properties");
-        Accessible access = props.isNull("type")? Accessible.ALL : Accessible.create( props.getString("type") );
-        String type = props.isNull("type")? null : props.getString("type");
-        
+        String access = props.isNull("type")? "service" :  props.getString("type") ;
         String name = props.isNull("name")? "null" : props.getString("name");
         boolean oneWay = props.isNull("oneway")? false : props.getInt("oneway") == 1? true : false;
         String direction = props.isNull("direction")? null : props.getString("direction");
