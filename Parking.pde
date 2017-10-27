@@ -77,7 +77,7 @@ void setup(){
   
   legend = createGraphics(700, 80);
   linearGraphic = createGraphics(1520, 480);
-  speedometerCanvas = createGraphics(1520,480);
+  speedometerCanvas = createGraphics(1520,270);
   pieChart =  new PieChart();
   
   
@@ -87,7 +87,7 @@ void setup(){
      j++;
   }
   for(int i = 0; i < 5; i++){
-    image(speedometer,26 + speedometer.width*i,530);
+    image(speedometer,26 + speedometer.width*i,500);
   }
   
 }
@@ -152,70 +152,16 @@ void draw(){
     image(linearGraphic,0,0);
     
     //-------------SPEEDOMETER-----------------
-    pushMatrix();
-    for(int i = 0; i < 5; i++){
-    color rectName = color(180,50);
-    fill(rectName);
-    /*first rect every 15 min*/
-    rect(60 + speedometer.width*i, 530 + speedometer.height, speedometer.width - 80 , 50,7);
-    /*second block max - min - prom day*/
-    rect(60 + speedometer.width*i, 595 + speedometer.height, speedometer.width/2.5 , 30,7);
-    rect(60 + speedometer.width*i, 630 + speedometer.height, speedometer.width/2.5 , 30,7);
-    rect(60 + speedometer.width*i, 665 + speedometer.height, speedometer.width/2.5 , 30,7);
-    rectName = color(220,80);
-    fill(rectName);
-    rect(80 + speedometer.width*i + speedometer.width/2.5, 595 + speedometer.height, speedometer.width/5 , 30,7);
-    rect(80 + speedometer.width*i + speedometer.width/2.5, 630 + speedometer.height, speedometer.width/5 , 30,7);
-    rect(80 + speedometer.width*i + speedometer.width/2.5, 665 + speedometer.height, speedometer.width/5 , 30,7);    
-        
-    textFont(createFont("Georgia",15)); textAlign(CENTER); fill(255);
-    if(i == 0) {
-      text( "Fener 1 - Fener 2", 26 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 1) {
-      text( "Parc Central 1 - Parc Central 2", 26 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 2){
-      text( "Centre Historic - Prat de la Creu", 26 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 3) {
-      text( "Trilla - Prada Casadet", 26 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 4) {
-      text( "Serradells - Antic Cami Ral", 26 + speedometer.width*i+speedometer.width/2, 520);
-    }
-   }
-  
-  textFont(createFont("Georgia",12));
-  ArrayList namepark = pois.getPOInames();
-  ArrayList capacitypark = pois.getCapacity(); 
-  pois.draw(occupancy, true);
-  for(int i = 0; i < namepark.size(); i++){
-     int number = (int)capacitypark.get(i);
-     String mostrar = (String)namepark.get(i);
-     textAlign(CENTER);
-     
-     if(i % 2 == 0){
-       textAlign(CENTER);
-       text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height ); 
-       text("capacity", 180 + speedometer.width*(i/2), 545 + speedometer.height );
-       text("Max per day", 120 + speedometer.width*(i/2), 615 + speedometer.height );
-       text("Min per day", 120 + speedometer.width*(i/2), 650 + speedometer.height );
-       text("Average per day", 120 + speedometer.width*(i/2), 685 + speedometer.height );
-       textAlign(LEFT);
-       text(mostrar,70 + speedometer.width*(i/2), 560 + speedometer.height);
-       lastNamex = 180 + speedometer.width*(i/2);
-       lastNamey = 560 + speedometer.height ;
-     }else{
-       textAlign(CENTER);
-       text(str(number), lastNamex, lastNamey+13);
-       textAlign(LEFT);
-       text(mostrar, lastNamex-110, lastNamey+13);
-     }
-    }
-    popMatrix();
+    speedometerCanvas.beginDraw();
+    pieChart.drawSpeedometer();
+    speedometerCanvas.endDraw();
+    image(speedometerCanvas,0,630);
     
 }
+
+//public void mousePressed(){
+// print(mouseX, mouseY); 
+//}
 
 void keyPressed(KeyEvent e){
   switch(key){

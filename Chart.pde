@@ -12,8 +12,9 @@ public class PieChart{
   ArrayList lineIni = (ArrayList) occPerDate.get(0);
   int borderX = 40;
   int borderY = 40;
-  //String[] poiColor = { 
-
+  color[] poiColor = { color(#A9BDCF), color(#Ef7501), color(230,0,0), color(#3500E5), color(#0ABCB2), color(#E50083), color(#8448b8), color(#FFF500), color(#00bc6c), color(#e5a68e)};
+  //                 {ligh blue, orange, red, blue, water blue, pink, purple, yellow, dark green, pink}
+  
   /*
   **Draw a pieChart for every hour
   **Draw every name and fit it to the pieChart
@@ -73,7 +74,7 @@ public class PieChart{
   **Refresh with every chronometer complete
   */
   public void drawLineGraph(){
-     color coLine = 255;
+     //color coLine = 255;
      linearGraphic.textSize(10);
      linearGraphic.fill(255); linearGraphic.stroke(255);
      //linearGraphic
@@ -116,18 +117,8 @@ public class PieChart{
             //int x = (((indiceLine)*(linearGraphic.width - 80))/(timePark.chronometer.size())) + borderX;
             int x = indiceLine*2 + borderX;
             int y = (4 * (100 - (int) occ.get(i))) + borderY;
-            if(i == 0) coLine = color(#71FF01);  //ligh green
-            if(i == 1) coLine = color(#Ef7501);  //orange
-            if(i == 2) coLine = color(#FF100E);  //red
-            if(i == 3) coLine = color(#3500E5);  //blue
-            if(i == 4) coLine = color(#0ABCB2);  //water blue
-            if(i == 5) coLine = color(#E50083);  //pink
-            if(i == 6) coLine = color(#8448b8);  //purple
-            if(i == 7) coLine = color(#FFF500);  //yellow
-            if(i == 8) coLine = color(#00bc6c);  //dark green
-            if(i == 9) coLine = color(#e5a68e);  //pink
             linearGraphic.fill(255); linearGraphic.stroke(255);
-            linearGraphic.fill(coLine); linearGraphic.stroke(coLine);
+            linearGraphic.fill(poiColor[i]); linearGraphic.stroke(poiColor[i]);
             if(lastIndice != indice){
               if(indice >= 4) linearGraphic.line(lastCoord.get(i).x, lastCoord.get(i).y,x,y);
               lastCoord.set(i, new PVector(x,y));
@@ -146,6 +137,76 @@ public class PieChart{
        } 
      } 
   }
+  
+  public void drawSpeedometer(){
+    speedometerCanvas.background(0);
+    for(int i = 0; i < 5; i++){
+      color rectName = color(180,50);
+      speedometerCanvas.fill(rectName); speedometerCanvas.noStroke();
+      /*first rect every 15 min*/
+      speedometerCanvas.rect(60 + speedometer.width*i, 35 , speedometer.width - 80, 50, 7);
+      /*second block max - min - prom day*/
+      speedometerCanvas.rect(60 + speedometer.width*i, 100 , speedometer.width/2.5, 30, 7);
+      speedometerCanvas.rect(60 + speedometer.width*i, 135 , speedometer.width/2.5, 30, 7);
+      speedometerCanvas.rect(60 + speedometer.width*i, 170, speedometer.width/2.5, 30, 7);
+      rectName = color(220,80);
+      speedometerCanvas.fill(rectName);
+      speedometerCanvas.rect(80 + speedometer.width*i + speedometer.width/2.5, 100, speedometer.width/5 , 30,7);
+      speedometerCanvas.rect(80 + speedometer.width*i + speedometer.width/2.5, 135, speedometer.width/5 , 30,7);
+      speedometerCanvas.rect(80 + speedometer.width*i + speedometer.width/2.5, 170, speedometer.width/5 , 30,7);    
+          
+      speedometerCanvas.textFont(createFont("Georgia",15)); speedometerCanvas.textAlign(CENTER); speedometerCanvas.fill(255);
+      if(i == 0) {
+        speedometerCanvas.text( "Fener 1 - Fener 2", 26 + speedometer.width*i+speedometer.width/2, 15);
+      }
+      if(i == 1) {
+        speedometerCanvas.text( "Parc Central 1 - Parc Central 2", 26 + speedometer.width*i+speedometer.width/2, 15);
+      }
+      if(i == 2){
+        speedometerCanvas.text( "Centre Historic - Prat de la Creu", 26 + speedometer.width*i+speedometer.width/2, 15);
+      }
+      if(i == 3) {
+        speedometerCanvas.text( "Trilla - Prada Casadet", 26 + speedometer.width*i+speedometer.width/2, 15);
+      }
+      if(i == 4) {
+        speedometerCanvas.text( "Serradells - Antic Cami Ral", 26 + speedometer.width*i+speedometer.width/2, 15);
+      }
+   }
+  
+  speedometerCanvas.textFont(createFont("Georgia",12));
+  ArrayList namepark = pois.getPOInames();
+  ArrayList capacitypark = pois.getCapacity(); 
+  pois.draw(occupancy, true);
+  for(int i = 0; i < namepark.size(); i++){
+     int number = (int)capacitypark.get(i);
+     String mostrar = (String)namepark.get(i);
+     speedometerCanvas.textAlign(CENTER);
+     
+     if(i % 2 == 0){
+       speedometerCanvas.textAlign(CENTER);
+       speedometerCanvas.text(str(number), 180 + speedometer.width*(i/2), 65 ); 
+       speedometerCanvas.text("capacity", 180 + speedometer.width*(i/2), 50 );
+       speedometerCanvas.text("Max per day", 120 + speedometer.width*(i/2), 120 );
+       speedometerCanvas.text("Min per day", 120 + speedometer.width*(i/2), 155 );
+       speedometerCanvas.text("Average per day", 120 + speedometer.width*(i/2), 190 );
+       speedometerCanvas.textAlign(LEFT);
+       speedometerCanvas.fill(poiColor[i]);
+       speedometerCanvas.text(mostrar,70 + speedometer.width*(i/2), 65);
+       speedometerCanvas.fill(255);
+       lastNamex = 180 + speedometer.width*(i/2);
+       lastNamey = 65 ;
+     }else{
+       speedometerCanvas.textAlign(CENTER);
+       speedometerCanvas.text(str(number), lastNamex, lastNamey+13);
+       speedometerCanvas.textAlign(LEFT);
+       speedometerCanvas.fill(poiColor[i]);
+       speedometerCanvas.text(mostrar, lastNamex-110, lastNamey+13);
+       speedometerCanvas.fill(255);
+     }
+    }
+    
+  }
+  
   
   public void pieChart(float diameter, FloatList data) {
       float lastAngle = 0;

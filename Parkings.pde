@@ -54,19 +54,19 @@ public void draw(IntList occupancy,boolean legendB){
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#4DFF00, #E60000,use);
         if( legendB == true){
-            stroke(255);
-            fill(255);          
+            speedometerCanvas.stroke(255);
+            speedometerCanvas.fill(255);          
             int useI = round(use * 100);
             //chart.text(str(useI)+"%",280,100+13*c); 
             if(c % 2 == 0){
-              text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 560 + speedometer.height);
-              text("use",230 + speedometer.width*(c/2) , 545 + speedometer.height);
-              text(str(useI)+"%",280 + speedometer.width*(c/2) , 560 + speedometer.height);
+              speedometerCanvas.text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 65);
+              speedometerCanvas.text("use",230 + speedometer.width*(c/2) , 50);
+              speedometerCanvas.text(str(useI)+"%",280 + speedometer.width*(c/2) , 65);
               lastNamex = 280 + speedometer.width*(c/2);
-              lastNamey = 560 + speedometer.height ;
+              lastNamey = 65 ;
             }else{
-              text((int) occupancy.get(c),lastNamex - 50 , lastNamey+13);
-              text(str(useI)+"%",lastNamex , lastNamey+13);
+              speedometerCanvas.text((int) occupancy.get(c),lastNamex - 50 , lastNamey+13);
+              speedometerCanvas.text(str(useI)+"%",lastNamex , lastNamey+13);
             }
             
         }else{
