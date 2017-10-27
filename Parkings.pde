@@ -71,11 +71,11 @@ public void draw(IntList occupancy,boolean legendB){
             
         }else{
             if(!roadsType){
-            canvas.rectMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
-            canvas.rect(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
-            canvas.rectMode(CENTER); canvas.noFill(); canvas.stroke(occColor); canvas.strokeWeight(2); 
+            canvas.ellipseMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
+            canvas.ellipse(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
+            canvas.stroke(occColor);
             int cap = (int) map(poi.CAPACITY,0,2500,0,100);
-            canvas.rect(poi.POSITION.x,poi.POSITION.y,cap,cap);     
+            canvas.ellipse(poi.POSITION.x,poi.POSITION.y,cap,cap);     
             }
             if(names) {
               

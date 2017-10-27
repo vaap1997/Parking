@@ -1,6 +1,4 @@
-import deadpixel.keystone.*;
-Keystone ks;
-CornerPinSurface keyStone;
+//NO ES GITHUB
 Roads roads;
 POIs pois;
 POI poi;
@@ -14,6 +12,7 @@ PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
 PGraphics linearGraphic;
+PGraphics speedometerCanvas;
 int indiceLine = 0;
 PImage BG;
 PImage speedometer;
@@ -53,20 +52,18 @@ int lastNamex = 600 ;
 int lastNamey = 600 ;
 
 void setup(){
-  fullScreen(P3D,SPAN);
+  fullScreen(P2D,SPAN);
   //fullScreen(P3D, 2);
   background(0);
   smooth(); 
   speedometer = loadImage(speedPath);
   speedometer.resize((int)(speedometer.width*0.48),(int)(speedometer.height*0.45));
   BG = loadImage(bgPath);
-    simWidth = BG.width;
-    simHeight = BG.height;
-    surface = new WarpSurface(this, 1500, 550, 20, 10);
-    surface.loadConfig();
-    canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
-
-  
+  simWidth = BG.width;
+  simHeight = BG.height;
+  surface = new WarpSurface(this, 1500, 550, 20, 10);
+  surface.loadConfig();
+  canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
   roads = new Roads(roadsPath,simWidth,simHeight,bounds);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
@@ -74,16 +71,13 @@ void setup(){
  
   chart = createGraphics(500,height);
   occPerDate=timePark.getTotalOccupancy();
+  print("\n occPerHour loaded");
   promParkHour = timePark.occupancyPerHour();
- 
+  print("\n promParlHour loaded");
   
   legend = createGraphics(700, 80);
-  ks = new Keystone(this);
-  keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
-  //ks.load();
-  
-  linearGraphic = createGraphics(800, 480);
-  
+  linearGraphic = createGraphics(1520, 480);
+  speedometerCanvas = createGraphics(1520,480);
   pieChart =  new PieChart();
   
   
@@ -92,11 +86,15 @@ void setup(){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
      j++;
   }
+  for(int i = 0; i < 5; i++){
+    image(speedometer,26 + speedometer.width*i,530);
+  }
+  
 }
 
 void draw(){  
     
-    background(0);
+    //background(0);
 
     if(indice > 0) lastIndice = indice;
     if( millis() - timer >= speed){
@@ -138,14 +136,14 @@ void draw(){
      legend.rect(10+20*i,50,20,20);
     } 
     legend.endDraw();
-    keyStone.render(legend);
+    image(legend,3025,737);
     
     //--------------PIE----------------------
     chart.beginDraw();
     chart.background(0);
     pieChart.drawPie();
     chart.endDraw();
-    image(chart,(0.6)*1440,0);
+    image(chart,1920*0.76,0);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
@@ -170,7 +168,6 @@ void draw(){
     rect(80 + speedometer.width*i + speedometer.width/2.5, 630 + speedometer.height, speedometer.width/5 , 30,7);
     rect(80 + speedometer.width*i + speedometer.width/2.5, 665 + speedometer.height, speedometer.width/5 , 30,7);    
         
-    image(speedometer,26 + speedometer.width*i,530);
     textFont(createFont("Georgia",15)); textAlign(CENTER); fill(255);
     if(i == 0) {
       text( "Fener 1 - Fener 2", 26 + speedometer.width*i+speedometer.width/2, 520);
@@ -197,13 +194,14 @@ void draw(){
      int number = (int)capacitypark.get(i);
      String mostrar = (String)namepark.get(i);
      textAlign(CENTER);
-     text("capacity", 180 + speedometer.width*i, 545 + speedometer.height );
-     text("Max per day", 120 + speedometer.width*i, 615 + speedometer.height );
-     text("Min per day", 120 + speedometer.width*i, 650 + speedometer.height );
-     text("Average per day", 120 + speedometer.width*i, 685 + speedometer.height );
+     
      if(i % 2 == 0){
        textAlign(CENTER);
        text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height ); 
+       text("capacity", 180 + speedometer.width*(i/2), 545 + speedometer.height );
+       text("Max per day", 120 + speedometer.width*(i/2), 615 + speedometer.height );
+       text("Min per day", 120 + speedometer.width*(i/2), 650 + speedometer.height );
+       text("Average per day", 120 + speedometer.width*(i/2), 685 + speedometer.height );
        textAlign(LEFT);
        text(mostrar,70 + speedometer.width*(i/2), 560 + speedometer.height);
        lastNamex = 180 + speedometer.width*(i/2);
@@ -235,7 +233,7 @@ void keyPressed(KeyEvent e){
       
     case 'k':
     surface.toggleCalibration();
-    ks.toggleCalibration();
+   // ks.toggleCalibration();
     break;
     
     case 'r':
@@ -243,8 +241,8 @@ void keyPressed(KeyEvent e){
     break;
     
     case 's':
-    ks.save();
-    ks.load();
+    //ks.save();
+    //ks.load();
     break;
     
     case 'g':
@@ -274,7 +272,5 @@ void keyPressed(KeyEvent e){
     surface.move(5,0);
     break;
   } 
-  
-  
-  
+
 }

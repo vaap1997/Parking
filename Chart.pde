@@ -78,7 +78,7 @@ public class PieChart{
      linearGraphic.fill(255); linearGraphic.stroke(255);
      //linearGraphic
      linearGraphic.line(borderX,linearGraphic.height-borderY,borderX,borderY);
-     linearGraphic.line(borderX,linearGraphic.height-borderY,timePark.chronometer.size()/4+borderX,linearGraphic.height-borderY);
+     linearGraphic.line(borderX,linearGraphic.height-borderY,timePark.chronometer.size()/2+borderX,linearGraphic.height-borderY);
      
      for(int i = 0; i <= 10; i++){
        linearGraphic.textAlign(CENTER);
@@ -88,8 +88,8 @@ public class PieChart{
      for(int j = 0; j <= 30; j++){
 
        //linearGraphic.text(j+2,(((j+1)*(linearGraphic.width-80))/(30))+ borderX, linearGraphic.height - (borderY-20)); 
-       if(j <  30)linearGraphic.text(j+2,j*24+ borderX, linearGraphic.height - (borderY-20)); 
-       if(j == 30)linearGraphic.text("Julio",j*24+ borderX, linearGraphic.height - (borderY-20));
+       if(j <  30)linearGraphic.text(j+2,j*24*2+ borderX, linearGraphic.height - (borderY-20)); 
+       if(j == 30)linearGraphic.text("Julio",j*24*2+ borderX, linearGraphic.height - (borderY-20));
      }
      
      if(indice % 4.00 == 0.00) {
@@ -114,7 +114,7 @@ public class PieChart{
 
          for( int i = 0; i < occ.size(); i++){
             //int x = (((indiceLine)*(linearGraphic.width - 80))/(timePark.chronometer.size())) + borderX;
-            int x = indiceLine + borderX;
+            int x = indiceLine*2 + borderX;
             int y = (4 * (100 - (int) occ.get(i))) + borderY;
             if(i == 0) coLine = color(#71FF01);  //ligh green
             if(i == 1) coLine = color(#Ef7501);  //orange
