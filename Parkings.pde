@@ -46,30 +46,13 @@ public class POIs extends Facade<POI>{
   }
   
   // Draw parking occupancy for the chronometer time
-public void draw(IntList occupancy,boolean legendB){
+public void draw(IntList occupancy){
 
     int c = 0;
     for(POI poi:pois.getAll()){ 
         int Occupancy = (int) map(occupancy.get(c),0,2500,0,100);        
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#4DFF00, #E60000,use);
-        if( legendB == true){
-            speedometerCanvas.stroke(255);
-            speedometerCanvas.fill(255);          
-            int useI = round(use * 100);
-            //chart.text(str(useI)+"%",280,100+13*c); 
-            if(c % 2 == 0){
-              speedometerCanvas.text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 65);
-              speedometerCanvas.text("use",230 + speedometer.width*(c/2) , 50);
-              speedometerCanvas.text(str(useI)+"%",280 + speedometer.width*(c/2) , 65);
-              lastNamex = 280 + speedometer.width*(c/2);
-              lastNamey = 65 ;
-            }else{
-              speedometerCanvas.text((int) occupancy.get(c),lastNamex - 50 , lastNamey+13);
-              speedometerCanvas.text(str(useI)+"%",lastNamex , lastNamey+13);
-            }
-            
-        }else{
             if(!roadsType){
             canvas.ellipseMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
             canvas.ellipse(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
@@ -89,7 +72,7 @@ public void draw(IntList occupancy,boolean legendB){
               canvas.popMatrix();
               
           }
-        }  
+          
         c++;
     } 
   }
@@ -112,7 +95,9 @@ public class POIFactory extends Factory {
             String name = props.isNull("NAME") ? "null" : props.getString("NAME");
             String type = props.isNull("TYPE") ? "null" : props.getString("TYPE");
             int capacity = props.isNull("CAPACITY") ? 0 : props.getInt("CAPACITY");
-            
+            float price = props.isNull("Price")? 0 : props.getFloat("Price");
+            price = ((int)( price * 100))/100.00;
+            print(price);
             JSONArray coord = poi.getJSONObject("geometry").getJSONArray("coordinates");
             PVector location = roads.toXY( coord.getFloat(1), coord.getFloat(0) );
             
@@ -130,7 +115,7 @@ public class POIFactory extends Factory {
             }
                 
             if( roads.contains(location) ) {
-                pois.add( new POI(roads, str(count), name, type, location, capacity, coords, deviceNum) );
+                pois.add( new POI(roads, str(count), name, type, location, capacity, coords, deviceNum, str(price)) );
                 counter.increment(type);
                 count++;
             }
@@ -155,6 +140,8 @@ public class POIFactory extends Factory {
             String   description = row.getString("Description");
             String type = row.getString("Type");
             int capacity = row.getInt("Capacity");
+            float price =  row.getFloat("Price");
+            price = ((int)( price * 100))/100.00;
             PVector location = roads.toXY(row.getFloat("Latitude"),row.getFloat("Longitude"));
             String io = row.getString("IO");
             String[] io_coords = trim(split(io,"|")); 
@@ -168,7 +155,7 @@ public class POIFactory extends Factory {
             }
                      
             if( roads.contains(location) ) {
-                pois.add( new POI(roads, str(count), name, type, location, capacity,coords, deviceNum) );
+                pois.add( new POI(roads, str(count), name, type, location, capacity,coords, deviceNum, str(price)) );
                 counter.increment(path); 
                 count++;
             }           
@@ -187,14 +174,14 @@ public class POI extends Node{
  protected final String access;
  protected final PVector[] COORDS;
  protected final ArrayList<Integer> DEVICENUM;
-
+ protected final String PRICE;
  protected float occupancy;
  protected float entries;
  protected float departures;
  private float size = 2;
  
      //Asign values
-     public POI(Roads roads, String id, String name, String type, PVector position, int capacity, PVector[] coords,ArrayList deviceNum){
+     public POI(Roads roads, String id, String name, String type, PVector position, int capacity, PVector[] coords,ArrayList deviceNum, String price){
             super(position);
             ID = id;
             NAME = name;
@@ -202,7 +189,8 @@ public class POI extends Node{
             access = type;
             COORDS = coords;
             DEVICENUM = deviceNum;
-            place(roads);       
+            place(roads); 
+            PRICE = price;
      }
     
     //connect POI with the closest point

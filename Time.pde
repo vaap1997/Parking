@@ -93,6 +93,7 @@ public class TimePark{
   }
   
   public ArrayList getTotalOccupancy(){
+    print("\nLoading occPerDate...");
     ArrayList occPerDate = new ArrayList(); 
     IntList occPerPoi = new IntList();
     for(int a = 0; a < chronometer.size(); a++){
@@ -110,7 +111,7 @@ public class TimePark{
                           occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
                         }
                        if(park.MOVTYPE == 1){
-                          occPerPoi.set(c,(int)occPerPoi.get(c)-park.PASSAGES);
+                          occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
                        }
                     }
                   }
@@ -125,7 +126,6 @@ public class TimePark{
            occTemporal.add(k,occPerPoi.get(k-1));
             k++;
          }
-     //print(occTemporal, chronometer.get(i));
      occPerDate.add(occTemporal);    
     }
    return occPerDate;
@@ -143,9 +143,18 @@ public class TimePark{
       }
     return occupancy;
   }
-  
-  public ArrayList<FloatList> occupancyPerHour(){
-   ArrayList<FloatList> promParkHour = new ArrayList();
+ 
+
+ 
+  public ArrayList<PVector> maxMinHour(){
+   print("\nLoading max and min per hour...");
+   ArrayList<PVector> MaxMin = new ArrayList(pois.count());
+   ArrayList<PVector> MaxMinValor = new ArrayList(pois.count());
+   for(int k=0; k<pois.count();k++){
+      MaxMin.add(k,new PVector(1,-1));
+      MaxMinValor.add(k,new PVector(-Integer.MAX_VALUE,Integer.MAX_VALUE)); 
+   }
+   
    for( int i = 0; i <24; i++){
          FloatList parkingPerHour = new FloatList(); 
          int x=0;
@@ -163,25 +172,109 @@ public class TimePark{
                parkingPerHour.set(j-1,parkingPerHour.get(j-1)+(int)temporal.get(j));                                 
              }
            }
-         }
-        int k=0;
-        FloatList parkingTemporal = new FloatList();
-        for(POI poi:pois.getAll()){
-           parkingTemporal.set(k,(parkingPerHour.get(k)/120)/poi.CAPACITY);
-           k++;
-        }
-         promParkHour.add(i, parkingTemporal);
-        }
-         //print("\n"+promParkHour);
-         return promParkHour;
+         } 
+         for(int k = 0; k < pois.count();k++){
+           float maximo = max(MaxMinValor.get(k).x,parkingPerHour.get(k));
+           float minimo = min(MaxMinValor.get(k).y,parkingPerHour.get(k));
+           MaxMinValor.set(k,new PVector( maximo, minimo));
+           if(MaxMinValor.get(k).x == parkingPerHour.get(k)) MaxMin.get(k).x = i;
+           if(MaxMinValor.get(k).y == parkingPerHour.get(k)) MaxMin.get(k).y = i;
+         }         
+   }
+   return MaxMin;
+ }
+ 
+ public ArrayList<String>  maxDay(){
+   ArrayList<Float> total = new ArrayList();
+   ArrayList<String> maxDay = new ArrayList();
+   String[] nameDay = {"Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thrusday", "Friday"};
+   print("\nLoading max per day...");
+   for(int k=0; k <pois.count();k++){
+     total.add(k,-Float.MAX_VALUE);
+     maxDay.add(k, null);
+   }
+   /*0=sabado,1=domingo, 2=lunes, 3=martes, 4=miercoles, 5=jueves, 6= viernes
+   */
+   for(int k = 0; k < 7; k++){
+     FloatList parkingPerDay = new FloatList();
+     for(int c=0; c<pois.count();c++){
+       parkingPerDay.set(c,0);
+     }
+     for(int c = k; c < occPerDate.size(); c=c+28){
+       for(int i=c; i < c+4; i++){
+         ArrayList temporal = (ArrayList) occPerDate.get(c);
+           for(int j = 1; j < temporal.size(); j++){                            
+              parkingPerDay.set(j-1,parkingPerDay.get(j-1)+(int)temporal.get(j));                                 
+            }
        }
-      
+     }
+     
+     for(int j = 0; j < pois.count();j++){
+       float maximo = max(total.get(j),parkingPerDay.get(j));
+       total.set(j,maximo);
+       if(total.get(j) == parkingPerDay.get(j)) maxDay.set(j, nameDay[k]);
+     }
+   }
+  return maxDay; 
+ }
+ 
+ public ArrayList<Float> getOccPerZone(){
+   ArrayList<Float> occPerZone = new ArrayList();
+   ArrayList capacityT = pois.getCapacity();
+   for(int i = 0; i < 7;i++){
+     Float sum = 0.00;
+     float capacity = 0.00;
+     if(i == 0 ){
+       int c=0;
+       for(POI poi:pois.getAll()){
+         sum =  sum + (float)occupancy.get(c);
+         capacity = capacity + poi.CAPACITY;
+         c++;
+       }
+       occPerZone.add(i,sum/capacity);
+     }
+    
+     if(i == 1){
+       sum = (float) occupancy.get(0) + occupancy.get(1);
+       capacity = float((int) capacityT.get(0) + (int) capacityT.get(1) );
+       occPerZone.add(i,sum/capacity);
+     }
+     
+     if(i == 2){
+       sum = (float) occupancy.get(2) + occupancy.get(3);
+       capacity = float((int) capacityT.get(2) + (int) capacityT.get(3));
+       occPerZone.add(i,sum/capacity);
+     }
+     
+     if(i == 3){
+       sum = (float) occupancy.get(4) + occupancy.get(5) + occupancy.get(6);
+       capacity = float((int) capacityT.get(4) + (int) capacityT.get(5) + (int) capacityT.get(6));
+       occPerZone.add(i,sum/capacity);
+     }
+     
+     if(i == 4){
+       sum = (float) occupancy.get(7);
+       capacity = float((int) capacityT.get(7));
+       occPerZone.add(i,sum/capacity);
+     }
+     
+     if(i == 5){
+       sum = (float) occupancy.get(8) + occupancy.get(9);
+       capacity = float((int) capacityT.get(8) + (int) capacityT.get(9));
+       occPerZone.add(i,sum/capacity);
+     }
+   }
+   return occPerZone;
+ }
+ 
+
   //Total time in seconds
+
   public int getmax(){
     totalTime = (yearMax - yearMin+1) * (monthMax - monthMin +1) * (dayMax - dayMin + 1) * (24) * (4);
     return totalTime;
   }
-   
+
 }
 
 public class TimeP{

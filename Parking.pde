@@ -1,4 +1,4 @@
-//NO ES GITHUB
+
 Roads roads;
 POIs pois;
 POI poi;
@@ -7,12 +7,22 @@ boolean showBG = true;
 boolean freeze = true;
 boolean names = false;
 boolean roadsType = false;
+boolean type1 = true;
+boolean type2 = true;
+boolean type3 = true;
+boolean type4 = true;
+boolean type5 = true;
+boolean type6 = true;
+boolean type7 = true;
+boolean type8 = true;
+boolean type9 = true;
+boolean type0 = true;
 WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
 PGraphics linearGraphic;
-PGraphics speedometerCanvas;
+PGraphics individualCanvas;
 int indiceLine = 0;
 PImage BG;
 PImage speedometer;
@@ -33,7 +43,6 @@ PVector[] roi = new PVector[] {
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto_small.jpg";
-final String speedPath = "speedometer2.png";
 int simWidth = 1000;
 int simHeight = 847;
 int timer = millis();
@@ -43,8 +52,10 @@ int lastIndice = 0;
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
-ArrayList promParkHour;
+ArrayList<PVector> maxMinHour;
+ArrayList<String> maxDay;
 ArrayList occPerDate;
+ArrayList<Float> occPerZone;
 IntList occupancy = new IntList();
 PieChart pieChart;
 ArrayList<PVector> lastCoord = new ArrayList();
@@ -56,8 +67,6 @@ void setup(){
   //fullScreen(P3D, 2);
   background(0);
   smooth(); 
-  speedometer = loadImage(speedPath);
-  speedometer.resize((int)(speedometer.width*0.48),(int)(speedometer.height*0.45));
   BG = loadImage(bgPath);
   simWidth = BG.width;
   simHeight = BG.height;
@@ -71,13 +80,15 @@ void setup(){
  
   chart = createGraphics(500,height);
   occPerDate=timePark.getTotalOccupancy();
-  print("\n occPerHour loaded");
-  promParkHour = timePark.occupancyPerHour();
-  print("\n promParlHour loaded");
+  print("LOADED");
+  maxMinHour= timePark.maxMinHour();
+  print("LOADED");
+  maxDay = timePark.maxDay();
+  print("LOADED");
   
   legend = createGraphics(700, 80);
   linearGraphic = createGraphics(1520, 480);
-  speedometerCanvas = createGraphics(1520,270);
+  individualCanvas = createGraphics(1520,height - linearGraphic.height);
   pieChart =  new PieChart();
   
   
@@ -86,9 +97,8 @@ void setup(){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
      j++;
   }
-  for(int i = 0; i < 5; i++){
-    image(speedometer,26 + speedometer.width*i,500);
-  }
+  
+  
   
 }
 
@@ -115,33 +125,20 @@ void draw(){
     canvas.background(0);
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,1,#cacfd6);  
-    pois.draw( occupancy,false); 
+    pois.draw(occupancy); 
     canvas.endDraw(); 
     surface.draw((Canvas) canvas);
     //---------- LEGEND----------------------------
     legend.beginDraw();
-    legend.background(0);
-    legend.stroke(255);
-    legend.fill(255);
-    legend.textSize(16);
-    legend.text("Date:\n" + actualDate[0]+"   "+actualDate[1] ,550,35);
-    legend.textSize(13);
-    legend.text("Parking's occupancy ratios",20,20);
-    legend.textSize(9);
-    legend.text("Size",150,40); legend.noFill();
-    legend.rect(150,50,20,20);
-    for(int i = 0; i < 6; i++){
-     legend.fill(lerpColor(#4DFF00, #E60000,0.2*i)); legend.noStroke();
-     legend.text(str(int(0.2*i*100)),10+20*i,40);
-     legend.rect(10+20*i,50,20,20);
-    } 
+    pieChart.drawLegend();
     legend.endDraw();
     image(legend,3025,737);
     
     //--------------PIE----------------------
     chart.beginDraw();
     chart.background(0);
-    pieChart.drawPie();
+    occPerZone = timePark.getOccPerZone();
+    pieChart.drawZoneIndice();
     chart.endDraw();
     image(chart,1920*0.76,0);
     
@@ -152,10 +149,10 @@ void draw(){
     image(linearGraphic,0,0);
     
     //-------------SPEEDOMETER-----------------
-    speedometerCanvas.beginDraw();
-    pieChart.drawSpeedometer();
-    speedometerCanvas.endDraw();
-    image(speedometerCanvas,0,630);
+    individualCanvas.beginDraw();
+    pieChart.drawIndResume();
+    individualCanvas.endDraw();
+    image(individualCanvas,0,linearGraphic.height);
     
 }
 
@@ -203,6 +200,46 @@ void keyPressed(KeyEvent e){
       speed = speed + 20;
     break;
     
+    case '1':
+    type1 = !type1;
+    break;
+    
+    case '2':
+    type2 = !type2;
+    break;
+    
+    case '3':
+    type3 = !type3;
+    break;
+    
+    case '4':
+    type4 = !type4;
+    break;
+    
+    case '5':
+    type5 = !type5;
+    break;
+    
+    case '6':
+    type6 = !type6;
+    break;
+    
+    case '7':
+    type7 = !type7;
+    break;
+    
+    case '8':
+    type8 = !type8;
+    break;
+    
+    case '9':
+    type9 = !type9;
+    break;
+    
+    case '0':
+    type0 = !type0;
+    break;
+
   }
   switch(e.getKeyCode()){
     case UP:

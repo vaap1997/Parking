@@ -40,7 +40,7 @@ private class Lane {
          }else if( access.equals("secondary")){
            co = color(#002ADA); //blue
          }else{
-          co=color(200); 
+          co=color(100); 
          } 
     }
     
