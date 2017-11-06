@@ -32,9 +32,9 @@ public class PieChart{
         chart.fill(occColor);
         chart.ellipse(chart.width/2, (i * height/7)+60,130,130);
         chart.fill(255);
-        chart.text("Total Occupancy", chart.width/2, (i * height/7) - 30);
+        chart.text("TOTAL OCCUPANCY", chart.width/2, (i * height/7) - 30);
         chart.textFont(createFont("Georgia",50));
-        chart.text("70%",chart.width/2, (i * height/7)+70);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+70);
       }
       if(i == 2) {
         occColor= lerpColor(#4DFF00, #E60000,occPerZone.get(i-1));
@@ -43,7 +43,7 @@ public class PieChart{
         chart.fill(255);
         chart.text( "Fener 1 - Fener 2", chart.width/2, (i * height/7)+10);
         chart.textFont(createFont("Georgia",40));
-        chart.text("70%",chart.width/2, (i * height/7)+90);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+90);
       }
       if(i == 3) {
         occColor= lerpColor(#4DFF00, #E60000,occPerZone.get(i-1));
@@ -52,7 +52,7 @@ public class PieChart{
         chart.fill(255);
         chart.text( "Parc Central 1 - Parc Central 2", chart.width/2, (i * height/7)+10);
         chart.textFont(createFont("Georgia",40));
-        chart.text("70%",chart.width/2, (i * height/7)+90);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+90);
       }
       if(i == 4){
         occColor= lerpColor(#4DFF00, #E60000,occPerZone.get(i-1));
@@ -61,7 +61,7 @@ public class PieChart{
         chart.textLeading(20);chart.fill(255);
         chart.text( "Centre Historic - Prat de la Creu\nPrada Casadet", chart.width/2, (i * height/7)+10);
         chart.textFont(createFont("Georgia",40));
-        chart.text("70%",chart.width/2, (i * height/7)+105);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+105);
       }
       if(i == 5) {
         occColor= lerpColor(#4DFF00, #E60000,occPerZone.get(i-1));
@@ -70,7 +70,7 @@ public class PieChart{
         chart.fill(255);
         chart.text( "Trilla", chart.width/2, (i * height/7)+20);
         chart.textFont(createFont("Georgia",40));
-        chart.text("70%",chart.width/2, (i * height/7)+90);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+90);
       }
       if(i == 6) {
         occColor= lerpColor(#4DFF00, #E60000,occPerZone.get(i-1));
@@ -79,7 +79,7 @@ public class PieChart{
         chart.fill(255);
         chart.text( "Serradells - Antic Cami Ral", chart.width/2, (i * height/7)+10);
         chart.textFont(createFont("Georgia",40));
-        chart.text("70%",chart.width/2, (i * height/7)+90);
+        chart.text(int(occPerZone.get(i-1)*100) +"%",chart.width/2, (i * height/7)+90);
       }
     }
   }
@@ -196,7 +196,7 @@ public class PieChart{
                   }
               }
               if(type0){
-                   if(line.TYPE == 0){
+                   if(line.TYPE == 10){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
@@ -240,11 +240,11 @@ public class PieChart{
         individualCanvas.rect(coordInd.x+30,coordInd.y+62,60,40,7);
         individualCanvas.rect(coordInd.x+100,coordInd.y+62,60,40,7);
         individualCanvas.rect(coordInd.x+170,coordInd.y+62,60,40,7);
-        individualCanvas.textFont(createFont("Georgia", 12));individualCanvas.fill(255,90);individualCanvas.textLeading(15);
+        individualCanvas.textFont(createFont("Georgia", 12));individualCanvas.fill(230);individualCanvas.textLeading(15);
         individualCanvas.text("CAPACITY", coordInd.x+60 , coordInd.y+55 );
         individualCanvas.text("PRICE"   , coordInd.x+130, coordInd.y+55 );
         individualCanvas.text("% USE"   , coordInd.x+200, coordInd.y+55 );
-        individualCanvas.fill(255,70);individualCanvas.textLeading(15);
+        individualCanvas.fill(230);individualCanvas.textLeading(15);
         individualCanvas.text("Max hour of occupancy",  coordInd.x+95, coordInd.y+135 );
         individualCanvas.text("Min hour of occupancy",  coordInd.x+95, coordInd.y+170 );
         individualCanvas.text("Day of max occupancy",  coordInd.x+95, coordInd.y+205  );    
@@ -255,7 +255,7 @@ public class PieChart{
         individualCanvas.fill(poiColor[i]);individualCanvas.textFont(createFont("Georgia", 20));individualCanvas.textAlign(LEFT);
         individualCanvas.text(poi.NAME,coordInd.x+40, coordInd.y+30);
         individualCanvas.fill(255);individualCanvas.textAlign(CENTER);
-        individualCanvas.text(str(i+1),coordInd.x + 20,coordInd.y + 20);
+        individualCanvas.text(str(i+1),coordInd.x + 20,coordInd.y + 25);
         individualCanvas.textFont(createFont("IMPACT", 22));
         individualCanvas.text(poi.CAPACITY,coordInd.x+60,coordInd.y+88);
         individualCanvas.text(poi.PRICE+"€",coordInd.x+130,coordInd.y+88);

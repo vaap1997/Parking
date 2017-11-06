@@ -16,9 +16,17 @@ public class Roads extends Facade<Node>{
 
       public Roads(String file, int x, int y, PVector[] bounds){
         window = new PVector(x,y);
+        this.bounds = scaleBounds(bounds);
         factory = new RoadFactory();
         this.loadJSON(file,this);
-        this.bounds = bounds;
+        
+      }
+      
+      public PVector[] scaleBounds(PVector[] bounds){
+        return new PVector[]{
+           Projection.toUTM(bounds[0].x, bounds[0].y, Projection.Datum.WGS84),
+           Projection.toUTM(bounds[1].x, bounds[1].y, Projection.Datum.WGS84) 
+          };
       }
     
       //Conect POIs
@@ -85,8 +93,10 @@ public class Roads extends Facade<Node>{
     public PVector toXY(float lat, float lon){
       PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
-      map(projPoint.x, boundaries[0].x,boundaries[1].x,0,window.x),
-      map(projPoint.y, boundaries[0].y,boundaries[1].y,window.y,0)
+      //map(projPoint.x, boundaries[0].x,boundaries[1].x,0,window.x),
+      //map(projPoint.y, boundaries[0].y,boundaries[1].y,window.y,0)
+      map(projPoint.x, bounds[0].x,bounds[1].x,0,window.x),
+      map(projPoint.y, bounds[0].y,bounds[1].y,window.y,0)
       );
     }
   
@@ -150,9 +160,7 @@ public class Roads extends Facade<Node>{
       } else {
        return "outside"; 
       }
-  
-  }
-  
+  } 
 }
 
 public class RoadFactory extends Factory<Node>{
@@ -176,7 +184,7 @@ public class RoadFactory extends Factory<Node>{
         
          for(int j = 0; j < points.size(); j++){
             PVector point = roads.toXY(points.getJSONArray(j).getFloat(1),points.getJSONArray(j).getFloat(0));
-                      
+                if( roads.contains(point) ) {      
                  vertices.add(point);
                  Node currNode = getNodeIfVertex(roads,point);
                  if(currNode != null) {
@@ -198,7 +206,7 @@ public class RoadFactory extends Factory<Node>{
                        currNode.place(roads);
                        if(direction != null) currNode.setDirection(direction);
                 }
-              
+             }  
          }
     }   
     println("LOADED");
@@ -247,5 +255,7 @@ public class RoadFactory extends Factory<Node>{
        Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
       };
     }
+    
+
   
 }  

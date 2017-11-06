@@ -99,6 +99,7 @@ public class WarpSurface {
     */
     public void loadConfig() {
         XML settings = loadXML(sketchPath("warp.xml"));
+        //XML settings = loadXML(sketchPath("surface.xml"));
         XML size = settings.getChild("size");
         rows = size.getInt("rows");
         cols = size.getInt("cols");
@@ -129,6 +130,7 @@ public class WarpSurface {
             }
         }
         saveXML(settings, "warp.xml");
+        //saveXML(settings, "surface.xml");
         println("Warp configuration saved");
     }
     

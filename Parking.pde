@@ -17,6 +17,7 @@ boolean type7 = true;
 boolean type8 = true;
 boolean type9 = true;
 boolean type0 = true;
+boolean surfaceMode = true;
 WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
@@ -28,10 +29,10 @@ PImage BG;
 PImage speedometer;
 
 
-final PVector[] bounds = new PVector[] {
-    new PVector(42.482119, 1.489794),
-    new PVector(42.533768, 1.572122)
-};
+//final PVector[] bounds = new PVector[] {
+//    new PVector(42.482119, 1.489794),
+//    new PVector(42.533768, 1.572122)
+//};
 
 PVector[] roi = new PVector[] {
     new PVector(42.505086, 1.509961),
@@ -40,9 +41,18 @@ PVector[] roi = new PVector[] {
     new PVector(42.496164, 1.515728)
 };
 
+final PVector[] orthoBounds = new PVector[] {
+    //new PVector(42.5181, 1.50803),
+    //new PVector(42.495, 1.55216)
+    
+    new PVector(42.495, 1.50803),
+    new PVector(42.5181, 1.55216)
+};
+
 
 final String roadsPath = "roads.geojson";
-final String bgPath = "orto_small.jpg";
+//final String bgPath = "orto_small.jpg";
+final String bgPath = "orto.jpg";
 int simWidth = 1000;
 int simHeight = 847;
 int timer = millis();
@@ -68,12 +78,21 @@ void setup(){
   background(0);
   smooth(); 
   BG = loadImage(bgPath);
-  simWidth = BG.width;
-  simHeight = BG.height;
-  surface = new WarpSurface(this, 1500, 550, 20, 10);
-  surface.loadConfig();
-  canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
-  roads = new Roads(roadsPath,simWidth,simHeight,bounds);
+  
+  if(surfaceMode){
+    simWidth = BG.width;
+    simHeight = BG.height;
+    surface = new WarpSurface(this, 1500, 550, 20, 10);
+    //surface = new WarpSurface();
+    //surface.loadConfig();
+    //canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
+    canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
+  }else{
+    BG.resize(simWidth, simHeight);
+    canvas = createGraphics(simWidth, simHeight);    
+  }
+  
+  roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
@@ -97,8 +116,6 @@ void setup(){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
      j++;
   }
-  
-  
   
 }
 
@@ -124,10 +141,11 @@ void draw(){
     canvas.beginDraw();
     canvas.background(0);
     if(showBG)canvas.image(BG,0,0); 
-      else roads.draw(canvas,1,#cacfd6);  
+      else roads.draw(canvas,3,#cacfd6);  
     pois.draw(occupancy); 
     canvas.endDraw(); 
-    surface.draw((Canvas) canvas);
+    if(surfaceMode) surface.draw((Canvas) canvas);
+    else image(canvas,0,0);
     //---------- LEGEND----------------------------
     legend.beginDraw();
     pieChart.drawLegend();
@@ -155,10 +173,6 @@ void draw(){
     image(individualCanvas,0,linearGraphic.height);
     
 }
-
-//public void mousePressed(){
-// print(mouseX, mouseY); 
-//}
 
 void keyPressed(KeyEvent e){
   switch(key){
@@ -190,6 +204,10 @@ void keyPressed(KeyEvent e){
     
     case 'g':
     surface.saveConfig();
+    break;
+    
+    case 'm':
+    surfaceMode = !surfaceMode;
     break;
     
     case '+':

@@ -35,24 +35,32 @@ public class TimePark{
        int movType = row.getInt("Movement Type");
        int passages = row.getInt("Passages");
        if( passages != 0){
-           int deviceNum = row.getInt("Device Number");
-           String time0 = row.getString("DateTime");       
-           String time1 = time0.replace(" ","/");
-           String time2 = time1.replace(":","/");
-           int[] Time = int(time2.split("/")) ;
-          
-           dayMin = min(dayMin,Time[0]);
-           dayMax = max(dayMax,Time[0]);
-           monthMin = min(monthMin,Time[1]);
-           monthMax = max(monthMax,Time[1]);
-           yearMin = min(yearMin,Time[2]);
-           yearMax = max(yearMax,Time[2]);
-           hourMin = min(hourMin,Time[3]);
-           hourMax = max(hourMax,Time[3]);
-           minMin = min(minMin,Time[4]);
-           minMax = max(minMax,Time[4]);
-           
-           park.add(new TimeP(deviceNum,movType,time0, passages));
+         int  carParkNumber = row.getInt("Car Park Number");
+         int deviceNum = row.getInt("Device Number");
+         for(POI poi:pois.getAll()){
+           for(int i=0; i < poi.DEVICENUM.size();i++){
+              if( (deviceNum == poi.DEVICENUM.get(i)) && ( poi.PARKNUMBER == carParkNumber) ){
+                 String time0 = row.getString("DateTime");       
+                 String time1 = time0.replace(" ","/");
+                 String time2 = time1.replace(":","/");
+                 int[] Time = int(time2.split("/")) ;
+                
+                 dayMin = min(dayMin,Time[0]);
+                 dayMax = max(dayMax,Time[0]);
+                 monthMin = min(monthMin,Time[1]);
+                 monthMax = max(monthMax,Time[1]);
+                 yearMin = min(yearMin,Time[2]);
+                 yearMax = max(yearMax,Time[2]);
+                 hourMin = min(hourMin,Time[3]);
+                 hourMax = max(hourMax,Time[3]);
+                 minMin = min(minMin,Time[4]);
+                 minMax = max(minMax,Time[4]);
+                 
+                 park.add(new TimeP(carParkNumber,deviceNum,movType,time0, passages));    
+                 
+               }
+           }   
+         } 
        }
     }
      print("LOADED");
@@ -104,9 +112,7 @@ public class TimePark{
           if(park.TIME.equals(chronometer.get(i))){
             int c=0;
              for( POI poi:pois.getAll()){
-             ArrayList devices = poi.DEVICENUM;
-                  for(int j = 0; j < devices.size(); j++){
-                    if( park.DEVICENUM == (int) devices.get(j)){
+                    if( poi.PARKNUMBER == park.CARPARKNUMBER){
                         if( (park.MOVTYPE == 0) | (park.MOVTYPE == 2)){ 
                           occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
                         }
@@ -114,7 +120,6 @@ public class TimePark{
                           occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
                        }
                     }
-                  }
              c++; 
           }
         }
@@ -282,12 +287,15 @@ public class TimeP{
   protected final int MOVTYPE;
   protected final String TIME;
   protected final int PASSAGES;
+  protected final int CARPARKNUMBER;
+
   
   
-  public TimeP(int deviceNum,int movType,String time, int passages){
+  public TimeP(int carParkNumber,int deviceNum,int movType,String time, int passages){
     DEVICENUM = deviceNum;
     MOVTYPE = movType;
     TIME = time;
     PASSAGES = passages;
+    CARPARKNUMBER = carParkNumber;
   } 
 }
