@@ -34,13 +34,13 @@ private class Lane {
         distance = calcLength();
         
         if(access.equals("primary")) {
-           co = color(#002ADA); 
+           co = color(#FFF500); //yellow
          }else if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
-           co = color(#E82200); 
+           co = color(#CC68FF); //purple
          }else if( access.equals("secondary")){
-           co = color(#C168F2);
+           co = color(#002ADA); //blue
          }else{
-          co=color(#CC68FF); 
+          co=color(100); 
          } 
     }
     

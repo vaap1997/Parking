@@ -1,6 +1,4 @@
-import deadpixel.keystone.*;
-Keystone ks;
-CornerPinSurface keyStone;
+
 Roads roads;
 POIs pois;
 POI poi;
@@ -9,20 +7,32 @@ boolean showBG = true;
 boolean freeze = true;
 boolean names = false;
 boolean roadsType = false;
+boolean type1 = true;
+boolean type2 = true;
+boolean type3 = true;
+boolean type4 = true;
+boolean type5 = true;
+boolean type6 = true;
+boolean type7 = true;
+boolean type8 = true;
+boolean type9 = true;
+boolean type0 = true;
+boolean surfaceMode = true;
 WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
 PGraphics linearGraphic;
+PGraphics individualCanvas;
 int indiceLine = 0;
 PImage BG;
 PImage speedometer;
 
 
-final PVector[] bounds = new PVector[] {
-    new PVector(42.482119, 1.489794),
-    new PVector(42.533768, 1.572122)
-};
+//final PVector[] bounds = new PVector[] {
+//    new PVector(42.482119, 1.489794),
+//    new PVector(42.533768, 1.572122)
+//};
 
 PVector[] roi = new PVector[] {
     new PVector(42.505086, 1.509961),
@@ -31,10 +41,18 @@ PVector[] roi = new PVector[] {
     new PVector(42.496164, 1.515728)
 };
 
+final PVector[] orthoBounds = new PVector[] {
+    //new PVector(42.5181, 1.50803),
+    //new PVector(42.495, 1.55216)
+    
+    new PVector(42.495, 1.50803),
+    new PVector(42.5181, 1.55216)
+};
+
 
 final String roadsPath = "roads.geojson";
-final String bgPath = "orto_small.jpg";
-final String speedPath = "speedometer.png";
+//final String bgPath = "orto_small.jpg";
+final String bgPath = "orto.jpg";
 int simWidth = 1000;
 int simHeight = 847;
 int timer = millis();
@@ -44,8 +62,10 @@ int lastIndice = 0;
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
-ArrayList promParkHour;
+ArrayList<PVector> maxMinHour;
+ArrayList<String> maxDay;
 ArrayList occPerDate;
+ArrayList<Float> occPerZone;
 IntList occupancy = new IntList();
 PieChart pieChart;
 ArrayList<PVector> lastCoord = new ArrayList();
@@ -53,37 +73,41 @@ int lastNamex = 600 ;
 int lastNamey = 600 ;
 
 void setup(){
-  fullScreen(P3D,SPAN);
+  fullScreen(P2D,SPAN);
   //fullScreen(P3D, 2);
   background(0);
   smooth(); 
-  speedometer = loadImage(speedPath);
-  speedometer.resize((int)(speedometer.width*0.48),(int)(speedometer.height*0.45));
   BG = loadImage(bgPath);
+  
+  if(surfaceMode){
     simWidth = BG.width;
     simHeight = BG.height;
     surface = new WarpSurface(this, 1500, 550, 20, 10);
-    surface.loadConfig();
-    canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
-
+    //surface = new WarpSurface();
+    //surface.loadConfig();
+    //canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
+    canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
+  }else{
+    BG.resize(simWidth, simHeight);
+    canvas = createGraphics(simWidth, simHeight);    
+  }
   
-  roads = new Roads(roadsPath,simWidth,simHeight,bounds);
+  roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
   chart = createGraphics(500,height);
   occPerDate=timePark.getTotalOccupancy();
-  promParkHour = timePark.occupancyPerHour();
- 
+  print("LOADED");
+  maxMinHour= timePark.maxMinHour();
+  print("LOADED");
+  maxDay = timePark.maxDay();
+  print("LOADED");
   
   legend = createGraphics(700, 80);
-  ks = new Keystone(this);
-  keyStone = ks.createCornerPinSurface(legend.width,legend.height,20);
-  //ks.load();
-  
-  linearGraphic = createGraphics(800, 480);
-  
+  linearGraphic = createGraphics(1520, 480);
+  individualCanvas = createGraphics(1520,height - linearGraphic.height);
   pieChart =  new PieChart();
   
   
@@ -92,11 +116,12 @@ void setup(){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
      j++;
   }
+  
 }
 
 void draw(){  
     
-    background(0);
+    //background(0);
 
     if(indice > 0) lastIndice = indice;
     if( millis() - timer >= speed){
@@ -116,36 +141,24 @@ void draw(){
     canvas.beginDraw();
     canvas.background(0);
     if(showBG)canvas.image(BG,0,0); 
-      else roads.draw(canvas,1,#cacfd6);  
-    pois.draw( occupancy,false); 
+      else roads.draw(canvas,3,#cacfd6);  
+    pois.draw(occupancy); 
     canvas.endDraw(); 
-    surface.draw((Canvas) canvas);
+    if(surfaceMode) surface.draw((Canvas) canvas);
+    else image(canvas,0,0);
     //---------- LEGEND----------------------------
     legend.beginDraw();
-    legend.background(0);
-    legend.stroke(255);
-    legend.fill(255);
-    legend.textSize(16);
-    legend.text("Date:\n" + actualDate[0]+"   "+actualDate[1] ,550,35);
-    legend.textSize(13);
-    legend.text("Parking's occupancy ratios",20,20);
-    legend.textSize(9);
-    legend.text("Size",150,40); legend.noFill();
-    legend.rect(150,50,20,20);
-    for(int i = 0; i < 6; i++){
-     legend.fill(lerpColor(#4DFF00, #E60000,0.2*i)); legend.noStroke();
-     legend.text(str(int(0.2*i*100)),10+20*i,40);
-     legend.rect(10+20*i,50,20,20);
-    } 
+    pieChart.drawLegend();
     legend.endDraw();
-    keyStone.render(legend);
+    image(legend,3025,737);
     
     //--------------PIE----------------------
     chart.beginDraw();
     chart.background(0);
-    pieChart.draw();
+    occPerZone = timePark.getOccPerZone();
+    pieChart.drawZoneIndice();
     chart.endDraw();
-    image(chart,(0.6)*1440,0);
+    image(chart,1920*0.76,0);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
@@ -154,94 +167,10 @@ void draw(){
     image(linearGraphic,0,0);
     
     //-------------SPEEDOMETER-----------------
-    pushMatrix();
-    for(int i = 0; i < 5; i++){
-    color rectName = color(180,50);
-    fill(rectName);
-    rect(60 + speedometer.width*i, 530 + speedometer.height, speedometer.width - 80 , 50,7);
-    rect(60 + speedometer.width*i, 590 + speedometer.height, speedometer.width - 80 , 100,7);
-    
-    image(speedometer,20 + speedometer.width*i,530);
-    textFont(createFont("Georgia",15)); textAlign(CENTER); fill(255);
-    if(i == 0) {
-      text( "Fener 1 - Fener 2", 20 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 1) {
-      text( "Parc Central 1 - Parc Central 2", 20 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 2){
-      text( "Centre Historic - Prat de la Creu", 20 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 3) {
-      text( "Trilla - Prada Casadet", 20 + speedometer.width*i+speedometer.width/2, 520);
-    }
-    if(i == 4) {
-      text( "Serradells - Antic Cami Ral", 20 + speedometer.width*i+speedometer.width/2, 520);
-    }
-   }
-  
-  textFont(createFont("Georgia",12));
-  ArrayList namepark = pois.getPOInames();
-  ArrayList capacitypark = pois.getCapacity(); 
-  pois.draw(occupancy, true);
-  for(int i = 0; i < namepark.size(); i++){
-     int number = (int)capacitypark.get(i);
-     String mostrar = (String)namepark.get(i);
-     if(i % 2 == 0){
-       textAlign(CENTER);
-       text(str(number), 180 + speedometer.width*(i/2), 560 + speedometer.height );
-       text("capacity", 180 + speedometer.width*(i/2), 545 + speedometer.height );
-       textAlign(LEFT);
-       text(mostrar,70 + speedometer.width*(i/2), 560 + speedometer.height);
-       lastNamex = 180 + speedometer.width*(i/2);
-       lastNamey = 560 + speedometer.height ;
-     }else{
-       textAlign(CENTER);
-       text(str(number), lastNamex, lastNamey+13);
-       textAlign(LEFT);
-       text(mostrar, lastNamex-110, lastNamey+13);
-     }
-     
-     
-     //if(c % 2 == 0){
-     //         text((int) occupancy.get(c), 230 + speedometer.width*(c/2), 550 + speedometer.height);
-     //         text(str(useI)+"%",280 + speedometer.width*(c/2) , 550 + speedometer.height);
-     //         lastNamex = 280 + speedometer.width*(c/2);
-     //         lastNamey = 550 + speedometer.height ;
-     //       }else{
-     //         text((int) occupancy.get(c),lastNamex - 50 , lastNamey+18);
-     //         text(str(useI)+"%",lastNamex , lastNamey+18);
-     //       }
-     
-     
-    }
-  
-    //continuing drawing
-    //pois.draw(occupancy, true);
-    //ArrayList namepark = pois.getPOInames();
-    //ArrayList capacitypark = pois.getCapacity();
-    //for(int i = 0; i < namepark.size(); i++){
-    //  int lastCoordx = 600;
-    //  int lastCoordy = 600;
-    //  String mostrar = (String)namepark.get(i);
-    //  int number = (int)capacitypark.get(i);
-    //  if( i % 2 == 0){
-    //    textAlign(CENTER);
-    //    text(str(number),60 + speedometer.width*(i/2),530 + speedometer.height);
-    //    textAlign(LEFT);
-    //    text(mostrar,60 + speedometer.width*(i/2),530 + speedometer.height);
-    //    lastCoordx = 60 + speedometer.width*(i/2);
-    //    lastCoordy = 530 + speedometer.height;
-    //  }else{
-    //    textAlign(CENTER);
-    //    text(str(number),lastCoordx,lastCoordy + 13);
-    //    textAlign(LEFT);
-    //    text(mostrar,lastCoordx,lastCoordy + 13);
-    //  }
-    //}
- 
-   
-    popMatrix();
+    individualCanvas.beginDraw();
+    pieChart.drawIndResume();
+    individualCanvas.endDraw();
+    image(individualCanvas,0,linearGraphic.height);
     
 }
 
@@ -261,7 +190,7 @@ void keyPressed(KeyEvent e){
       
     case 'k':
     surface.toggleCalibration();
-    ks.toggleCalibration();
+   // ks.toggleCalibration();
     break;
     
     case 'r':
@@ -269,12 +198,16 @@ void keyPressed(KeyEvent e){
     break;
     
     case 's':
-    ks.save();
-    ks.load();
+    //ks.save();
+    //ks.load();
     break;
     
     case 'g':
     surface.saveConfig();
+    break;
+    
+    case 'm':
+    surfaceMode = !surfaceMode;
     break;
     
     case '+':
@@ -285,6 +218,46 @@ void keyPressed(KeyEvent e){
       speed = speed + 20;
     break;
     
+    case '1':
+    type1 = !type1;
+    break;
+    
+    case '2':
+    type2 = !type2;
+    break;
+    
+    case '3':
+    type3 = !type3;
+    break;
+    
+    case '4':
+    type4 = !type4;
+    break;
+    
+    case '5':
+    type5 = !type5;
+    break;
+    
+    case '6':
+    type6 = !type6;
+    break;
+    
+    case '7':
+    type7 = !type7;
+    break;
+    
+    case '8':
+    type8 = !type8;
+    break;
+    
+    case '9':
+    type9 = !type9;
+    break;
+    
+    case '0':
+    type0 = !type0;
+    break;
+
   }
   switch(e.getKeyCode()){
     case UP:
@@ -300,7 +273,5 @@ void keyPressed(KeyEvent e){
     surface.move(5,0);
     break;
   } 
-  
-  
-  
+
 }
