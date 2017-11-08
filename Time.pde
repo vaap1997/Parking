@@ -28,6 +28,7 @@ public class TimePark{
   
   //Load CSV file
   public void loadCSV(String path){
+    int a=0;
      print("Loading time...");
      park = new ArrayList();   
      Table table = loadTable(path,"header");
@@ -55,7 +56,7 @@ public class TimePark{
                  hourMax = max(hourMax,Time[3]);
                  minMin = min(minMin,Time[4]);
                  minMax = max(minMax,Time[4]);
-                 
+                 a++;
                  park.add(new TimeP(carParkNumber,deviceNum,movType,time0, passages));    
                  
                }
@@ -113,12 +114,11 @@ public class TimePark{
             int c=0;
              for( POI poi:pois.getAll()){
                     if( poi.PARKNUMBER == park.CARPARKNUMBER){
-                        if( (park.MOVTYPE == 0) | (park.MOVTYPE == 2)){ 
+                        if(park.MOVTYPE == 1){
+                          occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
+                        }else{
                           occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
                         }
-                       if(park.MOVTYPE == 1){
-                          occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
-                       }
                     }
              c++; 
           }

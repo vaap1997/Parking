@@ -15,6 +15,7 @@ public class PieChart{
   color[] poiColor = { color(#A9BDCF), color(#Ef7501), color(230,0,0), color(#3500E5), color(#0ABCB2), color(#E50083), color(#8448b8), color(#FFF500), color(#00bc6c), color(#e5a68e)};
   //                 {ligh blue, orange, red, blue, water blue, pink, purple, yellow, dark green, pink}
   ArrayList<Line> lines = new ArrayList();
+  int repeat = 0;
   
   public void drawZoneIndice(){
     color occColor = 255;
@@ -94,6 +95,7 @@ public class PieChart{
   */
   public void drawLineGraph(){
      //color coLine = 255;
+     
      linearGraphic.textSize(10);
      linearGraphic.fill(255); linearGraphic.stroke(255);
      
@@ -125,7 +127,7 @@ public class PieChart{
             linearGraphic.fill(255); linearGraphic.stroke(255);
             if(lastIndice != indice){
               //if(indice >= 4) linearGraphic.line(lastCoord.get(i).x, lastCoord.get(i).y,x,y);
-              if(indice>=8) lines.add(new Line(lastCoord.get(i).x,lastCoord.get(i).y,x,y, i+1));
+              if(indice>=8) lines.add(new Line(lastCoord.get(i).x,lastCoord.get(i).y,x,y, i+1, repeat));
               lastCoord.set(i, new PVector(x,y));
             }
          }
@@ -142,61 +144,61 @@ public class PieChart{
              }
           for(Line line:lines){
             if(type1){
-                   if(line.TYPE == 1){
+                   if((line.TYPE == 1) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                    }
               }
               if(type2){
-                   if(line.TYPE == 2){
+                   if((line.TYPE == 2) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type3){
-                   if(line.TYPE == 3){
+                   if((line.TYPE == 3) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type4){
-                   if(line.TYPE == 4){
+                   if((line.TYPE == 4) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type5){
-                   if(line.TYPE == 5){
+                   if((line.TYPE == 5) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type6){
-                   if(line.TYPE == 6){
+                   if((line.TYPE == 6) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type7){
-                   if(line.TYPE == 7){
+                   if((line.TYPE == 7) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type8){
-                   if(line.TYPE == 8){
+                   if((line.TYPE == 8) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type9){
-                   if(line.TYPE == 9){
+                   if((line.TYPE == 9) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
               }
               if(type0){
-                   if(line.TYPE == 10){
+                   if((line.TYPE == 10) && (line.repeat == repeat)){
                     linearGraphic.fill(poiColor[line.TYPE-1]); linearGraphic.stroke(poiColor[line.TYPE-1]);
                     linearGraphic.line(line.LASTCOORDSx,line.LASTCOORDSy,line.COORDSx, line.COORDSy); 
                   }
@@ -206,6 +208,7 @@ public class PieChart{
        if(lastIndice != indice) indiceLine++;   
        }else{
           linearGraphic.background(0);
+          repeat++;
           indiceLine = 0;
           int j=0;
           for(POI poi : pois.getAll()){
@@ -313,11 +316,14 @@ public class Line{
   protected final float LASTCOORDSy;
   protected final int COORDSx;
   protected final int COORDSy;
-  public Line(float lastCoordsx,float lastCoordsy,int coordsx, int coordsy,int type){
+  protected final int repeat;
+  public Line(float lastCoordsx,float lastCoordsy,int coordsx, int coordsy,int type, int repeat){
     TYPE =  type;
     COORDSx = coordsx;
     COORDSy = coordsy;
     LASTCOORDSy = lastCoordsy;
     LASTCOORDSx = lastCoordsx;
+    this.repeat =  repeat;
+    
   }
  }

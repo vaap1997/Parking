@@ -134,11 +134,7 @@ private class Lane {
    //Draw and color line
    public void draw(PGraphics canvas, int stroke, color c) {  
      for(int i = 1; i < vertices.size(); i++) { 
-          if(roadsType){
             canvas.stroke(co, 127); canvas.strokeWeight(stroke);
-          }else{
-            canvas.stroke(c, 127); canvas.strokeWeight(stroke);
-          }
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
