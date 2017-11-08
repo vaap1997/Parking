@@ -6,7 +6,6 @@ TimePark timePark;
 boolean showBG = true;
 boolean freeze = true;
 boolean names = false;
-boolean roadsType = false;
 boolean type1 = true;
 boolean type2 = true;
 boolean type3 = true;
@@ -84,7 +83,7 @@ void setup(){
     simHeight = BG.height;
     surface = new WarpSurface(this, 1500, 550, 20, 10);
     //surface = new WarpSurface();
-    //surface.loadConfig();
+    surface.loadConfig();
     //canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
     canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
   }else{
@@ -95,6 +94,7 @@ void setup(){
   roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
+  pois.loadPrivateCSV("Private_Parkings.csv");
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
   chart = createGraphics(500,height);
@@ -142,7 +142,7 @@ void draw(){
     canvas.background(0);
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,3,#cacfd6);  
-    pois.draw(occupancy); 
+    pois.draw(occupancy);
     canvas.endDraw(); 
     if(surfaceMode) surface.draw((Canvas) canvas);
     else image(canvas,0,0);
@@ -191,10 +191,6 @@ void keyPressed(KeyEvent e){
     case 'k':
     surface.toggleCalibration();
    // ks.toggleCalibration();
-    break;
-    
-    case 'r':
-    roadsType = !roadsType;
     break;
     
     case 's':

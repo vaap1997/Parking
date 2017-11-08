@@ -5,19 +5,25 @@
 * @version       2.0
 */
 public class POIs extends Facade<POI>{   
-  
+  ArrayList<PVector> privatePois = new ArrayList();
   // Create new factory<pois>
   public POIs(){
     factory = new POIFactory();
-
   }
+  
  
   // load POIs, error if there is not file
   public void loadCSV(String path, Roads roadmap) {
     File file = new File( dataPath(path) );
     if( !file.exists() ) println("ERROR! CSV file does not exist");
-    else items.addAll( ((POIFactory)factory).loadCSV(path, roadmap) );
+    else {
+      items.addAll( ((POIFactory)factory).loadCSV(path, roadmap) );
+    }
   } 
+  
+  public void loadPrivateCSV(){
+    
+  }
       
   //Create an array with parking names
   public ArrayList getPOInames(){
@@ -54,30 +60,50 @@ public void draw(IntList occupancy){
         int Occupancy = (int) log(occupancy.get(c))*12; 
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
         color occColor = lerpColor(#4DFF00, #E60000,use);
-            if(!roadsType){
-            canvas.ellipseMode(CENTER); canvas.fill(occColor,127); canvas.stroke(occColor,127); canvas.strokeWeight(2);
+
+            canvas.ellipseMode(CENTER); canvas.fill(occColor); canvas.stroke(occColor,127); canvas.strokeWeight(2);
             canvas.ellipse(poi.POSITION.x,poi.POSITION.y,2+Occupancy,2+ Occupancy);
             canvas.stroke(occColor);
             //int cap = (int) map(poi.CAPACITY,0,800,0,100);
+            canvas.fill(occColor,100);
             int cap = (int) log(poi.CAPACITY)*12;
-            canvas.ellipse(poi.POSITION.x,poi.POSITION.y,cap,cap);     
-            }
-            if(names) {
-              
+            canvas.ellipse(poi.POSITION.x,poi.POSITION.y,cap,cap);  
+            canvas.fill(255);
+            //canvas.ellipse(
+            
+            if(names) {   
               canvas.pushMatrix();
               canvas.translate(poi.POSITION.x, poi.POSITION.y);
-              canvas.rotate(PI);
-              canvas.textSize(10);
+              canvas.strokeWeight(6);
+              canvas.rotate(3.5*PI/4);
+              canvas.textSize(40);
               canvas.textAlign(CENTER);
               canvas.fill(#ff9f10);
-              canvas.text("Parking: "+ poi.NAME,0,0);
+              canvas.text(poi.NAME,0,0);
               canvas.popMatrix();
               
           }
           
         c++;
-    } 
+    }
+    
+    for( int i = 0; i < privatePois.size(); i++){
+       canvas.fill(200,160);canvas.stroke(200,160);
+       canvas.ellipse(privatePois.get(i).x, privatePois.get(i).y,log(privatePois.get(i).z)*12,log(privatePois.get(i).z)*12);
+     }
   }
+  
+    public void loadPrivateCSV(String path){
+        Table table =  loadTable(path, "header");
+        for(TableRow row: table.rows()){
+          int capacity = row.getInt("Capacity");
+          String coord0 = row.getString("Coords");
+          String[] coord1 =  split(coord0,",");
+          PVector coords =  roads.toXY(float(coord1[0]),float(coord1[1]));
+          PVector coordCap =  new PVector(coords.x, coords.y,capacity);
+          privatePois.add(coordCap);
+        }
+   }
    
 }
   
@@ -108,14 +134,14 @@ public class POIFactory extends Factory {
             float[] io_coords = float(split(coords3," "));
             PVector[] coords = new PVector[io_coords.length];
             //ArrayList[] DeviceNum = new ArrayList[io_coords.length];
-            ArrayList deviceNum = new ArrayList();
+            ArrayList<Integer> deviceNum = new ArrayList();
             
             for(int j = 0 ; j <= io_coords.length; i++){
               coords[j] = roads.toXY(io_coords[0],io_coords[1]);
               deviceNum.add((int)io_coords[2]);
               
             }
-                
+             print(deviceNum);   
             if( roads.contains(location) ) {
                 pois.add( new POI(roads, parkNumber, name, type, location, capacity, deviceNum, str(price)) );
                 counter.increment(type);
@@ -151,7 +177,6 @@ public class POIFactory extends Factory {
             for(int i = 0; i < io_coords.length; i++){
               deviceNum.add(int(io_coords[i]));
             }
-
             if( roads.contains(location) ) {
                 pois.add( new POI(roads, parkNumber, name, type, location, capacity, deviceNum, str(price)) );
                 counter.increment(path); 
@@ -160,7 +185,9 @@ public class POIFactory extends Factory {
         }
         println("LOADED");
         return pois;     
-    }    
+    }
+    
+    
     
 }
 
@@ -179,7 +206,7 @@ public class POI extends Node{
  private float size = 2;
  
      //Asign values
-     public POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList deviceNum, String price){
+     public POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList<Integer> deviceNum, String price){
             super(position);
             PARKNUMBER = parkNumber ;
             NAME = name;
