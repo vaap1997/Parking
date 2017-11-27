@@ -14,6 +14,10 @@ private class Node implements Placeable{
   protected ArrayList<Lane> lanes = new ArrayList();
   private String direction = null;
   public String typeRoad;
+  public String access;
+  private Node parent;
+  private float f;
+  private float g;
     
   public Node(PVector position){
     id = -1;
@@ -57,11 +61,27 @@ private class Node implements Placeable{
         draw(canvas, 1, #F0F3F5);
    }
    
+   public Lane shortestLaneTo(Node node) {
+        Float shortestLaneLength = Float.NaN;
+        Lane shortestLane = null;
+        for(Lane lane : lanes) {
+            if(node.equals(lane.getEnd())) {
+                if(shortestLaneLength.isNaN() || lane.getLength() < shortestLaneLength) {
+                    shortestLaneLength = lane.getLength();
+                    shortestLane = lane;
+                }
+            }
+        }
+        return shortestLane;
+    }
+   
    protected void connect(Node node, ArrayList<PVector> vertices, String name, String access) {
+     this.access = access;
      lanes.add( new Lane(name, access, this, node, vertices) );
    }
    
    protected void connectBoth(Node node, ArrayList<PVector> vertices, String name, String access) {
+        this.access = access;
         connect(node, vertices, name, access);
         if(vertices != null) Collections.reverse(vertices); 
         node.connect(this, vertices, name, access);
@@ -74,6 +94,36 @@ private class Node implements Placeable{
     
     public ArrayList<Lane> outboundLanes() {
         return lanes;
+    }
+    
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+    
+    public Node getParent() {
+        return parent;
+    }
+    
+    public void setG(float g) {
+        this.g = g;
+    }
+    
+    public float getG() {
+        return g;
+    }
+    
+    public void setF(Node nextNode) {
+        float h =  POSITION.dist(nextNode.getPosition());
+        f = g + h;
+    }
+    
+    public float getF() {
+        return f;
+    }
+    
+    public void reset() {
+        parent = null;
+        f = g = 0.0;
     }
   
 }

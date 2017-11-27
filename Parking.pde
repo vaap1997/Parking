@@ -17,6 +17,7 @@ boolean type8 = true;
 boolean type9 = true;
 boolean type0 = true;
 boolean surfaceMode = true;
+boolean debug = false;
 WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
@@ -58,18 +59,23 @@ int timer = millis();
 int speed = 200;
 int indice = 0;
 int lastIndice = 0;
+int totalAgent = 200;
+
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
-ArrayList<PVector> maxMinHour;
+//ArrayList<PVector> maxMinHour;
 ArrayList<String> maxDay;
 ArrayList occPerDate;
-ArrayList<Float> occPerZone;
 IntList occupancy = new IntList();
 PieChart pieChart;
 ArrayList<PVector> lastCoord = new ArrayList();
 int lastNamex = 600 ;
 int lastNamey = 600 ;
+ArrayList<ArrayList> dinamicHours;
+ArrayList<String> dinamicDay;
+ArrayList<Vehicle> vehicles;
+Path path;
 
 void setup(){
   fullScreen(P2D,SPAN);
@@ -83,7 +89,7 @@ void setup(){
     simHeight = BG.height;
     surface = new WarpSurface(this, 1500, 550, 20, 10);
     //surface = new WarpSurface();
-    surface.loadConfig();
+    //surface.loadConfig();
     //canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
     canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
   }else{
@@ -92,29 +98,35 @@ void setup(){
   }
   
   roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
+  
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
   pois.loadPrivateCSV("Private_Parkings.csv");
+
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
   chart = createGraphics(500,height);
   occPerDate=timePark.getTotalOccupancy();
   print("LOADED");
-  maxMinHour= timePark.maxMinHour();
-  print("LOADED");
+
   maxDay = timePark.maxDay();
   print("LOADED");
   
   legend = createGraphics(700, 80);
-  linearGraphic = createGraphics(1520, 480);
-  individualCanvas = createGraphics(1520,height - linearGraphic.height);
+  linearGraphic = createGraphics(800, 520);
+  individualCanvas = createGraphics(1400,height - linearGraphic.height);
   pieChart =  new PieChart();
-  
-  
+
   int j=0;
   for(POI poi : pois.getAll()){
      lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
      j++;
+  }
+  
+  vehicles =  new ArrayList<Vehicle>();
+  for(int i=0; i < totalAgent; i++){
+   //vehicles.add( new Vehicle(roads, random(2,4),0.3));
+   vehicles.add( new Vehicle(roads));
   }
   
 }
@@ -123,7 +135,7 @@ void draw(){
     
     //background(0);
 
-    if(indice > 0) lastIndice = indice;
+    if(indice > 0) lastIndice = indice-1;
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice){
@@ -132,7 +144,6 @@ void draw(){
       datesS = timePark.chronometer.get(indice);
       actualDate = split(datesS, ' ');
       if(freeze) {
-        indice++;
         occupancy = timePark.getOccupancy(datesS);
       }  
       timer = millis();
@@ -140,9 +151,17 @@ void draw(){
     //-------------MAP---------------
     canvas.beginDraw();
     canvas.background(0);
+    //canvas.background(100);
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,3,#cacfd6);  
     pois.draw(occupancy);
+    
+    
+    for(Vehicle v:vehicles){
+      v.move(v.maxspeed);
+      v.display();
+    }
+    
     canvas.endDraw(); 
     if(surfaceMode) surface.draw((Canvas) canvas);
     else image(canvas,0,0);
@@ -152,27 +171,32 @@ void draw(){
     legend.endDraw();
     image(legend,3025,737);
     
-    //--------------PIE----------------------
-    chart.beginDraw();
-    chart.background(0);
-    occPerZone = timePark.getOccPerZone();
-    pieChart.drawZoneIndice();
-    chart.endDraw();
-    image(chart,1920*0.76,0);
+    ////--------------PIE----------------------
+    //chart.beginDraw();
+    //chart.background(0);
+    ////occPerZone = timePark.getOccPerZone();
+    ////pieChart.drawZoneIndice();
+    //chart.endDraw();
+    //image(chart,800,0);
     
-    //------------LINEAR GRAPHIC---------------
-    linearGraphic.beginDraw();
-    if(freeze) pieChart.drawLineGraph();
-    linearGraphic.endDraw();
-    image(linearGraphic,0,0);
+    ////------------LINEAR GRAPHIC---------------
+    //linearGraphic.beginDraw();
+    //if(freeze) pieChart.drawLineGraph();
+    //linearGraphic.endDraw();
+    //image(linearGraphic,0,0);
     
-    //-------------SPEEDOMETER-----------------
-    individualCanvas.beginDraw();
-    pieChart.drawIndResume();
-    individualCanvas.endDraw();
-    image(individualCanvas,0,linearGraphic.height);
+    ////-------------SPEEDOMETER-----------------
+    //individualCanvas.beginDraw();
+    ////pieChart.drawIndResume();
+    //pieChart.BasicParkingStats();
+    //individualCanvas.endDraw();
+    //image(individualCanvas,0,linearGraphic.height);
     
+    if(freeze){
+     indice++; 
+    }
 }
+
 
 void keyPressed(KeyEvent e){
   switch(key){
@@ -204,6 +228,10 @@ void keyPressed(KeyEvent e){
     
     case 'm':
     surfaceMode = !surfaceMode;
+    break;
+    
+    case 'd':
+    debug = !debug;
     break;
     
     case '+':

@@ -5,11 +5,6 @@
 * @version       2.0
 */
 
-public PVector[] boundaries;
- //buscar pois que estan dentro del shape
-//dibujar solo si estan dentro del shape
-
-
 public class Roads extends Facade<Node>{
       private PVector window;
       private PVector[] bounds;
@@ -59,7 +54,7 @@ public class Roads extends Facade<Node>{
               if(closestLaneBack != null) connectionNode = closestLaneBack.split(connectionNode);
               this.add(connectionNode);
               
-              //poi.connectBoth(connectionNode, null, "footway", poi.access);
+              poi.connectBoth(connectionNode, null, "Parking", poi.access);
         }
         add(poi);
      }
@@ -93,8 +88,6 @@ public class Roads extends Facade<Node>{
     public PVector toXY(float lat, float lon){
       PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
-      //map(projPoint.x, boundaries[0].x,boundaries[1].x,0,window.x),
-      //map(projPoint.y, boundaries[0].y,boundaries[1].y,window.y,0)
       map(projPoint.x, bounds[0].x,bounds[1].x,0,window.x),
       map(projPoint.y, bounds[0].y,bounds[1].y,window.y,0)
       );
@@ -117,50 +110,7 @@ public class Roads extends Facade<Node>{
   public boolean contains(PVector point) {
         return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
     }
-   
-  //Take model boundaries and check if the point is inside this shade  
-  public String pointInPolygon(PVector point){
 
-      ArrayList<PVector> vertices = new ArrayList();
-      vertices.add(toXY(42.496164,1.515728));
-      vertices.add(toXY(42.508161,1.549798));
-      vertices.add(toXY(42.517066,1.544024));
-      vertices.add(toXY(42.505086,1.509961));
-      vertices.add(toXY(42.496164,1.515728));
-      
-      int boundaries=0;
-      
-      for( PVector vertex : vertices){
-       if((vertex.x == point.x) || (vertex.y == point.y)) boundaries++;
-      }
-      
-      int intersections=0;
-      
-      for(int i=1; i<vertices.size(); i++){
-        PVector vertex1= vertices.get(i-1);
-        PVector vertex2=vertices.get(i);
-        
-        if( (vertex1.y == vertex2.y) && (vertex1.y == point.y) && (point.x > min(vertex1.x,vertex2.x)) && (point.x < max(vertex1.x, vertex2.x))){
-          boundaries++;
-        }
-        
-        if( (point.y > min(vertex1.y,vertex2.y)) && (point.y <= max(vertex1.y,vertex2.y)) && (point.x <= max(vertex1.x,vertex2.x)) && (vertex1.y != vertex2.y) ){
-          float xinters = (point.y - vertex1.y) * (vertex2.x - vertex1.x) / (vertex2.y - vertex1.y) + vertex1.x;
-          if(xinters == point.x){
-            boundaries++;
-          }
-          if( (vertex1.x == vertex2.x) || (point.x <=xinters)){
-            intersections++;
-          } 
-        } 
-      }
-    
-      if((intersections%2 != 0) || (boundaries > 0)){
-       return "inside"; 
-      } else {
-       return "outside"; 
-      }
-  } 
 }
 
 public class RoadFactory extends Factory<Node>{
@@ -168,7 +118,7 @@ public class RoadFactory extends Factory<Node>{
   public ArrayList<Node>  loadJSON(File file, Roads roads){
     JSONObject roadNetwork = loadJSONObject(file);
     JSONArray lanes = roadNetwork.getJSONArray("features");
-    boundaries = findBound(lanes);
+
     for(int i = 0; i < lanes.size(); i++){
         JSONObject lane =lanes.getJSONObject(i);
         //JALAR PROPERTIES
@@ -232,29 +182,6 @@ public class RoadFactory extends Factory<Node>{
         return null;
     }
  
- //Find Andorra's boundaries 
-  public PVector[] findBound(JSONArray lanes){
-    float minLat =  Float.MAX_VALUE;
-    float maxLat = -Float.MAX_VALUE;
-    float minLon =  Float.MAX_VALUE;
-    float maxLon = -Float.MAX_VALUE;
-    for(int i = 0; i < lanes.size(); i++){
-        JSONObject lane = lanes.getJSONObject(i);
-        JSONArray points = lane.getJSONObject("geometry").getJSONArray("coordinates");
-        for(int j = 0; j < points.size(); j++){
-          float lat = points.getJSONArray(j).getFloat(1);
-          float lon = points.getJSONArray(j).getFloat(0);
-            minLat = min(minLat,lat);
-            maxLat = max(maxLat,lat);
-            minLon = min(minLon,lon);
-            maxLon = max(maxLon,lon);
-        }
-    }
-     return new PVector[]{
-       Projection.toUTM(minLat, minLon, Projection.Datum.WGS84),
-       Projection.toUTM(maxLat, maxLon, Projection.Datum.WGS84) 
-      };
-    }
     
 
   

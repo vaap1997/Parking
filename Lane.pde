@@ -15,8 +15,6 @@ private class Lane {
     private Node finalNode;
     private float distance;
     private ArrayList<PVector> vertices = new ArrayList();
-
-    
     //private ArrayList<Agent> crowd = new ArrayList();
     private float occupancy;
     
@@ -31,6 +29,7 @@ private class Lane {
             this.vertices.add(initNode.getPosition());
             this.vertices.add(finalNode.getPosition());   
         }
+        
         distance = calcLength();
         
         if(access.equals("primary")) {
@@ -57,11 +56,38 @@ private class Lane {
         return new ArrayList(vertices);
     }
     
+   public boolean allows(Vehicle vehicle) {
+     if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
+        return false;
+     } else{
+       return true;
+     }
+   }
+   
+   public PVector getVertex(int i) {
+        if(i >= 0  && i < vertices.size()) return vertices.get(i).copy();
+        return null;
+    }
+    
+    public PVector nextVertex(PVector vertex) {
+        int i = vertices.indexOf(vertex) + 1;
+        if(i > 0 && i < vertices.size()) return vertices.get(i);
+        return null;
+    }
+    
+    public boolean isLastVertex( PVector vertex ) {
+        return vertex.equals( vertices.get( vertices.size() - 1 ) );
+    }
+    
     
     public float calcLength() {
         float dist = 0;
         for(int i = 1; i < vertices.size(); i++) dist += vertices.get(i-1).dist( vertices.get(i) );
         return dist;
+    }
+    
+    public float getLength() {
+        return distance;
     }
     
     public Lane findContrariwise() {
@@ -135,9 +161,11 @@ private class Lane {
    public void draw(PGraphics canvas, int stroke, color c) {  
      for(int i = 1; i < vertices.size(); i++) { 
             canvas.stroke(co, 127); canvas.strokeWeight(stroke);
+            //canvas.stroke(0, 127); canvas.strokeWeight(stroke);
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
      }
-   }   
+   }
+
 }
