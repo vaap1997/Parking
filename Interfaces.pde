@@ -10,6 +10,9 @@ public interface Placeable {
     public void draw(PGraphics canvas);
 }
 
+/**
+* Let have filters
+*/
 public interface Predicate<T> {
     public boolean evaluate(T type);
 }

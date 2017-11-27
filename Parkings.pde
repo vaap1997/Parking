@@ -5,15 +5,17 @@
 * @version       2.0
 */
 public class POIs extends Facade<POI>{   
-  ArrayList<PVector> privatePois = new ArrayList();
+  ArrayList<PRIVATEPOI> privatePois = new ArrayList();
   int totalAgentsIn;
-  // Create new factory<pois>
+  
   public POIs(){
     factory = new POIFactory();
   }
   
  
-  // load POIs, error if there is not file
+  /**
+   * load POIs, error if there is not file
+  */ 
   public void loadCSV(String path, Roads roadmap) {
     File file = new File( dataPath(path) );
     if( !file.exists() ) println("ERROR! CSV file does not exist");
@@ -25,8 +27,10 @@ public class POIs extends Facade<POI>{
   public void loadPrivateCSV(){
     
   }
-      
-  //Create an array with parking names
+   
+  /**
+   * Create an array with parking names
+  */ 
   public ArrayList getPOInames(){
     ArrayList<String> namePark = new ArrayList();
     for (POI poi : pois.getAll()){
@@ -35,7 +39,9 @@ public class POIs extends Facade<POI>{
     return namePark;
   }
   
-  //Create an array with parking capacities
+  /**
+   * Create an array with parking capacity
+  */ 
   public ArrayList getCapacity(){
      ArrayList CapacityPark = new ArrayList();
      for(POI poi : pois.getAll()){
@@ -43,6 +49,7 @@ public class POIs extends Facade<POI>{
      }
    return CapacityPark;
   }
+  
    
   public int count(){
     int i=0;
@@ -52,13 +59,10 @@ public class POIs extends Facade<POI>{
     return i;
   }
   
-  //public boolean available(POI poi){
-  // if( totalAgentsIn < timePark.getIn(indice, poi) )
-  //}
-  
-  
-  // Draw parking occupancy for the chronometer time
-public void draw(IntList occupancy){
+ /**
+ * Draw parking occupancy for the chronometer time
+ */ 
+ public void draw(IntList occupancy){
     
     int c = 0;
     for(POI poi:pois.getAll()){ 
@@ -91,31 +95,38 @@ public void draw(IntList occupancy){
         c++;
     }
     
-    for( int i = 0; i < privatePois.size(); i++){
+    for(PRIVATEPOI privatePoi : privatePois){
        canvas.fill(100,160);canvas.stroke(100);
-       canvas.ellipse(privatePois.get(i).x, privatePois.get(i).y,log(privatePois.get(i).z)*12,log(privatePois.get(i).z)*12);
+       canvas.ellipse(privatePoi.position.x , privatePoi.position.y ,log(privatePoi.capacity)*12,log(privatePoi.capacity)*12);
      }
   }
   
-    public void loadPrivateCSV(String path){
-        Table table =  loadTable(path, "header");
-        for(TableRow row: table.rows()){
-          int capacity = row.getInt("Capacity");
-          String coord0 = row.getString("Coords");
-          String[] coord1 =  split(coord0,",");
-          PVector coords =  roads.toXY(float(coord1[0]),float(coord1[1]));
-          PVector coordCap =  new PVector(coords.x, coords.y,capacity);
-          privatePois.add(coordCap);
-        }
-   }
-   
-   
-   
+ /**
+ * Load private parking
+ */ 
+ public void loadPrivateCSV(String path){
+   Table table =  loadTable(path, "header");
+   int id=0;
+    for(TableRow row: table.rows()){
+      String name = row.getString("Name");
+      int capacity = row.getInt("Capacity");
+      String coord0 = row.getString("Coords");
+      String[] coord1 =  split(coord0,",");
+      PVector coords =  roads.toXY(float(coord1[0]),float(coord1[1]));
+      privatePois.add(new PRIVATEPOI(roads, id, name, coords, capacity));
+      id ++;
+    }
+  }
+
 }
-  
+
+  /**
+ * Load public parking (the study ones) 
+ * Load in case of a JSON
+ * Load in case of CSV
+ */
 public class POIFactory extends Factory {
   
-  //Load a JSON file 
     public ArrayList<POI> loadJSON(File JSONFile, Roads roads) {
         
         print("Loading POIs... ");
@@ -146,7 +157,6 @@ public class POIFactory extends Factory {
               deviceNum.add((int)io_coords[2]);
               
             }
-             print(deviceNum);   
             if( roads.contains(location) ) {
                 pois.add( new POI(roads, parkNumber, name, type, location, capacity, deviceNum, str(price),coords));
                 counter.increment(type);
@@ -158,7 +168,6 @@ public class POIFactory extends Factory {
         return pois;  
     }  
     
-    //Load CSV file 
     public ArrayList<POI> loadCSV(String path, Roads roads) {
         
         print("Loading POIs... ");
@@ -186,7 +195,6 @@ public class POIFactory extends Factory {
               float[] latlonIO = float(split(entries_coords[i]," "));
               coords[i] = roads.toXY(latlonIO[0],latlonIO[1]); 
             }
-            //print(coords);
 
             for(int i = 0; i < io_coords.length; i++){
               deviceNum.add(int(io_coords[i]));
@@ -205,7 +213,9 @@ public class POIFactory extends Factory {
     
 }
 
-//Read the file
+ /**
+ * create class POI with caracteristic
+ */
 public class POI extends Node{
  protected final int PARKNUMBER;
  protected final String NAME;
@@ -216,42 +226,59 @@ public class POI extends Node{
  protected final String PRICE;
  public int line;
  protected ArrayList<Vehicle> crowd = new ArrayList();
- //protected final 
  
-     //Asign values
      public POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList<Integer> deviceNum, String price, PVector[] coords){
             super(position);
             PARKNUMBER = parkNumber ;
             NAME = name;
             CAPACITY = capacity;
             access = type;
-            //COORDS = coords;
             DEVICENUM = deviceNum;
-            place(roads); 
-            PRICE = price;
             COORDS = coords;
+            PRICE = price;
+            place(roads);           
      }
      
     
-    //connect POI with the closest point
+    /**
+    * conect different entries of the poi with the road
+    */
     public void place(Roads roads){
-      //roads.connectP(this, COORDS); 
+      roads.connectP(this, COORDS); 
     }
     
+    /**
+    * Upload how many agents are insite the POI
+    */
     public boolean host(Vehicle vehicle) {
-      int occIn = timePark.getIn(indice,this);
-        if(crowd.size() < occIn) {
+      //int occIn = timePark.getIn(indice,this);
+        //if(crowd.size() < occIn) {
             crowd.add(vehicle);
             return true;
-        }
-        return false;
+        //}
+        //return false;
     }
-    
+   
+    /**
+    * Upload how many agents are insite the POI
+    */
     public void unhost(Vehicle vehicle) {
         crowd.remove(vehicle);
-    }
-    
-    
-    
-    
+    } 
+}
+
+public class PRIVATEPOI extends Node{
+ protected final int id;
+ protected final String name;
+ protected final PVector position;
+ protected final int capacity;
+ 
+ public PRIVATEPOI(Roads roads, int id, String name, PVector position, int capacity){
+  super(position);
+  this.id = id;
+  this.name = name;
+  this.position = position;
+  this.capacity = capacity;
+  place(roads);
+ }
 }

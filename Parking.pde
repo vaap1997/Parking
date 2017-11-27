@@ -1,8 +1,16 @@
+/**
+* Parking - Visualize parkings behavior
+* @author        Vanesa Alcantara
+* @version       3.0
+*/
 
 Roads roads;
 POIs pois;
 POI poi;
+Path path;
 TimePark timePark;
+WarpSurface surface;
+PieChart pieChart;
 boolean showBG = true;
 boolean freeze = true;
 boolean names = false;
@@ -16,9 +24,6 @@ boolean type7 = true;
 boolean type8 = true;
 boolean type9 = true;
 boolean type0 = true;
-boolean surfaceMode = true;
-boolean debug = false;
-WarpSurface surface;
 PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
@@ -28,12 +33,6 @@ int indiceLine = 0;
 PImage BG;
 PImage speedometer;
 
-
-//final PVector[] bounds = new PVector[] {
-//    new PVector(42.482119, 1.489794),
-//    new PVector(42.533768, 1.572122)
-//};
-
 PVector[] roi = new PVector[] {
     new PVector(42.505086, 1.509961),
     new PVector(42.517066, 1.544024),
@@ -42,9 +41,7 @@ PVector[] roi = new PVector[] {
 };
 
 final PVector[] orthoBounds = new PVector[] {
-    //new PVector(42.5181, 1.50803),
-    //new PVector(42.495, 1.55216)
-    
+
     new PVector(42.495, 1.50803),
     new PVector(42.5181, 1.55216)
 };
@@ -60,42 +57,39 @@ int speed = 200;
 int indice = 0;
 int lastIndice = 0;
 int totalAgent = 200;
-
 String datesS;
 String[] actualDate;
 ArrayList deviceNumPark;
-//ArrayList<PVector> maxMinHour;
 ArrayList<String> maxDay;
 ArrayList occPerDate;
 IntList occupancy = new IntList();
-PieChart pieChart;
 ArrayList<PVector> lastCoord = new ArrayList();
 int lastNamex = 600 ;
 int lastNamey = 600 ;
 ArrayList<ArrayList> dinamicHours;
 ArrayList<String> dinamicDay;
 ArrayList<Vehicle> vehicles;
-Path path;
 
+/**
+* Create a canvas by linking more than one screen
+* Create a surface to manipulate the canvas
+* Upload roads
+* Place pois
+* Read timeparl
+* Create PGraphics and inicialize line graphics
+* Read and summarize timePark information
+*/
 void setup(){
   fullScreen(P2D,SPAN);
-  //fullScreen(P3D, 2);
   background(0);
   smooth(); 
-  BG = loadImage(bgPath);
   
-  if(surfaceMode){
-    simWidth = BG.width;
-    simHeight = BG.height;
-    surface = new WarpSurface(this, 1500, 550, 20, 10);
-    //surface = new WarpSurface();
-    //surface.loadConfig();
-    //canvas = new Canvas(this, simWidth, simHeight, bounds,roi);
-    canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
-  }else{
-    BG.resize(simWidth, simHeight);
-    canvas = createGraphics(simWidth, simHeight);    
-  }
+  BG = loadImage(bgPath);
+  simWidth = BG.width;
+  simHeight = BG.height;
+  surface = new WarpSurface(this, 1500, 550, 20, 10);
+  //surface.loadConfig();
+  canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
   
   roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
   
@@ -131,9 +125,16 @@ void setup(){
   
 }
 
+
+/**
+* Inicialize choronometer
+* draw roads and vehicles insite the surface
+* draw surface
+* draw legend
+* draw linear graphic
+* draw a chart with basic parking's statidistics
+*/
 void draw(){  
-    
-    //background(0);
 
     if(indice > 0) lastIndice = indice-1;
     if( millis() - timer >= speed){
@@ -155,21 +156,17 @@ void draw(){
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,3,#cacfd6);  
     pois.draw(occupancy);
-    
-    
     for(Vehicle v:vehicles){
-      v.move(v.maxspeed);
+      v.move();
       v.display();
     }
-    
     canvas.endDraw(); 
-    if(surfaceMode) surface.draw((Canvas) canvas);
-    else image(canvas,0,0);
-    //---------- LEGEND----------------------------
-    legend.beginDraw();
-    pieChart.drawLegend();
-    legend.endDraw();
-    image(legend,3025,737);
+    surface.draw((Canvas) canvas);
+    ////---------- LEGEND----------------------------
+    //legend.beginDraw();
+    //pieChart.drawLegend();
+    //legend.endDraw();
+    //image(legend,3025,737);
     
     ////--------------PIE----------------------
     //chart.beginDraw();
@@ -197,7 +194,9 @@ void draw(){
     }
 }
 
-
+/**
+*Upload diffent funtionalities
+*/
 void keyPressed(KeyEvent e){
   switch(key){
     case ' ':
@@ -224,14 +223,6 @@ void keyPressed(KeyEvent e){
     
     case 'g':
     surface.saveConfig();
-    break;
-    
-    case 'm':
-    surfaceMode = !surfaceMode;
-    break;
-    
-    case 'd':
-    debug = !debug;
     break;
     
     case '+':

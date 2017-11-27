@@ -6,8 +6,6 @@
 public class PieChart{
   String message;
   PFont f = createFont("Georgia",15,true);
-  int r = 360/2;
-  int[] angles = {30, 50, 20, 35, 45, 38, 55, 37, 20,30 };
   ArrayList<String> namePark = pois.getPOInames();
   ArrayList lineIni = (ArrayList) occPerDate.get(0);
   int borderX = 40;
@@ -17,13 +15,13 @@ public class PieChart{
   ArrayList<Line> lines = new ArrayList();
   int repeat = 0;
   
-  /*
-  **Draw the cartesian plane
-  **Daw percentage legend
-  **Draw days legend
-  **Media per hour
-  **Draw lines coordinate with the chronometer
-  **Refresh with every chronometer complete
+  /**
+  * Draw the cartesian plane
+  * Daw percentage legend
+  * Draw days legend
+  * Media per hour
+  * Draw lines coordinate with the chronometer and depending if the parking is selected or not
+  * Refresh with every chronometer complete
   */
   public void drawLineGraph(){
      //color coLine = 255;
@@ -152,6 +150,15 @@ public class PieChart{
        } 
      } 
   }
+ 
+  
+  /**
+  * Upload every daythe maximum and minimun time of occupancy of the day
+  * Upload every week the maximun day of occupancy
+  * Fill the parking name with color in case it is selected
+  * Draw the use's percentage for every parking
+  * Draw capacity, name, max and min hour of the day, maxday of the week
+  */
   
   public void BasicParkingStats(){
    individualCanvas.background(0);
@@ -263,6 +270,10 @@ public class PieChart{
    }
   }
   
+  
+ /**
+ * Draw legend in order to explain Andorra's surface
+ */
   public void drawLegend(){
     legend.background(0);
     legend.stroke(255);
@@ -301,6 +312,11 @@ public class PieChart{
 
 }
 
+/**
+* class to link every lane to a parking
+* let draw just the ones link with the parking selected
+* let have a new line chart with every total repetition (at the end of all the month)
+*/
 public class Line{
   public int TYPE;
   protected final float LASTCOORDSx;

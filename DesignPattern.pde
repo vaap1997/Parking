@@ -63,7 +63,7 @@ public abstract class Facade<T extends Placeable> {
     }
     
     
-    /** 
+    /**
     * Draw all items
     * @param canvas  Canvas to draw items
     */

@@ -19,7 +19,9 @@ public class TimePark{
   int minMin =  Integer.MAX_VALUE;
   int minMax = -Integer.MAX_VALUE;
   
-  //Recognize if the file exist
+  /**
+  * Recognize if the file exist
+  */
   public TimePark(String path){
     chronometer = new ArrayList();
     if(path!= null) loadCSV(path);
@@ -27,7 +29,9 @@ public class TimePark{
     chronometer = Chronometer();
   }
   
-  //Load CSV file
+  /**
+  * Load CSV file
+  */
   public void loadCSV(String path){
     int a=0;
      print("Loading time...");
@@ -68,7 +72,9 @@ public class TimePark{
      print("LOADED");
   }
   
-  //Create an array with all the dates in the range
+  /**
+  * Create an array with all the dates in the range
+  */
   public ArrayList<String> Chronometer(){
     ArrayList<String> chronometer = new ArrayList();
       for(int year = yearMin; year <= yearMax; year++){
@@ -103,19 +109,18 @@ public class TimePark{
   }
   
  
-  
+  /**
+  * Create an array with all the occupancies every date
+  * Create an array with
+  */
   public ArrayList getTotalOccupancy(){
     print("\nLoading occPerDate...");
     ArrayList occPerDate = new ArrayList(); 
     IntList occPerPoi = new IntList();
-    ArrayList<PVector> maxmin = new ArrayList();
     for(int a = 0; a < chronometer.size(); a++){
     occPerPoi.set(a,0);
     }
     for(int i=0; i <chronometer.size(); i++){ 
-      for(int a = 0; a < pois.count(); a++){
-        maxmin.add(a,new PVector(0,0));
-      }
         for(TimeP park:park){
           if(park.TIME.equals(chronometer.get(i))){
             int c=0;
@@ -123,14 +128,8 @@ public class TimePark{
                     if( poi.PARKNUMBER == park.CARPARKNUMBER){
                         if(park.MOVTYPE == 1){
                           occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
-                          maxmin.set(c,new PVector(maxmin.get(c).x,maxmin.get(c).y+park.PASSAGES));
                         }else{
                           occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
-                          if(park.MOVTYPE == 0 | (park.MOVTYPE ==2 && park.MOVTYPE > 0)){
-                            maxmin.set(c, new PVector(maxmin.get(c).x+park.PASSAGES,maxmin.get(c).y));
-                          }else{
-                            maxmin.set(c, new PVector(maxmin.get(c).x, maxmin.get(c).y-park.PASSAGES));
-                          }   
                         }
                     }
              c++; 
@@ -142,22 +141,12 @@ public class TimePark{
          int k=1;
          for(POI poi:pois.getAll()){
            occTemporal.add(k,occPerPoi.get(k-1));
-           maxMin.set(chronometer.get(i)+poi.PARKNUMBER+"in",(int)maxmin.get(k-1).x);
-           maxMin.set(chronometer.get(i)+poi.PARKNUMBER+"out",(int)maxmin.get(k-1).y);
             k++;
          }
      occPerDate.add(occTemporal);    
     }
    return occPerDate;
   }
-  
-   public int getIn(int indice, POI poi){
-    return maxMin.get(indice+poi.PARKNUMBER+"in"); 
-   }
-   
-   public int getOut(String indice, POI poi){
-    return maxMin.get(indice+poi.PARKNUMBER+"out"); 
-   }
     
   public IntList getOccupancy(String dateS){
       IntList occupancy = new IntList(pois.count());
@@ -172,6 +161,9 @@ public class TimePark{
     return occupancy;
   }
  
+ /**
+ * compare hours in a day begining by the date given 
+ */
   public ArrayList<ArrayList> dinamicHours(int indexResume){
     ArrayList<ArrayList> dinamicHours = new ArrayList();
     ArrayList<PVector> dinamicHoursValue = new ArrayList();
@@ -205,7 +197,9 @@ public class TimePark{
     return dinamicHours;
   }
   
-
+  /**
+ * find the max and min hour in promedio in the month
+ */
   public ArrayList<PVector> maxMinHour(){
    print("\nLoading max and min per hour...");
    ArrayList<PVector> MaxMin = new ArrayList(pois.count());
@@ -243,8 +237,9 @@ public class TimePark{
    return MaxMin;
  }
  
- 
- 
+  /**
+ * make arrays statistics of day media occupancy every days for 7 days and compare everyday statistics to find the max day
+ */
  public ArrayList<String> dinamicDay(int indexResume){
    ArrayList<Float> total = new ArrayList();
    ArrayList<String> maxDay = new ArrayList();
@@ -276,6 +271,10 @@ public class TimePark{
    return maxDay;  
  } 
  
+ 
+ /**
+ * make arrays statistics of everyday of the weekend and find the media of the month
+ */
  public ArrayList<String>  maxDay(){
    ArrayList<Float> total = new ArrayList();
    ArrayList<String> maxDay = new ArrayList();
@@ -285,8 +284,7 @@ public class TimePark{
      total.add(k,-Float.MAX_VALUE);
      maxDay.add(k, null);
    }
-   /*0=sabado,1=domingo, 2=lunes, 3=martes, 4=miercoles, 5=jueves, 6= viernes
-   */
+
    for(int k = 0; k < 7; k++){
      FloatList parkingPerDay = new FloatList();
      for(int c=0; c<pois.count();c++){
@@ -310,10 +308,9 @@ public class TimePark{
   return maxDay; 
  }
  
-
-
-  //Total time in seconds
-
+  /**
+  * total time in seconds that contain the file
+  */
   public int getmax(){
     totalTime = (yearMax - yearMin+1) * (monthMax - monthMin +1) * (dayMax - dayMin + 1) * (24) * (4);
     return totalTime;

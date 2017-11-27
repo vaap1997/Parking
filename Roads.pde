@@ -17,6 +17,9 @@ public class Roads extends Facade<Node>{
         
       }
       
+      /**
+      * Scale bound in a WGS84 scale
+      */
       public PVector[] scaleBounds(PVector[] bounds){
         return new PVector[]{
            Projection.toUTM(bounds[0].x, bounds[0].y, Projection.Datum.WGS84),
@@ -24,7 +27,9 @@ public class Roads extends Facade<Node>{
           };
       }
     
-      //Conect POIs
+      /**
+      * connect a simple poi to the roads
+      */
       private void connect(POI poi) {
             
             Lane closestLane = findClosestLane(poi.getPosition());
@@ -40,10 +45,12 @@ public class Roads extends Facade<Node>{
             add(poi);
            
       }
- 
-     //Conect POIs with multiples entries
+       
+       
+     /**
+      * connect poi with differect entries to the roads
+      */
       private void connectP(POI poi, PVector[] coords){
-      
         for(PVector coord:coords){
               Lane closestLane = findClosestLane(coord);
               Lane closestLaneBack = closestLane.findContrariwise();
@@ -59,13 +66,19 @@ public class Roads extends Facade<Node>{
         add(poi);
      }
 
-     //Find the closest point in the line
+    /**
+    * find the closest lane to the point
+    * find the closest point insite that lane
+    */
      public PVector findClosestPoint(PVector position) {
         Lane closestLane = findClosestLane(position);
         return closestLane.findClosestPoint(position);
      } 
 
-   //Find the closestLane to the poi
+    /**
+    * find the closest point in the closest lane
+    * find the closest lane if you create a new one
+    */
     public Lane findClosestLane(PVector position) {
         Float minDistance = Float.NaN;
         Lane closestLane = null;
@@ -84,7 +97,9 @@ public class Roads extends Facade<Node>{
     
 
    
-   //Scale the roads
+    /**
+      * scale coordinate into the canvas (surface)
+    */
     public PVector toXY(float lat, float lon){
       PVector projPoint = Projection.toUTM(lat, lon,Projection.Datum.WGS84);
       return new PVector(
@@ -93,6 +108,9 @@ public class Roads extends Facade<Node>{
       );
     }
   
+    /**
+    * add new node to the array
+    */
     public void add(Node node) {
       if(node.getID() == -1) {
         node.setID(items.size());
@@ -101,12 +119,18 @@ public class Roads extends Facade<Node>{
     }
   
     
+    /**
+      * call the draw of node that calls draw of lane and draw all the roads
+    */
     public void draw(PGraphics canvas, int stroke, color c) {
         for(Node node : items){
           node.draw(canvas, stroke, c);
         } 
     }
 
+  /**
+  * point of the roads is insite the canvas(surface) 
+ */
   public boolean contains(PVector point) {
         return point.x > 0 && point.x < window.x && point.y > 0 && point.y < window.y;
     }
