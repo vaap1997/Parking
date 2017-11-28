@@ -33,7 +33,13 @@ public class Vehicle {
     this.speed = constrain(3, 0, maxspeed) ;
   }
   
-  
+  /**
+  * increment speedFactor
+  */
+  public void changeSpeed(float inc) {
+     this.speed = constrain(speed + inc, 0, maxspeed);
+  }
+    
   /**
   * Asign an inicial destination
   */
@@ -86,7 +92,6 @@ public class Vehicle {
    if(!arrived){
      if(!path.available()){
        path.findPath(inNode, destination);
-     //  borders();
      }else{
       //PVector movement = path.move(position, speed *speedFactor);  ** speedFactor para cambiar speed
       PVector movement = path.move(position, this.speed);   
@@ -129,17 +134,6 @@ public class Vehicle {
    canvas.ellipse(0,0,r,r);
    canvas.popMatrix();
   }
-  
-  /**
-  * if the vehicle is on the border disappears and it is set in a new position
-  */
-   public void borders(){
-   if(position.x < -r) position.x = canvas.width+r;
-   if(position.y < -r) position.y = canvas.height+r;
-   if(position.x > canvas.width+r) position.x = -r;
-   if(position.y > canvas.height+r) position.y = -r;
-  }
-  
 }
 
 

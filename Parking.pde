@@ -229,10 +229,16 @@ void keyPressed(KeyEvent e){
     
     case '+':
       speed = speed - 20 ;
+      for(Vehicle V : vehicles){
+        V.changeSpeed(0.5);
+      }
     break;
     
     case '-':
       speed = speed + 20;
+      for(Vehicle V : vehicles){
+        V.changeSpeed(-0.5);
+      }
     break;
     
     case '1':
