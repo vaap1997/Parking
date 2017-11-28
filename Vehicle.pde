@@ -40,7 +40,7 @@ public class Vehicle {
   public Node getStart(){
    points = new ArrayList();
      for(Node node:ROADMAP.getAll()){
-       //if((node.access.equals("pedestrian") )|| (node.access.equals("living_street")) || (node.access.equals("footway")) || (node.access.equals("steps"))){
+       //if((!node.access.equals("pedestrian") )|| (!node.access.equals("living_street")) || (!node.access.equals("footway")) || (!node.access.equals("steps"))){
          points.add(node);
        //}
    }

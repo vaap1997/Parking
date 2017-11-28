@@ -44,9 +44,11 @@ public class PieChart{
 
          int c=0;
          for(POI poi : pois.getAll()){
-          occ.set(c, ((int) occ.get(c) * 100)/(4 * poi.CAPACITY));
-          if((int) occ.get(c) >= 100) occ.set(c,100);
-          c++;
+           if(poi.access.equals("publicPark")){
+              occ.set(c, ((int) occ.get(c) * 100)/(4 * poi.CAPACITY));
+              if((int) occ.get(c) >= 100) occ.set(c,100);
+              c++;
+           }
          }
 
          for( int i = 0; i < occ.size(); i++){
@@ -144,9 +146,11 @@ public class PieChart{
           indiceLine = 0;
           int j=0;
           for(POI poi : pois.getAll()){
+           if(poi.access.equals("publicPark")){
              lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
              j++;
-          }
+           }
+         }
        } 
      } 
   }
@@ -172,32 +176,34 @@ public class PieChart{
      maxDay = timePark.dinamicDay(indice);
    }
    int i=0;
-   for(POI poi:pois.getAll()){   
-     if(type1 && i==0)individualCanvas.fill(poiColor[0]);
-     if(type2 && i==1)individualCanvas.fill(poiColor[1]);
-     else individualCanvas.fill(255);
-     if(type3 && i==2)individualCanvas.fill(poiColor[2]); 
-     if(type4 && i==3)individualCanvas.fill(poiColor[3]); 
-     if(type5 && i==4)individualCanvas.fill(poiColor[4]); 
-     if(type6 && i==5)individualCanvas.fill(poiColor[5]);
-     if(type7 && i==6)individualCanvas.fill(poiColor[6]);
-     if(type8 && i==7)individualCanvas.fill(poiColor[7]);
-     if(type9 && i==8)individualCanvas.fill(poiColor[8]); 
-     if(type0 && i==9)individualCanvas.fill(poiColor[9]);  
-     individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,50);   
-     individualCanvas.fill(255);
-     int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
-     individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
-     individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);
-     individualCanvas.text(poi.PRICE+"€",((i+1)*individualCanvas.width/(pois.count()+1))+40, 4* individualCanvas.height/8);
-     ArrayList b = (ArrayList) dinamicHours.get(i);
-     String tempmax= (String) b.get(0);
-     String tempmin= (String) b.get(1);
-     individualCanvas.text( tempmax, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 5* individualCanvas.height/8);
-     individualCanvas.text( tempmin, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 6* individualCanvas.height/8);
-     
-     individualCanvas.text( maxDay.get(i), ((i+1)*individualCanvas.width/(pois.count()+1))+40, 7* individualCanvas.height/8);
-     i++;
+   for(POI poi:pois.getAll()){ 
+     if(poi.access.equals("publicPark")){
+       if(type1 && i==0)individualCanvas.fill(poiColor[0]);
+       if(type2 && i==1)individualCanvas.fill(poiColor[1]);
+       else individualCanvas.fill(255);
+       if(type3 && i==2)individualCanvas.fill(poiColor[2]); 
+       if(type4 && i==3)individualCanvas.fill(poiColor[3]); 
+       if(type5 && i==4)individualCanvas.fill(poiColor[4]); 
+       if(type6 && i==5)individualCanvas.fill(poiColor[5]);
+       if(type7 && i==6)individualCanvas.fill(poiColor[6]);
+       if(type8 && i==7)individualCanvas.fill(poiColor[7]);
+       if(type9 && i==8)individualCanvas.fill(poiColor[8]); 
+       if(type0 && i==9)individualCanvas.fill(poiColor[9]);  
+       individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,50);   
+       individualCanvas.fill(255);
+       int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
+       individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
+       individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);
+       individualCanvas.text(poi.PRICE+"€",((i+1)*individualCanvas.width/(pois.count()+1))+40, 4* individualCanvas.height/8);
+       ArrayList b = (ArrayList) dinamicHours.get(i);
+       String tempmax= (String) b.get(0);
+       String tempmin= (String) b.get(1);
+       individualCanvas.text( tempmax, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 5* individualCanvas.height/8);
+       individualCanvas.text( tempmin, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 6* individualCanvas.height/8);
+       
+       individualCanvas.text( maxDay.get(i), ((i+1)*individualCanvas.width/(pois.count()+1))+40, 7* individualCanvas.height/8);
+       i++;
+     }
    }
    individualCanvas.textAlign(RIGHT);individualCanvas.fill(255);individualCanvas.textSize(11);
    individualCanvas.text("OCCUPANCY", 90, 2* individualCanvas.height/8);
@@ -206,7 +212,7 @@ public class PieChart{
    individualCanvas.text("MAX", 90, 5* individualCanvas.height/8);
    individualCanvas.text("MIN", 90, 6* individualCanvas.height/8);
    individualCanvas.text("DAY", 90, 7* individualCanvas.height/8);
-   
+
   }
   
   
@@ -220,53 +226,55 @@ public class PieChart{
    }
 
    int i = 0;
-   for(POI poi:pois.getAll()){   
-     individualCanvas.noFill();individualCanvas.textAlign(CENTER); individualCanvas.stroke(255,50);
-     if(i % 2 == 0 ) {
-        coordInd.x = 20 + (i/2)*individualCanvas.width/(pois.count()/2);
-        coordInd.y = 20;        
-     }else{
-        coordInd.x = 20 + ((i/1)/2)*individualCanvas.width/(pois.count()/2);
-        coordInd.y = individualCanvas.height/2;
+   for(POI poi:pois.getAll()){
+     if(poi.access.equals("publicPark")){
+       individualCanvas.noFill();individualCanvas.textAlign(CENTER); individualCanvas.stroke(255,50);
+       if(i % 2 == 0 ) {
+          coordInd.x = 20 + (i/2)*individualCanvas.width/(pois.count()/2);
+          coordInd.y = 20;        
+       }else{
+          coordInd.x = 20 + ((i/1)/2)*individualCanvas.width/(pois.count()/2);
+          coordInd.y = individualCanvas.height/2;
+       }
+          int heightRect = individualCanvas.width/(pois.count()/2) - 40 ;
+          int widthRect = individualCanvas.height/2 - 60;
+          individualCanvas.rect(coordInd.x, coordInd.y,heightRect,widthRect);
+          individualCanvas.fill(255,50);
+          individualCanvas.ellipse(coordInd.x + 20, coordInd.y + 20, 30,30); 
+          individualCanvas.fill(rectName);
+          individualCanvas.rect(coordInd.x+30,coordInd.y+62,60,40,7);
+          individualCanvas.rect(coordInd.x+100,coordInd.y+62,60,40,7);
+          individualCanvas.rect(coordInd.x+170,coordInd.y+62,60,40,7);
+          individualCanvas.textFont(createFont("Georgia", 12));individualCanvas.fill(230);individualCanvas.textLeading(15);
+          individualCanvas.text("CAPACITY", coordInd.x+60 , coordInd.y+55 );
+          individualCanvas.text("PRICE"   , coordInd.x+130, coordInd.y+55 );
+          individualCanvas.text("% USE"   , coordInd.x+200, coordInd.y+55 );
+          individualCanvas.fill(230);individualCanvas.textLeading(15);
+          individualCanvas.text("Max hour of occupancy",  coordInd.x+95, coordInd.y+135 );
+          individualCanvas.text("Min hour of occupancy",  coordInd.x+95, coordInd.y+170 );
+          individualCanvas.text("Day of max occupancy",  coordInd.x+95, coordInd.y+205  );    
+          individualCanvas.fill(80,40);
+          individualCanvas.rect(coordInd.x+165,coordInd.y+120,65,30,7);
+          individualCanvas.rect(coordInd.x+165,coordInd.y+155,65,30,7);
+          individualCanvas.rect(coordInd.x+160,coordInd.y+190,75,30,7);
+          individualCanvas.fill(poiColor[i]);individualCanvas.textFont(createFont("Georgia", 20));individualCanvas.textAlign(LEFT);
+          individualCanvas.text(poi.NAME,coordInd.x+40, coordInd.y+30);
+          individualCanvas.fill(255);individualCanvas.textAlign(CENTER);
+          individualCanvas.text(str(i+1),coordInd.x + 20,coordInd.y + 25);
+          individualCanvas.textFont(createFont("IMPACT", 22));
+          individualCanvas.text(poi.CAPACITY,coordInd.x+60,coordInd.y+88);
+          individualCanvas.text(poi.PRICE+"€",coordInd.x+130,coordInd.y+88);
+          int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
+          individualCanvas.text(use+"%",coordInd.x+200,coordInd.y+88);
+          individualCanvas.textFont(createFont("Georgia", 15));
+          ArrayList b = (ArrayList) dinamicHours.get(i);
+          String tempmax= (String) b.get(0);
+          String tempmin= (String) b.get(1);
+          individualCanvas.text( tempmax, coordInd.x+197,coordInd.y+140);
+          individualCanvas.text( tempmin, coordInd.x+197,coordInd.y+175);
+          individualCanvas.text( maxDay.get(i), coordInd.x+197,coordInd.y+210);
+       i++;
      }
-        int heightRect = individualCanvas.width/(pois.count()/2) - 40 ;
-        int widthRect = individualCanvas.height/2 - 60;
-        individualCanvas.rect(coordInd.x, coordInd.y,heightRect,widthRect);
-        individualCanvas.fill(255,50);
-        individualCanvas.ellipse(coordInd.x + 20, coordInd.y + 20, 30,30); 
-        individualCanvas.fill(rectName);
-        individualCanvas.rect(coordInd.x+30,coordInd.y+62,60,40,7);
-        individualCanvas.rect(coordInd.x+100,coordInd.y+62,60,40,7);
-        individualCanvas.rect(coordInd.x+170,coordInd.y+62,60,40,7);
-        individualCanvas.textFont(createFont("Georgia", 12));individualCanvas.fill(230);individualCanvas.textLeading(15);
-        individualCanvas.text("CAPACITY", coordInd.x+60 , coordInd.y+55 );
-        individualCanvas.text("PRICE"   , coordInd.x+130, coordInd.y+55 );
-        individualCanvas.text("% USE"   , coordInd.x+200, coordInd.y+55 );
-        individualCanvas.fill(230);individualCanvas.textLeading(15);
-        individualCanvas.text("Max hour of occupancy",  coordInd.x+95, coordInd.y+135 );
-        individualCanvas.text("Min hour of occupancy",  coordInd.x+95, coordInd.y+170 );
-        individualCanvas.text("Day of max occupancy",  coordInd.x+95, coordInd.y+205  );    
-        individualCanvas.fill(80,40);
-        individualCanvas.rect(coordInd.x+165,coordInd.y+120,65,30,7);
-        individualCanvas.rect(coordInd.x+165,coordInd.y+155,65,30,7);
-        individualCanvas.rect(coordInd.x+160,coordInd.y+190,75,30,7);
-        individualCanvas.fill(poiColor[i]);individualCanvas.textFont(createFont("Georgia", 20));individualCanvas.textAlign(LEFT);
-        individualCanvas.text(poi.NAME,coordInd.x+40, coordInd.y+30);
-        individualCanvas.fill(255);individualCanvas.textAlign(CENTER);
-        individualCanvas.text(str(i+1),coordInd.x + 20,coordInd.y + 25);
-        individualCanvas.textFont(createFont("IMPACT", 22));
-        individualCanvas.text(poi.CAPACITY,coordInd.x+60,coordInd.y+88);
-        individualCanvas.text(poi.PRICE+"€",coordInd.x+130,coordInd.y+88);
-        int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
-        individualCanvas.text(use+"%",coordInd.x+200,coordInd.y+88);
-        individualCanvas.textFont(createFont("Georgia", 15));
-        ArrayList b = (ArrayList) dinamicHours.get(i);
-        String tempmax= (String) b.get(0);
-        String tempmin= (String) b.get(1);
-        individualCanvas.text( tempmax, coordInd.x+197,coordInd.y+140);
-        individualCanvas.text( tempmin, coordInd.x+197,coordInd.y+175);
-        individualCanvas.text( maxDay.get(i), coordInd.x+197,coordInd.y+210);
-     i++;
    }
   }
   

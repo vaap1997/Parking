@@ -44,8 +44,7 @@ public class Roads extends Facade<Node>{
             poi.connectBoth(connectionNode, null, "footway", poi.access);
             add(poi);
            
-      }
-       
+      } 
        
      /**
       * connect poi with differect entries to the roads

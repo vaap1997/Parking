@@ -95,7 +95,7 @@ void setup(){
   
   pois = new POIs();
   pois.loadCSV("Aparcaments.csv",roads);
-  pois.loadPrivateCSV("Private_Parkings.csv");
+  pois.loadPrivateCSV("Private_Parkings.csv",roads);
 
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
@@ -113,8 +113,10 @@ void setup(){
 
   int j=0;
   for(POI poi : pois.getAll()){
-     lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
-     j++;
+    if(poi.access.equals("publicPark")){
+       lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
+       j++;
+    }
   }
   
   vehicles =  new ArrayList<Vehicle>();

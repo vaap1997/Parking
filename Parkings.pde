@@ -5,7 +5,6 @@
 * @version       2.0
 */
 public class POIs extends Facade<POI>{   
-  ArrayList<PRIVATEPOI> privatePois = new ArrayList();
   int totalAgentsIn;
   
   public POIs(){
@@ -24,8 +23,12 @@ public class POIs extends Facade<POI>{
     }
   } 
   
-  public void loadPrivateCSV(){
-    
+  public void loadPrivateCSV(String path, Roads roadmap){
+    File file = new File( dataPath(path) );
+    if( !file.exists() ) println("ERROR! CSV file does not exist");
+    else {
+      items.addAll( ((POIFactory)factory).loadPrivateCSV(path, roadmap) );
+    }
   }
    
   /**
@@ -34,7 +37,9 @@ public class POIs extends Facade<POI>{
   public ArrayList getPOInames(){
     ArrayList<String> namePark = new ArrayList();
     for (POI poi : pois.getAll()){
-      namePark.add(new String(poi.NAME));
+      if(poi.access.equals("publicPark")){
+        namePark.add(new String(poi.NAME));
+      }
     }
     return namePark;
   }
@@ -45,7 +50,9 @@ public class POIs extends Facade<POI>{
   public ArrayList getCapacity(){
      ArrayList CapacityPark = new ArrayList();
      for(POI poi : pois.getAll()){
-        CapacityPark.add(int(poi.CAPACITY));
+       if(poi.access.equals("publicPark")){
+         CapacityPark.add(int(poi.CAPACITY));
+       }
      }
    return CapacityPark;
   }
@@ -54,7 +61,9 @@ public class POIs extends Facade<POI>{
   public int count(){
     int i=0;
     for(POI poi : pois.getAll()){
+      if(poi.access.equals("publicPark")){
       i++;
+      }
     }
     return i;
   }
@@ -66,6 +75,7 @@ public class POIs extends Facade<POI>{
     
     int c = 0;
     for(POI poi:pois.getAll()){ 
+      if(poi.access.equals("publicPark")){
         //int Occupancy = (int) map(occupancy.get(c),0,800,0,100); 
         int Occupancy = (int) log(occupancy.get(c))*12; 
         float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
@@ -90,33 +100,16 @@ public class POIs extends Facade<POI>{
               canvas.text(poi.NAME,0,0);
               canvas.popMatrix();
               
-          }
-          
+          }    
         c++;
-    }
-    
-    for(PRIVATEPOI privatePoi : privatePois){
+      }else{
        canvas.fill(100,160);canvas.stroke(100);
-       canvas.ellipse(privatePoi.position.x , privatePoi.position.y ,log(privatePoi.capacity)*12,log(privatePoi.capacity)*12);
-     }
+       canvas.ellipse(poi.POSITION.x , poi.POSITION.y ,log(poi.CAPACITY)*12,log(poi.CAPACITY)*12);
+      }
+    }
   }
   
- /**
- * Load private parking
- */ 
- public void loadPrivateCSV(String path){
-   Table table =  loadTable(path, "header");
-   int id=0;
-    for(TableRow row: table.rows()){
-      String name = row.getString("Name");
-      int capacity = row.getInt("Capacity");
-      String coord0 = row.getString("Coords");
-      String[] coord1 =  split(coord0,",");
-      PVector coords =  roads.toXY(float(coord1[0]),float(coord1[1]));
-      privatePois.add(new PRIVATEPOI(roads, id, name, coords, capacity));
-      id ++;
-    }
-  }
+
 
 }
 
@@ -209,7 +202,25 @@ public class POIFactory extends Factory {
         return pois;     
     }
     
-    
+     /**
+   * Load private parking
+   */ 
+   public ArrayList<POI> loadPrivateCSV(String path, Roads roads){
+     ArrayList<POI> pois = new ArrayList();
+     Table table =  loadTable(path, "header");
+     int id=0;
+      for(TableRow row: table.rows()){
+        String name = row.getString("Name");
+        String type = row.getString("Type");
+        int capacity = row.getInt("Capacity");
+        String coord0 = row.getString("Coords");
+        String[] coord1 =  split(coord0,",");
+        PVector coords =  roads.toXY(float(coord1[0]),float(coord1[1]));
+        pois.add(new POI(roads, id, type, name, coords, capacity));
+        id ++;
+      }
+      return pois;
+    }
     
 }
 
@@ -239,12 +250,28 @@ public class POI extends Node{
             place(roads);           
      }
      
+     public POI(Roads roads, int id, String type, String name, PVector position, int capacity){
+       super(position);
+       PARKNUMBER = id ;
+       NAME = name;
+       CAPACITY = capacity;
+       access = type;
+       DEVICENUM = null;
+       COORDS = null;
+       PRICE = null;
+       place(roads);
+     }
+     
     
     /**
     * conect different entries of the poi with the road
     */
     public void place(Roads roads){
-      roads.connectP(this, COORDS); 
+      if(access.equals("publicPark")){
+        roads.connectP(this, COORDS); 
+      }else{
+        roads.connect(this); 
+      }
     }
     
     /**
@@ -265,20 +292,4 @@ public class POI extends Node{
     public void unhost(Vehicle vehicle) {
         crowd.remove(vehicle);
     } 
-}
-
-public class PRIVATEPOI extends Node{
- protected final int id;
- protected final String name;
- protected final PVector position;
- protected final int capacity;
- 
- public PRIVATEPOI(Roads roads, int id, String name, PVector position, int capacity){
-  super(position);
-  this.id = id;
-  this.name = name;
-  this.position = position;
-  this.capacity = capacity;
-  place(roads);
- }
 }
