@@ -30,7 +30,7 @@ public class PieChart{
      linearGraphic.fill(255); linearGraphic.stroke(255);
      
      if (indice % 4.00 == 0.00) {
-       if(indice < occPerDate.size()){
+       if(indice < timePark.chronometer.size()-1){
          ArrayList occ = new ArrayList();
          for(int c = 0; c < pois.count(); c++){
            occ.add(c,0);
@@ -52,7 +52,7 @@ public class PieChart{
          }
 
          for( int i = 0; i < occ.size(); i++){
-            int x = indiceLine + borderX;
+            int x = indiceLine * 2 + borderX;
             int y = (4 * (100 - (int) occ.get(i))) + borderY*2;
             linearGraphic.fill(255); linearGraphic.stroke(255);
             
@@ -72,8 +72,8 @@ public class PieChart{
                linearGraphic.text(str(i*10) + "%", borderX - 20, linearGraphic.height - borderY * (i+1));
              }
              for(int j = 0; j <= 30; j++){
-               if(j <  30)linearGraphic.text(j+2,j*24+ borderX, linearGraphic.height - (borderY-20)); 
-               if(j == 30)linearGraphic.text("July",j*24+ borderX, linearGraphic.height - (borderY-20));
+               if(j <  30)linearGraphic.text(j+2,j*24*2+ borderX, linearGraphic.height - (borderY-20)); 
+               if(j == 30)linearGraphic.text("July",j*24*2 + borderX, linearGraphic.height - (borderY-20));
              }
           for(Line line:lines){
             if(type1){

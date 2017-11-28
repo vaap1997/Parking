@@ -106,8 +106,8 @@ void setup(){
   print("LOADED");
   
   legend = createGraphics(700, 80);
-  linearGraphic = createGraphics(800, 520);
-  individualCanvas = createGraphics(1400,height - linearGraphic.height);
+  linearGraphic = createGraphics(1520, 520);
+  individualCanvas = createGraphics(1520,height - linearGraphic.height);
   pieChart =  new PieChart();
 
   int j=0;
@@ -169,13 +169,13 @@ void draw(){
     legend.endDraw();
     image(legend,3025,737);
     
-    //--------------PIE----------------------
-    chart.beginDraw();
-    chart.background(0);
-    //occPerZone = timePark.getOccPerZone();
-    //pieChart.drawZoneIndice();
-    chart.endDraw();
-    image(chart,800,0);
+    ////--------------PIE----------------------
+    //chart.beginDraw();
+    //chart.background(0);
+    ////occPerZone = timePark.getOccPerZone();
+    ////pieChart.drawZoneIndice();
+    //chart.endDraw();
+    //image(chart,800,0);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
@@ -185,7 +185,6 @@ void draw(){
     
     //-------------SPEEDOMETER-----------------
     individualCanvas.beginDraw();
-    //pieChart.drawIndResume();
     pieChart.BasicParkingStats();
     individualCanvas.endDraw();
     image(individualCanvas,0,linearGraphic.height);
