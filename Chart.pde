@@ -29,8 +29,8 @@ public class PieChart{
      linearGraphic.textSize(10);
      linearGraphic.fill(255); linearGraphic.stroke(255);
      
-     if(indice % 4.00 == 0.00) {
-       if(indice < timePark.chronometer.size()){
+     if (indice % 4.00 == 0.00) {
+       if(indice < occPerDate.size()){
          ArrayList occ = new ArrayList();
          for(int c = 0; c < pois.count(); c++){
            occ.add(c,0);
@@ -52,9 +52,8 @@ public class PieChart{
          }
 
          for( int i = 0; i < occ.size(); i++){
-            //int x = (((indiceLine)*(linearGraphic.width - 80))/(timePark.chronometer.size())) + borderX;
             int x = indiceLine + borderX;
-            int y = (4 * (100 - (int) occ.get(i))) + borderY;
+            int y = (4 * (100 - (int) occ.get(i))) + borderY*2;
             linearGraphic.fill(255); linearGraphic.stroke(255);
             
             if(lastIndice != indice){
@@ -140,7 +139,7 @@ public class PieChart{
           }
           
        if(lastIndice != indice) indiceLine++;   
-       }else{
+       } else {
           linearGraphic.background(0);
           repeat++;
           indiceLine = 0;
@@ -168,11 +167,10 @@ public class PieChart{
    individualCanvas.background(0);
    individualCanvas.textFont(createFont("Raleway", 20)); individualCanvas.textAlign(LEFT); individualCanvas.fill(255);
    individualCanvas.text("Basic parking stats", 40, 20);
-   individualCanvas.textSize(14); individualCanvas.textAlign(CENTER);
    if(indice % 96 == 0){
       dinamicHours = timePark.dinamicHours(indice);
    }
-   if(indice % 642 == 0){
+   if(indice % 672 == 0){
      maxDay = timePark.dinamicDay(indice);
    }
    int i=0;
@@ -189,8 +187,9 @@ public class PieChart{
        if(type8 && i==7)individualCanvas.fill(poiColor[7]);
        if(type9 && i==8)individualCanvas.fill(poiColor[8]); 
        if(type0 && i==9)individualCanvas.fill(poiColor[9]);  
+       individualCanvas.textSize(15.5); individualCanvas.textAlign(CENTER);
        individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,50);   
-       individualCanvas.fill(255);
+       individualCanvas.fill(255);individualCanvas.textSize(14);
        int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
        individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
        individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);

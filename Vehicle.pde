@@ -46,9 +46,9 @@ public class Vehicle {
   public Node getStart(){
    points = new ArrayList();
      for(Node node:ROADMAP.getAll()){
-       //if((!node.access.equals("pedestrian") )|| (!node.access.equals("living_street")) || (!node.access.equals("footway")) || (!node.access.equals("steps"))){
+       if(node.allows(this)){
          points.add(node);
-       //}
+       }
    }
   return  points.get(round(random(0, points.size()-1))); 
   }
@@ -92,6 +92,7 @@ public class Vehicle {
    if(!arrived){
      if(!path.available()){
        path.findPath(inNode, destination);
+       
      }else{
       //PVector movement = path.move(position, speed *speedFactor);  ** speedFactor para cambiar speed
       PVector movement = path.move(position, this.speed);   
@@ -159,9 +160,7 @@ public class Path{
    VEHICLE = vehicle;
    points = new ArrayList();
    for(Node node:ROADMAP.getAll()){
-     //if((node.access.equals("pedestrian") )|| (node.access.equals("living_street")) || (node.access.equals("footway")) || (node.access.equals("steps"))){
          points.add(node.POSITION);
-       //}
    }
  }
 
@@ -251,6 +250,8 @@ public class Path{
                 currentLane = lanes.get(0);
                 toVertex = currentLane.getVertex(1);
                 arrived = false;
+            } else {
+             destination = VEHICLE.findDestination();
             }
         }
   }
@@ -277,7 +278,7 @@ public class Path{
                 if( currNode.equals(destination) ) break;
                 for(Lane lane : currNode.outboundLanes()) {
                     Node neighbor = lane.getEnd();
-                    if( closed.contains(neighbor)) continue;
+                    if( closed.contains(neighbor) || (!lane.allows(VEHICLE))) continue;
                     boolean neighborOpen = open.contains(neighbor);
                     float costToNeighbor = currNode.getG() + lane.getLength();
                     if( costToNeighbor < neighbor.getG() || !neighborOpen ) {

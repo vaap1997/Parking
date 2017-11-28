@@ -48,7 +48,6 @@ final PVector[] orthoBounds = new PVector[] {
 
 
 final String roadsPath = "roads.geojson";
-//final String bgPath = "orto_small.jpg";
 final String bgPath = "orto.jpg";
 int simWidth = 1000;
 int simHeight = 847;
@@ -88,7 +87,7 @@ void setup(){
   simWidth = BG.width;
   simHeight = BG.height;
   surface = new WarpSurface(this, 1500, 550, 20, 10);
-  //surface.loadConfig();
+  surface.loadConfig();
   canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
   
   roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
@@ -164,32 +163,32 @@ void draw(){
     }
     canvas.endDraw(); 
     surface.draw((Canvas) canvas);
-    ////---------- LEGEND----------------------------
-    //legend.beginDraw();
-    //pieChart.drawLegend();
-    //legend.endDraw();
-    //image(legend,3025,737);
+    //---------- LEGEND----------------------------
+    legend.beginDraw();
+    pieChart.drawLegend();
+    legend.endDraw();
+    image(legend,3025,737);
     
-    ////--------------PIE----------------------
-    //chart.beginDraw();
-    //chart.background(0);
-    ////occPerZone = timePark.getOccPerZone();
-    ////pieChart.drawZoneIndice();
-    //chart.endDraw();
-    //image(chart,800,0);
+    //--------------PIE----------------------
+    chart.beginDraw();
+    chart.background(0);
+    //occPerZone = timePark.getOccPerZone();
+    //pieChart.drawZoneIndice();
+    chart.endDraw();
+    image(chart,800,0);
     
-    ////------------LINEAR GRAPHIC---------------
-    //linearGraphic.beginDraw();
-    //if(freeze) pieChart.drawLineGraph();
-    //linearGraphic.endDraw();
-    //image(linearGraphic,0,0);
+    //------------LINEAR GRAPHIC---------------
+    linearGraphic.beginDraw();
+    if(freeze) pieChart.drawLineGraph();
+    linearGraphic.endDraw();
+    image(linearGraphic,0,0);
     
-    ////-------------SPEEDOMETER-----------------
-    //individualCanvas.beginDraw();
-    ////pieChart.drawIndResume();
-    //pieChart.BasicParkingStats();
-    //individualCanvas.endDraw();
-    //image(individualCanvas,0,linearGraphic.height);
+    //-------------SPEEDOMETER-----------------
+    individualCanvas.beginDraw();
+    //pieChart.drawIndResume();
+    pieChart.BasicParkingStats();
+    individualCanvas.endDraw();
+    image(individualCanvas,0,linearGraphic.height);
     
     if(freeze){
      indice++; 

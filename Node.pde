@@ -110,6 +110,16 @@ private class Node implements Placeable, Comparable<Node>{
     }
     
     /**
+   * Allow just some type of roads
+   */
+    public boolean allows(Vehicle vehicle) {
+        for(Lane lane : lanes) {
+            if(lane.allows(vehicle)) return true;
+        }
+        return false;
+    }
+    
+    /**
    * Create a new lane conecting the actual node, the given and with an arrayList of vertices
    * Create other lane in case the road has two ways
    */

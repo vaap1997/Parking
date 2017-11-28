@@ -112,7 +112,6 @@ public class TimePark{
  
   /**
   * Create an array with all the occupancies every date
-  * Create an array with
   */
   public ArrayList getTotalOccupancy(){
     print("\nLoading occPerDate...");
@@ -152,7 +151,10 @@ public class TimePark{
     }
    return occPerDate;
   }
-    
+  
+  /**
+ * Return the occupancy in the date given 
+ */  
   public IntList getOccupancy(String dateS){
       IntList occupancy = new IntList(pois.count());
       for(int i = 0; i < occPerDate.size(); i++){
@@ -256,16 +258,18 @@ public class TimePark{
      maxDay.add(k,null);
    }
    int x=0;
-   for(int i = indexResume; i<indexResume+642; i=i+96){
+   for(int i = indexResume; i<indexResume+672; i=i+96){
      FloatList parkingPerDay = new FloatList();
      for(int c=0; c<pois.count();c++){
        parkingPerDay.set(c,0);
      }
      for(int j=i; j<i+96;j++){
-      ArrayList temporal = (ArrayList) occPerDate.get(j);
-        for(int k = 1; k < temporal.size(); k++){                            
-          parkingPerDay.set(k-1,parkingPerDay.get(k-1)+(int)temporal.get(k));                                 
-        } 
+      if(j<occPerDate.size()){
+        ArrayList temporal = (ArrayList) occPerDate.get(j);
+          for(int k = 1; k < temporal.size(); k++){                            
+            parkingPerDay.set(k-1,parkingPerDay.get(k-1)+(int)temporal.get(k));                                 
+          } 
+       }
      }
      
      for(int j = 0; j < pois.count();j++){

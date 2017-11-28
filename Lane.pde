@@ -70,7 +70,7 @@ private class Lane {
     }
    
     /**
-   * try to allow just some type of roads
+   * Allow just some type of roads
    */
    public boolean allows(Vehicle vehicle) {
      if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
