@@ -1,12 +1,15 @@
 /**
-* Roads - Class to manage the roadmap of simulation
+* Geometry - find if point is insite the lane
 * @author        Marc Vilella
 * @version       2.0
 */
 
-//Geometry class
+
 public static class Geometry{
-  //Check if a point is contained in a line
+
+   /**
+    * Check if a point is contained in a line
+    */
     public static boolean inLine(PVector point, PVector l1, PVector l2) {
         final float EPSILON = 0.001f;
         PVector l1p = PVector.sub(point, l1);
@@ -14,7 +17,9 @@ public static class Geometry{
         return PVector.angleBetween(l1p, line) <= EPSILON && l1p.mag() < line.mag();
     }
    
-   //find the perpendicular projection of the point over a line (find closest line, connect)
+   /**
+    * find the perpendicular projection of the point over a line (find closest line, connect)
+    */
     public static PVector scalarProjection(PVector point, PVector l1, PVector l2) {
         PVector l1p = PVector.sub(point, l1);
         PVector line = PVector.sub(l2, l1);

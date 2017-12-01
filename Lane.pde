@@ -15,11 +15,14 @@ private class Lane {
     private Node finalNode;
     private float distance;
     private ArrayList<PVector> vertices = new ArrayList();
-
-    
     //private ArrayList<Agent> crowd = new ArrayList();
     private float occupancy;
     
+    
+    /**
+    * create a lane with caracteristics name, access, initNode, finalNode and the vertices insite it
+    * Asign a color depending of the line type
+    */
     public Lane(String name, String access, Node initNode, Node finalNode, ArrayList<PVector> vertices) {
         this.name = name;
         this.access = access;
@@ -31,6 +34,7 @@ private class Lane {
             this.vertices.add(initNode.getPosition());
             this.vertices.add(finalNode.getPosition());   
         }
+        
         distance = calcLength();
         
         if(access.equals("primary")) {
@@ -44,26 +48,83 @@ private class Lane {
          } 
     }
     
-
+   /**
+   * return finalNode of the lane
+   */
    public Node getEnd() {
         return finalNode;
     }
-    
+   
+   /**
+   * true if the vertex is inside vertices
+   */
    public boolean contains(PVector vertex) {
         return vertices.indexOf(vertex) >= 0;
     }
     
+   /**
+   * return all the vertices in one array
+   */
    public ArrayList<PVector> getVertices() {
         return new ArrayList(vertices);
     }
+   
+    /**
+   * Allow just some type of roads
+   */
+   public boolean allows(Vehicle vehicle) {
+     if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
+        return false;
+     } else{
+       return true;
+     }
+   }
+   
+   /**
+   * return an specific vertex
+   */
+   public PVector getVertex(int i) {
+        if(i >= 0  && i < vertices.size()){
+          return vertices.get(i).copy();
+        }
+        return null;
+    }
     
+    /**
+   * return vertex given +1
+   */
+    public PVector nextVertex(PVector vertex) {
+        int i = vertices.indexOf(vertex) + 1;
+        if(i > 0 && i < vertices.size()) return vertices.get(i);
+        return null;
+    }
     
+    /**
+   * true if the vertex is one of the finalvertex of a lane
+   */
+    public boolean isLastVertex( PVector vertex ) {
+        return vertex.equals( vertices.get( vertices.size() - 1 ) );
+    }
+    
+   /**
+   * distance between vertex and the one before
+   */
     public float calcLength() {
         float dist = 0;
         for(int i = 1; i < vertices.size(); i++) dist += vertices.get(i-1).dist( vertices.get(i) );
         return dist;
     }
     
+   /**
+   * return dist that was calculate before
+   */
+    public float getLength() {
+        return distance;
+    }
+    
+   /**
+   * If it has two ways
+   */
     public Lane findContrariwise() {
         for(Lane otherLane : finalNode.outboundLanes()) {
             if( otherLane.isContrariwise(this) ) return otherLane;
@@ -71,15 +132,18 @@ private class Lane {
         return null;
     }
     
-    
-
+   /**
+   * is content inside reversed vertices array
+   */
     public boolean isContrariwise(Lane lane) {
         ArrayList<PVector> reversedVertices = new ArrayList(lane.getVertices());
         Collections.reverse(reversedVertices);
         return vertices.equals(reversedVertices);
     }
     
-   //Find the closest point to the POI in the lane selected 
+    /**
+   * find distance between the position and all the vertices and select the minimum
+   */
     public PVector findClosestPoint(PVector position) {
         Float minDistance = Float.NaN;
         PVector closestPoint = null;
@@ -93,7 +157,10 @@ private class Lane {
         }
         return closestPoint;
     }
-    
+  
+   /**
+   * divide the list of vertices that contain the node in two different arrays, creating two different lines
+   */  
    protected boolean divide(Node node) {
         int i = vertices.indexOf(node.getPosition());
         if(i > 0 && i < vertices.size()-1) {
@@ -108,8 +175,9 @@ private class Lane {
         return false;
     }
     
-    
-    //Create a new node to connect the POI with the closest point in the closest lane
+    /**
+   * Create a new node to connect the POI with the closest point in the closest lane
+   */
     protected Node split(Node node) {
         if( node.getPosition().equals(vertices.get(0)) ) return initNode;
         else if( node.getPosition().equals(finalNode.getPosition()) ) return finalNode;
@@ -131,13 +199,17 @@ private class Lane {
         return null;
     }    
    
-   //Draw and color line
+   /**
+   * draw lanes with color
+   */
    public void draw(PGraphics canvas, int stroke, color c) {  
      for(int i = 1; i < vertices.size(); i++) { 
             canvas.stroke(co, 127); canvas.strokeWeight(stroke);
+            //canvas.stroke(0, 127); canvas.strokeWeight(stroke);
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
      }
-   }   
+   }
+
 }
