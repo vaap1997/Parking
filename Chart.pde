@@ -30,7 +30,7 @@ public class PieChart{
      linearGraphic.fill(255); linearGraphic.stroke(255);
      
      if (indice % 4.00 == 0.00) {
-       if(indice < timePark.chronometer.size()-1){
+       if(indice < timePark.chronometer.size()- 4){
          ArrayList occ = new ArrayList();
          for(int c = 0; c < pois.count(); c++){
            occ.add(c,0);
@@ -64,13 +64,16 @@ public class PieChart{
              linearGraphic.background(0);
              linearGraphic.line(borderX,linearGraphic.height-borderY,borderX,borderY*2);
              linearGraphic.line(borderX,linearGraphic.height-borderY,timePark.chronometer.size()/2+borderX,linearGraphic.height-borderY);
-             linearGraphic.textFont(createFont("Raleway", 20)); linearGraphic.textAlign(LEFT);
+             linearGraphic.textFont(createFont("Raleway", 20)); linearGraphic.textAlign(LEFT); linearGraphic.fill(200); linearGraphic.stroke(200);
              linearGraphic.text("Average parking occupancy in July 2016",borderX,40);
+             linearGraphic.line(borderX,47,borderX + 360, 47);
+            
              linearGraphic.textSize(10);
              for(int i = 0; i <= 10; i++){
                linearGraphic.textAlign(CENTER);
                linearGraphic.text(str(i*10) + "%", borderX - 20, linearGraphic.height - borderY * (i+1));
              }
+             linearGraphic.textSize(12);
              for(int j = 0; j <= 30; j++){
                if(j <  30)linearGraphic.text(j+2,j*24*2+ borderX, linearGraphic.height - (borderY-20)); 
                if(j == 30)linearGraphic.text("July",j*24*2 + borderX, linearGraphic.height - (borderY-20));
@@ -165,31 +168,119 @@ public class PieChart{
   
   public void BasicParkingStats(){
    individualCanvas.background(0);
-   individualCanvas.textFont(createFont("Raleway", 20)); individualCanvas.textAlign(LEFT); individualCanvas.fill(255);
-   individualCanvas.text("Basic parking stats", 40, 20);
-   if(indice % 96 == 0){
+   individualCanvas.textFont(createFont("Raleway", 20)); individualCanvas.textAlign(LEFT); individualCanvas.fill(200);
+   individualCanvas.text("Basic parking stats", 40, 40); individualCanvas.textAlign(CENTER); individualCanvas.stroke(200);
+   individualCanvas.line(40,47,210,47);
+   if(indice % 96 == 0 && indice < timePark.chronometer.size()){
       dinamicHours = timePark.dinamicHours(indice);
    }
-   if(indice % 672 == 0){
+   if(indice % 672 == 0 && indice < timePark.chronometer.size() - 192){
      maxDay = timePark.dinamicDay(indice);
    }
    int i=0;
    for(POI poi:pois.getAll()){ 
      if(poi.access.equals("publicPark")){
-       if(type1 && i==0)individualCanvas.fill(poiColor[0]);
-       if(type2 && i==1)individualCanvas.fill(poiColor[1]);
-       else individualCanvas.fill(255);
-       if(type3 && i==2)individualCanvas.fill(poiColor[2]); 
-       if(type4 && i==3)individualCanvas.fill(poiColor[3]); 
-       if(type5 && i==4)individualCanvas.fill(poiColor[4]); 
-       if(type6 && i==5)individualCanvas.fill(poiColor[5]);
-       if(type7 && i==6)individualCanvas.fill(poiColor[6]);
-       if(type8 && i==7)individualCanvas.fill(poiColor[7]);
-       if(type9 && i==8)individualCanvas.fill(poiColor[8]); 
-       if(type0 && i==9)individualCanvas.fill(poiColor[9]);  
-       individualCanvas.textSize(15.5); individualCanvas.textAlign(CENTER);
-       individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,50);   
-       individualCanvas.fill(255);individualCanvas.textSize(14);
+       if(type1 && i==0){
+         individualCanvas.fill(poiColor[0]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       } else if( i == 0) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type2 && i==1){
+         individualCanvas.fill(poiColor[1]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 1) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type3 && i==2){
+         individualCanvas.fill(poiColor[2]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 2) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type4 && i==3){
+         individualCanvas.fill(poiColor[3]); 
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 3) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type5 && i==4){
+         individualCanvas.fill(poiColor[4]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 4) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type6 && i==5){
+         individualCanvas.fill(poiColor[5]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 5) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type7 && i==6){
+         individualCanvas.fill(poiColor[6]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 6) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type8 && i==7){
+         individualCanvas.fill(poiColor[7]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 7) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type9 && i==8){
+         individualCanvas.fill(poiColor[8]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(15.5);
+         individualCanvas.fill(255);
+       } else if( i == 8) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+       }
+       if(type0 && i==9){
+         individualCanvas.fill(poiColor[9]);
+         individualCanvas.textSize(17.5); 
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(16); individualCanvas.fill(255);
+       } else if( i == 9) {
+         individualCanvas.textSize(15.5); individualCanvas.fill(255);
+         individualCanvas.text(poi.NAME,((i+1)*individualCanvas.width/(pois.count()+1))+40,90);
+         individualCanvas.textSize(14.5); individualCanvas.fill(220);
+         
+       }
+          
+       individualCanvas.fill(255);individualCanvas.textSize(16);
        int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
        individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
        individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);
@@ -199,7 +290,6 @@ public class PieChart{
        String tempmin= (String) b.get(1);
        individualCanvas.text( tempmax, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 5* individualCanvas.height/8);
        individualCanvas.text( tempmin, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 6* individualCanvas.height/8);
-       
        individualCanvas.text( maxDay.get(i), ((i+1)*individualCanvas.width/(pois.count()+1))+40, 7* individualCanvas.height/8);
        i++;
      }
@@ -214,7 +304,43 @@ public class PieChart{
 
   }
   
-  
+  /**
+  * Draw curve
+  * Max and min average occupncy parkings
+  * Increment in the second fortnight of the month 
+  */
+  public void drawSummary(){
+    chart.fill(200); chart.textAlign(CENTER); chart.textSize(20);
+    chart.ellipse( 170, 350, 200, 200);
+    chart.ellipse( 250, 620, 200, 200);
+    chart.ellipse( 120, 900, 200, 200);
+    chart.stroke(0);chart.fill(0);
+    chart.text("Busiest parkings \n Fener1 and Fener2",170,330);
+    chart.text("Most free parking \n Antic Cami Ral",250,610);
+    chart.text("Occupancy´s increase\n in the second half",120,900);
+    chart.textFont(createFont("Raleway", 20)); chart.textAlign(LEFT); chart.strokeWeight(1);chart.stroke(200);chart.fill(200);
+    chart.line(10,77,155,77);
+    chart.text("Total statidistics",10,70);
+    chart.textAlign(CENTER);chart.textSize(13);
+    chart.text("8:00",40,195);
+    chart.text("12:00",120,195);
+    chart.text("17:00",200,195);
+    chart.text("21:00",280,195);
+    chart.text("8:00",360,195);
+    chart.triangle(70,165,80,145,90,165);
+    chart.triangle(150,145,160,165,170,145);
+    chart.triangle(230,165,240,145,250,165);
+    chart.triangle(310,145,320,165,330,145);
+    chart.strokeWeight(3.5);
+    chart.line(40,175,360,175);
+    chart.ellipseMode(CENTER);
+    chart.ellipse(40,175,5,5);
+    chart.ellipse(120,175,5,5);
+    chart.ellipse(200,175,5,5);
+    chart.ellipse(280,175,5,5);
+    chart.ellipse(360,175,5,5);
+  }
+   
   public void drawIndResume(){
    individualCanvas.background(0);
    individualCanvas.ellipseMode(CENTER); 

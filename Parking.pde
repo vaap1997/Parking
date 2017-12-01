@@ -98,7 +98,7 @@ void setup(){
 
   timePark = new TimePark("Aparcaments_julio.csv"); 
  
-  chart = createGraphics(500,height);
+  
   occPerDate=timePark.getTotalOccupancy();
   print("LOADED");
 
@@ -108,6 +108,7 @@ void setup(){
   legend = createGraphics(700, 80);
   linearGraphic = createGraphics(1520, 520);
   individualCanvas = createGraphics(1520,height - linearGraphic.height);
+  chart = createGraphics(500,height);
   pieChart =  new PieChart();
 
   int j=0;
@@ -163,19 +164,18 @@ void draw(){
     }
     canvas.endDraw(); 
     surface.draw((Canvas) canvas);
-    //---------- LEGEND----------------------------
+    //-------------- LEGEND ----------------------
     legend.beginDraw();
     pieChart.drawLegend();
     legend.endDraw();
     image(legend,3025,737);
     
-    ////--------------PIE----------------------
-    //chart.beginDraw();
-    //chart.background(0);
-    ////occPerZone = timePark.getOccPerZone();
-    ////pieChart.drawZoneIndice();
-    //chart.endDraw();
-    //image(chart,800,0);
+    //----------- SUMMARY ----------------------
+    chart.beginDraw();
+    chart.background(0);
+    pieChart.drawSummary();
+    chart.endDraw();
+    image(chart,1520,0);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
@@ -228,14 +228,14 @@ void keyPressed(KeyEvent e){
     case '+':
       speed = speed - 20 ;
       for(Vehicle V : vehicles){
-        V.changeSpeed(0.5);
+        V.changeSpeed(1);
       }
     break;
     
     case '-':
       speed = speed + 20;
       for(Vehicle V : vehicles){
-        V.changeSpeed(-0.5);
+        V.changeSpeed(-1);
       }
     break;
     
