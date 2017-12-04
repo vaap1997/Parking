@@ -236,7 +236,7 @@ public class POI extends Node{
  protected final ArrayList<Integer> DEVICENUM;
  protected final String PRICE;
  public int line;
- protected ArrayList<Vehicle> crowd = new ArrayList();
+ protected ArrayList<Agent> crowd = new ArrayList();
  
      public POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList<Integer> deviceNum, String price, PVector[] coords){
             super(position);
@@ -277,10 +277,10 @@ public class POI extends Node{
     /**
     * Upload how many agents are insite the POI
     */
-    public boolean host(Vehicle vehicle) {
+    public boolean host(Agent agent) {
       //int occIn = timePark.getIn(indice,this);
         //if(crowd.size() < occIn) {
-            crowd.add(vehicle);
+            crowd.add(agent);
             return true;
         //}
         //return false;
@@ -289,7 +289,7 @@ public class POI extends Node{
     /**
     * Upload how many agents are insite the POI
     */
-    public void unhost(Vehicle vehicle) {
-        crowd.remove(vehicle);
+    public void unhost(Agent agent) {
+        crowd.remove(agent);
     } 
 }

@@ -112,9 +112,9 @@ private class Node implements Placeable, Comparable<Node>{
     /**
    * Allow just some type of roads
    */
-    public boolean allows(Vehicle vehicle) {
+    public boolean allows(Agent agent) {
         for(Lane lane : lanes) {
-            if(lane.allows(vehicle)) return true;
+            if(lane.allows(agent)) return true;
         }
         return false;
     }

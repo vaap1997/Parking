@@ -15,7 +15,8 @@ private class Lane {
     private Node finalNode;
     private float distance;
     private ArrayList<PVector> vertices = new ArrayList();
-    //private ArrayList<Agent> crowd = new ArrayList();
+    private ArrayList<Agent> crowd = new ArrayList();
+    private int maxCrowd = 20;
     private float occupancy;
     
     
@@ -72,7 +73,7 @@ private class Lane {
     /**
    * Allow just some type of roads
    */
-   public boolean allows(Vehicle vehicle) {
+   public boolean allows(Agent agent) {
      if((access.equals("pedestrian") )|| (access.equals("living_street")) || (access.equals("footway")) || (access.equals("steps"))){
         return false;
      } else{
@@ -211,5 +212,24 @@ private class Lane {
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
      }
    }
+   
+   /**
+    * Add reference to an agent that is crossing in the lane. Recalculate occupancy
+    * @param agent  The agent crossing the lane
+    */
+    public void addAgent(Agent agent) {
+        crowd.add(agent);
+        occupancy = (float) crowd.size() / maxCrowd;
+    }
+    
+    
+    /**
+    * Remove reference to agent that was crossing in the lane, but it's not anymore. Recalculate occupancy
+    * @param agent  The agent that was crossing the lane
+    */
+    public void removeAgent(Agent agent) {
+        crowd.remove(agent);
+        occupancy = (float) crowd.size() / maxCrowd;
+    }
 
 }

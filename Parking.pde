@@ -67,7 +67,8 @@ int lastNamex = 600 ;
 int lastNamey = 600 ;
 ArrayList<ArrayList> dinamicHours;
 ArrayList<String> dinamicDay;
-ArrayList<Vehicle> vehicles;
+//ArrayList<Agent> vehicles;
+Agents agents;
 
 /**
 * Create a canvas by linking more than one screen
@@ -119,12 +120,9 @@ void setup(){
     }
   }
   
-  vehicles =  new ArrayList<Vehicle>();
-  for(int i=0; i < totalAgent; i++){
-   //vehicles.add( new Vehicle(roads, random(2,4),0.3));
-   vehicles.add( new Vehicle(roads));
-  }
-  
+ agents = new Agents();
+ agents.loadVehicles(totalAgent, "vehicle", roads);
+ agents.setSpeed(3, 6);
 }
 
 
@@ -158,10 +156,8 @@ void draw(){
     if(showBG)canvas.image(BG,0,0); 
       else roads.draw(canvas,3,#cacfd6);  
     pois.draw(occupancy);
-    for(Vehicle v:vehicles){
-      v.move();
-      v.display();
-    }
+    agents.move();
+    agents.draw(canvas);
     canvas.endDraw(); 
     surface.draw((Canvas) canvas);
     //-------------- LEGEND ----------------------
@@ -227,16 +223,12 @@ void keyPressed(KeyEvent e){
     
     case '+':
       speed = speed - 20 ;
-      for(Vehicle V : vehicles){
-        V.changeSpeed(1);
-      }
+        agents.changeSpeed(1);
     break;
     
     case '-':
       speed = speed + 20;
-      for(Vehicle V : vehicles){
-        V.changeSpeed(-1);
-      }
+        agents.changeSpeed(-1);
     break;
     
     case '1':
