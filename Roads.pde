@@ -45,6 +45,15 @@ public class Roads extends Facade<Node>{
             add(poi);
            
       } 
+      
+      private void locateRNC( RNC rnc){
+         Lane closestLane =  findClosestLane( rnc.getPosition() );
+         //Lane closestLaneBack = closestLane.findContrariwise();
+         PVector closestPoint = closestLane.findClosestPoint( rnc.getPosition() );
+         
+         rnc.changePosition(closestPoint);        
+         
+      }
        
      /**
       * connect poi with differect entries to the roads
@@ -64,6 +73,8 @@ public class Roads extends Facade<Node>{
         }
         add(poi);
      }
+     
+     
 
     /**
     * find the closest lane to the point
