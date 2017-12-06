@@ -83,9 +83,10 @@ public class RNCFactory extends Factory{
       if( roads.contains(rncCoord)){
       String timestamp = rnc.getString("timestamp");
       rncTime = fmt.parseDateTime(timestamp);
-      String rncColor = rnc.getString("Color");
+      String rncCountry = rnc.getString("Country");
+      String rncMCC =  rnc.getString("MCC");
       
-      rncs.add(new RNC(rncCoord, rncTime, rncColor, roads));
+      rncs.add(new RNC(rncCoord, rncTime, rncCountry,rncMCC, roads));
       
       }
     }
@@ -108,22 +109,16 @@ public class RNCFactory extends Factory{
         rncTime = fmt.parseDateTime(timestamp);
         String rncMCC =  row.getString("MCC");
        
-        String rncColor;
-          if( rncMCC.equals("213") || rncMCC.equals("214") || rncMCC.equals("208")){
-            rncColor = MCC.get(rncMCC);
-          }else {
-            rncColor = MCC.get("Others");
+        String rncCountry;
+
+          if(MCC.hasKey(rncMCC)){
+            rncCountry = MCC.get(rncMCC);
+          }else{
+            rncCountry = MCC.get("Others");
           }
-            
-          //if(MCC.get(rncMCC).equals(null)){
-          //rncColor = MCC.get("Others");
-          //} else {
-          //rncColor = MCC.get(rncMCC);
-          //}
           
-          //print(rncColor);
         
-        rncs.add(new RNC(rncCoord, rncTime,rncColor, roads));
+        rncs.add(new RNC(rncCoord, rncTime,rncCountry, rncMCC, roads));
         
         } 
     }
@@ -136,7 +131,7 @@ public class RNCFactory extends Factory{
     
     Table table = loadTable(path,"header");
     for(TableRow row:table.rows()){
-     MCC.set(row.getString("MCC"), row.getString("Color"));
+     MCC.set(row.getString("MCC"), row.getString("Country"));
     }
     return MCC;
   }
@@ -148,13 +143,24 @@ public class RNC implements Placeable{
   DateTime rncTime;
   private int size = 6;
   private boolean selected = false;
-  private String rncColor;
+  private String rncCountry;
+  private color c;
   
-  public RNC(PVector rncCoord, DateTime rncTime, String rncColor, Roads roads){
+  
+  public RNC(PVector rncCoord, DateTime rncTime, String rncCountry, String MCC, Roads roads){
     this.position = rncCoord;
     this.rncTime = rncTime;
-    this.rncColor = rncColor;
+    this.rncCountry = rncCountry;
     place(roads);
+    if(MCC.equals("213")){
+      c = #FFFF33;
+    }else if(MCC.equals("214")){
+      c = #3349FF;
+    }else if(MCC.equals("208")){
+      c = #FF7733;
+    }else{
+      c = #FFFFFF;
+    }
   }
   
   /**
@@ -179,9 +185,7 @@ public class RNC implements Placeable{
   }
   
   public void draw(PGraphics p, DateTime indiceRnc){
-    //print(rncColor);
-    //color c = unhex(rncColor);
-    // p.stroke(c);
+     p.stroke(c);
     if(rncTime.isEqual(indiceRnc)){
        p.ellipse( position.x, position.y, 6,6);
     }
