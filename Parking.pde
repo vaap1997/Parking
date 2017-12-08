@@ -58,8 +58,8 @@ final PVector[] orthoBounds = new PVector[] {
 
 final String roadsPath = "roads.geojson";
 final String bgPath = "orto.jpg";
-String datesS;
-String[] actualDate;
+DateTime datesS;
+String actualDate;
 int indiceLine = 0;
 int simWidth = 1000;
 int simHeight = 847;
@@ -162,8 +162,8 @@ void draw(){
       if(indice >= maxIndice){
         indice = 0;
       }
-      datesS = timePark.chronometer.get(indice).toString(fmtToShow);
-      actualDate = split(datesS, ' ');
+      datesS = timePark.chronometer.get(indice);
+      actualDate = datesS.toString(fmtToShow);
       if(freeze) {
         occupancy = timePark.getOccupancy(datesS);
       }

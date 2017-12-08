@@ -412,7 +412,7 @@ public class PieChart{
     legend.stroke(255);
     legend.fill(255);
     legend.textSize(16);
-    legend.text("Date:\n" + actualDate[0]+"   "+actualDate[1] ,500,35);
+    legend.text("Date:\n" + actualDate ,500,35);
     legend.textSize(13);
     legend.text("Percentage of occupancy",50,20);
     legend.text("Road type",320,20);
