@@ -106,7 +106,7 @@ public class TimePark{
         }
       }
      ArrayList occTemporal = new ArrayList();
-         occTemporal.add(0,chronometer.get(i).toString(fmtToShow));
+         occTemporal.add(0,chronometer.get(i));
          int k=1;
          for(POI poi:pois.getAll()){
            if(poi.access.equals("publicPark")){
@@ -122,11 +122,11 @@ public class TimePark{
   /**
  * Return the occupancy in the date given 
  */  
-  public IntList getOccupancy(String dateS){
+  public IntList getOccupancy(DateTime dateS){
       IntList occupancy = new IntList(pois.count());
       for(int i = 0; i < occPerDate.size(); i++){
        ArrayList temporal = (ArrayList) occPerDate.get(i);
-       if(dateS.equals(temporal.get(0) )){
+       if(dateS.isEqual( (DateTime) temporal.get(0))){
           for(int c = 1; c < temporal.size(); c++){
             occupancy.set(c-1,(int)temporal.get(c));
           }
@@ -152,9 +152,8 @@ public class TimePark{
 
       for(int i=indexResume; i<indexResume+96;i++){
          ArrayList temporal = (ArrayList) occPerDate.get(i);
-         String date = (String) temporal.get(0);
-         int place = date.indexOf(":"); 
-         String dayToCompare = date.substring(place-2,place+3);
+         DateTime date =  (DateTime) temporal.get(0);
+         String dayToCompare = date.toString("HH:mm");
          for(int x=1; x<temporal.size(); x++){
            float compare1 = float((int)temporal.get(x));
            float maximo = max((float) dinamicHoursValue.get(x-1).x,compare1);
@@ -193,9 +192,9 @@ public class TimePark{
          } 
          for(int c=0; c <occPerDate.size(); c++){
            ArrayList temporal = (ArrayList) occPerDate.get(c);
-           String date = (String) temporal.get(0);
-           int place = date.indexOf(":"); 
-           int dayToCompare = int( date.substring(place-2,place));
+           DateTime date =  (DateTime) temporal.get(0);
+           int dayToCompare = date.dayOfMonth().get();
+           
            if( dayToCompare == i){
              for(int j = 1; j < temporal.size(); j++){                            
                parkingPerHour.set(j-1,parkingPerHour.get(j-1)+(int)temporal.get(j));                                 
