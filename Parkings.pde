@@ -23,6 +23,9 @@ public class POIs extends Facade<POI>{
     }
   } 
   
+  /**
+   * load Escaldes's public or privates POIs, error if there is not file
+  */ 
   public void loadPrivateCSV(String path, Roads roadmap){
     File file = new File( dataPath(path) );
     if( !file.exists() ) println("ERROR! CSV file does not exist");
@@ -97,7 +100,9 @@ public class POIs extends Facade<POI>{
    return CapacityPark;
   }
   
-   
+ /**
+ * Count the public Andorran POIs
+ */ 
   public int count(){
     int i=0;
     for(POI poi : pois.getAll()){
@@ -111,14 +116,14 @@ public class POIs extends Facade<POI>{
  /**
  * Draw parking occupancy for the chronometer time
  */ 
- public void draw(IntList occupancy){
+ public void draw(DateTime date){
     
     int c = 0;
     for(POI poi:pois.getAll()){ 
       if(poi.access.equals("publicPark")){
         //int Occupancy = (int) map(occupancy.get(c),0,800,0,100); 
-        int Occupancy = (int) log(occupancy.get(c))*12; 
-        float use = ((float)occupancy.get(c) / (float)poi.CAPACITY);
+        int Occupancy = (int) log(poi.getCrowd(date))*12; 
+        float use = ((float)poi.getCrowd(date) / (float)poi.CAPACITY);
         color occColor = lerpColor(#4DFF00, #E60000,use);
 
             canvas.ellipseMode(CENTER); canvas.fill(occColor); canvas.stroke(occColor,127); canvas.strokeWeight(2);

@@ -82,21 +82,6 @@ public class TimePark{
    return minDate; 
   }
   
-  /**
- * Return the occupancy in the date given 
- */  
-  public IntList getOccupancy(DateTime dateS){
-      IntList occupancy = new IntList(pois.count());
-      for(POI poi:pois.getAll()){
-        if(poi.access.equals("publicPark")){
-          for(int c=0; c< pois.count();c++){
-            occupancy.set(c,(int) poi.getCrowd(dateS));
-          }
-        }
-      }
-    return occupancy;
-  }
- 
  /**
  * compare hours in a day begining by the date given 
  */
@@ -111,9 +96,8 @@ public class TimePark{
       dinamicHours.add(a);
       dinamicHoursValue.add(new PVector(-Integer.MAX_VALUE,Integer.MAX_VALUE));
     }
-
+    
     for(int i=indexResume; i<indexResume+96; i++){
-        //DateTime date =  (DateTime) temporal.get(0);
         String dayToCompare = dateToCompare.toString("HH:mm");
         int x=0;
          for(POI poi:pois.getAll()){
@@ -124,39 +108,20 @@ public class TimePark{
              dinamicHoursValue.set(x, new PVector(maximo,minimo));
              ArrayList b = (ArrayList) dinamicHours.get(x);
              if(dinamicHoursValue.get(x).x == compare1) b.set(0,dayToCompare);
-             if(dinamicHoursValue.get(x).y == compare1) b.set(0,dayToCompare);
+             if(dinamicHoursValue.get(x).y == compare1) b.set(1,dayToCompare);
              dinamicHours.set(x,b);
              x++;
            }
          }
         dateToCompare = dateToCompare.plusMinutes(15); 
       }
-      
-      //for(int i=indexResume; i<indexResume+96;i++){
-      //   ArrayList temporal = (ArrayList) occPerDate.get(i);
-      //   DateTime date =  (DateTime) temporal.get(0);
-      //   String dayToCompare = date.toString("HH:mm");
-      //   for(int x=1; x<temporal.size(); x++){
-      //     float compare1 = float((int)temporal.get(x));
-      //     float maximo = max((float) dinamicHoursValue.get(x-1).x,compare1);
-      //     float minimo = min((float) dinamicHoursValue.get(x-1).y,compare1);
-      //     dinamicHoursValue.set(x-1,new PVector( maximo, minimo));
-      //     ArrayList b = (ArrayList) dinamicHours.get(x-1);
-      //     if(dinamicHoursValue.get(x-1).x == compare1) b.set(0,dayToCompare);
-      //     if(dinamicHoursValue.get(x-1).y == compare1) b.set(1,dayToCompare);
-      //     dinamicHours.set(x-1,b);
-      //   }
-      //}
 
-    //print("\n"+ dinamicHours);
     return dinamicHours;
   }
   
   /**
  * find the max and min hour in promedio in the month
  */
- //totalTime
- //minDate
   public ArrayList<PVector> maxMinHour(){
    print("\nLoading max and min per hour...");
    ArrayList<PVector> MaxMin = new ArrayList(pois.count());
@@ -236,46 +201,7 @@ public class TimePark{
    return maxDay;  
  } 
  
- 
- /**
- * make arrays statistics of everyday of the weekend and find the media of the month
- */
- //public ArrayList<String>  maxDay(){
- //  ArrayList<Float> total = new ArrayList();
- //  ArrayList<String> maxDay = new ArrayList();
- //  String[] nameDay = {"SAT", "SUN", "MON", "TUE", "WED", "THR", "FRI"};
- //  print("\nLoading max per day...");
- //  for(int k=0; k <pois.count();k++){
- //    total.add(k,-Float.MAX_VALUE);
- //    maxDay.add(k, null);
- //  }
 
- //  for(int k = 0; k < 7; k++){
- //    FloatList parkingPerDay = new FloatList();
- //    for(int c=0; c<pois.count();c++){
- //      parkingPerDay.set(c,0);
- //    }
- //    for(int c = k; c < totalTime; c=c+28){
- //      for(int i=c; i < c+4; i++){
- //          int j=0;
- //          for(POI poi: pois.getAll()){ 
- //            if(poi.access.equals("publicPark")){
- //               parkingPerDay.set(j-1,parkingPerDay.get(j-1)+(int)poi.getCrowd(dateToCompare));  
- //               j++;
- //            }
- //          }
- //      }
- //    }
-     
- //    for(int j = 0; j < pois.count();j++){
- //      float maximo = max(total.get(j),parkingPerDay.get(j));
- //      total.set(j,maximo);
- //      if(total.get(j) == parkingPerDay.get(j)) maxDay.set(j, nameDay[k]);
- //    }
- //  }
- // return maxDay; 
- //}
- 
   /**
   * total time in seconds that contain the file
   */

@@ -56,7 +56,9 @@ private class Node implements Placeable, Comparable<Node>{
      return selected;
   }
   
-  
+ /**
+ *Return node's position
+ */
   public PVector getPosition() {
     return POSITION.copy();
   }

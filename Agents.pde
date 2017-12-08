@@ -23,8 +23,7 @@ public class Agents extends Facade<Agent> {
       else {
       items.addAll( ((AgentFactory)factory).loadAgents(numberAgents, typeAgent, roads) );
       }
-      
-      
+
     }
 
     

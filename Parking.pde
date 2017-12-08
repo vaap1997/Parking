@@ -76,24 +76,20 @@ int lastNamey = 600 ;
 public int maxHourT = 23;
 ArrayList deviceNumPark;
 ArrayList<String> maxDay;
-//ArrayList occPerDate;
 ArrayList<PVector> lastCoord = new ArrayList();
 ArrayList<ArrayList> dinamicHours;
 ArrayList<String> dinamicDay;
-IntList occupancy = new IntList();
-//ArrayList<Agent> vehicles;
-
-
-
+//IntList occupancy = new IntList();
 
 /**
 * Create a canvas by linking more than one screen
 * Create a surface to manipulate the canvas
 * Upload roads
 * Place pois
-* Read timeparl
+* Read timepark
+* Fullfit dictionary of occupancy per poi per date
 * Create PGraphics and inicialize line graphics
-* Read and summarize timePark information
+* Inicialize agents
 */
 void setup(){
   fullScreen(P2D,SPAN);
@@ -145,6 +141,7 @@ void setup(){
 * draw legend
 * draw linear graphic
 * draw a chart with basic parking's statidistics
+* draw summary
 */
 void draw(){  
 
@@ -153,11 +150,10 @@ void draw(){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice){
         indice = 0;
-      }
-      datesS = timePark.chronometer.get(indice);
-      actualDate = datesS.toString(fmtToShow);
+      } 
       if(freeze) {
-        occupancy = timePark.getOccupancy(datesS);
+        datesS = timePark.chronometer.get(indice);
+        actualDate = datesS.toString(fmtToShow);
       }
       timer = millis();
     }
@@ -169,7 +165,7 @@ void draw(){
       canvas.image(BG,0,0); 
     }
     else roads.draw(canvas,3,#cacfd6);  
-    pois.draw(occupancy);
+    pois.draw(datesS);
     agents.move(); 
     agents.draw(canvas);
       
@@ -202,7 +198,6 @@ void draw(){
     
     if(freeze){
      indice++; 
-     
    }
 }
 

@@ -283,7 +283,7 @@ public class PieChart{
        }
           
        individualCanvas.fill(255);individualCanvas.textSize(16);
-       int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
+       int use = int(((float)poi.getCrowd(datesS) / (float)poi.CAPACITY)*100);
        individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
        individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);
        individualCanvas.text(poi.PRICE+"€",((i+1)*individualCanvas.width/(pois.count()+1))+40, 4* individualCanvas.height/8);
@@ -391,7 +391,7 @@ public class PieChart{
           individualCanvas.textFont(createFont("IMPACT", 22));
           individualCanvas.text(poi.CAPACITY,coordInd.x+60,coordInd.y+88);
           individualCanvas.text(poi.PRICE+"€",coordInd.x+130,coordInd.y+88);
-          int use = int(((float)occupancy.get(i) / (float)poi.CAPACITY)*100);
+          int use = int(((float)poi.getCrowd(datesS) / (float)poi.CAPACITY)*100);
           individualCanvas.text(use+"%",coordInd.x+200,coordInd.y+88);
           individualCanvas.textFont(createFont("Georgia", 15));
           ArrayList b = (ArrayList) dinamicHours.get(i);
