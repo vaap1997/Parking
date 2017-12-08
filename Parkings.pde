@@ -30,6 +30,16 @@ public class POIs extends Facade<POI>{
       items.addAll( ((POIFactory)factory).loadPrivateCSV(path, roadmap) );
     }
   }
+  
+  
+  public void loadED(ArrayList<DateTime> chronometer, ArrayList<TimeP> parks){
+   for (POI poi : pois.getAll()){
+      if(poi.access.equals("publicPark")){
+        poi.getPerDate(chronometer, parks);
+      }
+    } 
+  }
+  
    
   /**
    * Create an array with parking names
@@ -237,6 +247,8 @@ public class POI extends Node{
  protected final String PRICE;
  public int line;
  protected ArrayList<Agent> crowd = new ArrayList();
+ private IntDict occupancyPerDate = new IntDict();
+ 
  
      public POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList<Integer> deviceNum, String price, PVector[] coords){
             super(position);
@@ -292,4 +304,31 @@ public class POI extends Node{
     public void unhost(Agent agent) {
         crowd.remove(agent);
     } 
+    
+    
+    public void getPerDate(ArrayList<DateTime> chronometer, ArrayList<TimeP> parks){
+      print("\nLoading occPerDate...");
+      IntDict occPerDate = new IntDict();
+        for(int a = 0; a < chronometer.size(); a++){
+          for(TimeP park: parks){
+            if(poi.PARKNUMBER == park.CARPARKNUMBER){
+              if(occPerDate.hasKey( chronometer.get(a).toString() )){
+                if(park.MOVTYPE == 1){
+                  occPerDate.set( chronometer.get(a).toString() ,occPerDate.get( chronometer.get(a).toString() )-park.PASSAGES);
+                 }else{
+                   occPerDate.set( chronometer.get(a).toString() ,occPerDate.get( chronometer.get(a).toString() )+park.PASSAGES);
+                 }  
+              }else{
+                if(park.MOVTYPE == 1){
+                  occPerDate.set(chronometer.get(a).toString(),-park.PASSAGES);
+                 }else{
+                  occPerDate.set(chronometer.get(a).toString(), park.PASSAGES);
+                 }
+              }
+            }
+          }
+        }
+    }
+    
+    
 }
