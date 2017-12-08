@@ -20,6 +20,7 @@ PieChart pieChart;
 Agents agents;
 DateTimeFormatter fmtPark = DateTimeFormat.forPattern("dd/MM/yy HH:mm");
 DateTimeFormatter fmtToShow = DateTimeFormat.forPattern("dd/MM/yy  HH:mm");
+DateTime minDate;
 
 boolean showBG = true;
 boolean freeze = true;
@@ -75,7 +76,7 @@ int lastNamey = 600 ;
 public int maxHourT = 23;
 ArrayList deviceNumPark;
 ArrayList<String> maxDay;
-ArrayList occPerDate;
+//ArrayList occPerDate;
 ArrayList<PVector> lastCoord = new ArrayList();
 ArrayList<ArrayList> dinamicHours;
 ArrayList<String> dinamicDay;
@@ -112,14 +113,9 @@ void setup(){
   pois.loadCSV("Aparcaments.csv",roads);
   pois.loadPrivateCSV("Private_Parkings.csv",roads);
 
-  timePark = new TimePark("Aparcaments_julio.csv"); 
- 
-  
-  occPerDate=timePark.getTotalOccupancy();
-  print("LOADED");
-
-  maxDay = timePark.maxDay();
-  print("LOADED");
+  timePark = new TimePark("Aparcaments_julio.csv", pois); 
+  pois.loadED(timePark.chronometer, timePark.parks);
+  minDate =  timePark.minDate;
   
   legend = createGraphics(700, 80);
   linearGraphic = createGraphics(1520, 520);
@@ -130,7 +126,7 @@ void setup(){
   int j=0;
   for(POI poi : pois.getAll()){
     if(poi.access.equals("publicPark")){
-       lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
+       lastCoord.add(j,new PVector(pieChart.borderX,(int)poi.getCrowd(minDate) / poi.CAPACITY)); 
        j++;
     }
   }
@@ -138,10 +134,6 @@ void setup(){
  agents = new Agents();
  agents.loadVehicles(totalAgent, "vehicle", roads);
  agents.setSpeed(3, 6);
- 
-
- 
-
  
 }
 
@@ -198,13 +190,13 @@ void draw(){
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
-    if(freeze) pieChart.drawLineGraph();
+    if(freeze) pieChart.drawLineGraph(datesS,minDate);
     linearGraphic.endDraw();
     image(linearGraphic,0,0);
     
     //-------------SPEEDOMETER-----------------
     individualCanvas.beginDraw();
-    pieChart.BasicParkingStats();
+    pieChart.BasicParkingStats(indice, datesS);
     individualCanvas.endDraw();
     image(individualCanvas,0,linearGraphic.height);
     

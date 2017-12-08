@@ -7,7 +7,6 @@ public class PieChart{
   String message;
   PFont f = createFont("Georgia",15,true);
   ArrayList<String> namePark = pois.getPOInames();
-  ArrayList lineIni = (ArrayList) occPerDate.get(0);
   int borderX = 40;
   int borderY = 40;
   color[] poiColor = { color(#A9BDCF), color(#Ef7501), color(230,0,0), color(#3500E5), color(#0ABCB2), color(#E50083), color(#8448b8), color(#FFF500), color(#00bc6c), color(#e5a68e)};
@@ -23,7 +22,7 @@ public class PieChart{
   * Draw lines coordinate with the chronometer and depending if the parking is selected or not
   * Refresh with every chronometer complete
   */
-  public void drawLineGraph(){
+  public void drawLineGraph(DateTime chronometer,DateTime minDate){
      //color coLine = 255;
      
      linearGraphic.textSize(10);
@@ -36,9 +35,12 @@ public class PieChart{
            occ.add(c,0);
          }
          for(int i = indice; i < indice+4; i++){ 
-           ArrayList occTemp = (ArrayList) occPerDate.get(i);
-           for(int j = 0; j < occTemp.size() - 1; j++){
-             occ.set(j,(int)occ.get(j)+(int)occTemp.get(j+1));  
+           int f=0;
+           for(POI poi: pois.getAll()){
+            if(poi.access.equals("publicPark")){
+               occ.set(f, (int) occ.get(f)+poi.getCrowd(chronometer));
+               f++;
+            }
            }
          } 
 
@@ -149,7 +151,7 @@ public class PieChart{
           int j=0;
           for(POI poi : pois.getAll()){
            if(poi.access.equals("publicPark")){
-             lastCoord.add(j,new PVector(pieChart.borderX,(int)pieChart.lineIni.get(j+1) / poi.CAPACITY)); 
+             lastCoord.add(j,new PVector(pieChart.borderX,(int)poi.getCrowd(minDate) / poi.CAPACITY)); 
              j++;
            }
          }
@@ -166,16 +168,16 @@ public class PieChart{
   * Draw capacity, name, max and min hour of the day, maxday of the week
   */
   
-  public void BasicParkingStats(){
+  public void BasicParkingStats(int indice, DateTime datesS){
    individualCanvas.background(0);
    individualCanvas.textFont(createFont("Raleway", 20)); individualCanvas.textAlign(LEFT); individualCanvas.fill(200);
    individualCanvas.text("Basic parking stats", 40, 40); individualCanvas.textAlign(CENTER); individualCanvas.stroke(200);
    individualCanvas.line(40,47,210,47);
    if(indice % 96 == 0 && indice < timePark.chronometer.size()){
-      dinamicHours = timePark.dinamicHours(indice);
+      dinamicHours = timePark.dinamicHours(indice, datesS);
    }
    if(indice % 672 == 0 && indice < timePark.chronometer.size() - 192){
-     maxDay = timePark.dinamicDay(indice);
+     maxDay = timePark.dinamicDay(indice, datesS);
    }
    int i=0;
    for(POI poi:pois.getAll()){ 
@@ -341,13 +343,13 @@ public class PieChart{
     chart.ellipse(360,175,5,5);
   }
    
-  public void drawIndResume(){
+  public void drawIndResume(int indice, DateTime datesS){
    individualCanvas.background(0);
    individualCanvas.ellipseMode(CENTER); 
    PVector coordInd = new PVector(0,0);
    color rectName = color(180,50);
    if(indice % 96 == 0){
-      dinamicHours = timePark.dinamicHours(indice);
+      dinamicHours = timePark.dinamicHours(indice,datesS);
    }
 
    int i = 0;

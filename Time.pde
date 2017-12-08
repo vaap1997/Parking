@@ -4,24 +4,26 @@
 * @version       2.0
 */
 public class TimePark{
-  ArrayList <TimeP> park;
+  ArrayList<TimeP> parks;
   ArrayList<DateTime> chronometer;
   IntDict maxMin = new IntDict();
   int totalTime;
   DateTime minDate = null;
   DateTime maxDate = null;
   Period differenceInTime;
-  //private POIs pois;
+  private POIs pois;
   
   /**
   * Recognize if the file exist
   */
-  public TimePark(String path){
+  public TimePark(String path, POIs pois){
+    this.pois = pois;
     chronometer = new ArrayList();
     if(path!= null) loadCSV(path);
     else println("There is not file");
     chronometer = Chronometer();
   }
+
   
   /**
   * Load CSV file
@@ -30,7 +32,7 @@ public class TimePark{
     DateTime parkingTime;
      print("Loading time...");
      
-     park = new ArrayList();   
+     parks = new ArrayList();   
      Table table = loadTable(path,"header");
      for(TableRow row:table.rows()){
        int movType = row.getInt("Movement Type");
@@ -53,7 +55,7 @@ public class TimePark{
                         minDate = parkingTime;
                     }
 
-                   park.add(new TimeP(carParkNumber,deviceNum,movType, parkingTime, passages));         
+                   parks.add(new TimeP(carParkNumber,deviceNum,movType, parkingTime, passages));         
                  }
              }   
            } 
@@ -76,47 +78,8 @@ public class TimePark{
      return chronometer;
   }
   
- 
-  /**
-  * Create an array with all the occupancies every date
-  */
-  public ArrayList getTotalOccupancy(){
-    print("\nLoading occPerDate...");
-    ArrayList occPerDate = new ArrayList(); 
-    IntList occPerPoi = new IntList();
-    for(int a = 0; a < chronometer.size(); a++){
-    occPerPoi.set(a,0);
-    }
-    for(int i=0; i <chronometer.size(); i++){ 
-        for(TimeP park:park){
-          if(park.TIME.isEqual(chronometer.get(i))){
-            int c=0;
-             for( POI poi:pois.getAll()){
-               if(poi.access.equals("publicPark")){
-                    if( poi.PARKNUMBER == park.CARPARKNUMBER){
-                        if(park.MOVTYPE == 1){
-                          occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
-                        }else{
-                          occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
-                        }
-                    }
-               c++; 
-            }
-          }
-        }
-      }
-     ArrayList occTemporal = new ArrayList();
-         occTemporal.add(0,chronometer.get(i));
-         int k=1;
-         for(POI poi:pois.getAll()){
-           if(poi.access.equals("publicPark")){
-             occTemporal.add(k,occPerPoi.get(k-1));
-              k++;
-           }
-         }
-     occPerDate.add(occTemporal);    
-    }
-   return occPerDate;
+  public DateTime getMinDate(){
+   return minDate; 
   }
   
   /**
@@ -124,11 +87,10 @@ public class TimePark{
  */  
   public IntList getOccupancy(DateTime dateS){
       IntList occupancy = new IntList(pois.count());
-      for(int i = 0; i < occPerDate.size(); i++){
-       ArrayList temporal = (ArrayList) occPerDate.get(i);
-       if(dateS.isEqual( (DateTime) temporal.get(0))){
-          for(int c = 1; c < temporal.size(); c++){
-            occupancy.set(c-1,(int)temporal.get(c));
+      for(POI poi:pois.getAll()){
+        if(poi.access.equals("publicPark")){
+          for(int c=0; c< pois.count();c++){
+            occupancy.set(c,(int) poi.getCrowd(dateS));
           }
         }
       }
@@ -138,7 +100,7 @@ public class TimePark{
  /**
  * compare hours in a day begining by the date given 
  */
-  public ArrayList<ArrayList> dinamicHours(int indexResume){
+  public ArrayList<ArrayList> dinamicHours(int indexResume, DateTime dateToCompare){
     ArrayList<ArrayList> dinamicHours = new ArrayList();
     ArrayList<PVector> dinamicHoursValue = new ArrayList();
     
@@ -150,21 +112,41 @@ public class TimePark{
       dinamicHoursValue.add(new PVector(-Integer.MAX_VALUE,Integer.MAX_VALUE));
     }
 
-      for(int i=indexResume; i<indexResume+96;i++){
-         ArrayList temporal = (ArrayList) occPerDate.get(i);
-         DateTime date =  (DateTime) temporal.get(0);
-         String dayToCompare = date.toString("HH:mm");
-         for(int x=1; x<temporal.size(); x++){
-           float compare1 = float((int)temporal.get(x));
-           float maximo = max((float) dinamicHoursValue.get(x-1).x,compare1);
-           float minimo = min((float) dinamicHoursValue.get(x-1).y,compare1);
-           dinamicHoursValue.set(x-1,new PVector( maximo, minimo));
-           ArrayList b = (ArrayList) dinamicHours.get(x-1);
-           if(dinamicHoursValue.get(x-1).x == compare1) b.set(0,dayToCompare);
-           if(dinamicHoursValue.get(x-1).y == compare1) b.set(1,dayToCompare);
-           dinamicHours.set(x-1,b);
+    for(int i=indexResume; i<indexResume+96; i++){
+        //DateTime date =  (DateTime) temporal.get(0);
+        String dayToCompare = dateToCompare.toString("HH:mm");
+        int x=0;
+         for(POI poi:pois.getAll()){
+           if(poi.access.equals("publicPark")){
+             float compare1 = float((int) poi.getCrowd(dateToCompare));
+             float maximo = max((float) dinamicHoursValue.get(x).x, compare1);
+             float minimo = min((float) dinamicHoursValue.get(x).y, compare1);
+             dinamicHoursValue.set(x, new PVector(maximo,minimo));
+             ArrayList b = (ArrayList) dinamicHours.get(x);
+             if(dinamicHoursValue.get(x).x == compare1) b.set(0,dayToCompare);
+             if(dinamicHoursValue.get(x).y == compare1) b.set(0,dayToCompare);
+             dinamicHours.set(x,b);
+             x++;
+           }
          }
+        dateToCompare = dateToCompare.plusMinutes(15); 
       }
+      
+      //for(int i=indexResume; i<indexResume+96;i++){
+      //   ArrayList temporal = (ArrayList) occPerDate.get(i);
+      //   DateTime date =  (DateTime) temporal.get(0);
+      //   String dayToCompare = date.toString("HH:mm");
+      //   for(int x=1; x<temporal.size(); x++){
+      //     float compare1 = float((int)temporal.get(x));
+      //     float maximo = max((float) dinamicHoursValue.get(x-1).x,compare1);
+      //     float minimo = min((float) dinamicHoursValue.get(x-1).y,compare1);
+      //     dinamicHoursValue.set(x-1,new PVector( maximo, minimo));
+      //     ArrayList b = (ArrayList) dinamicHours.get(x-1);
+      //     if(dinamicHoursValue.get(x-1).x == compare1) b.set(0,dayToCompare);
+      //     if(dinamicHoursValue.get(x-1).y == compare1) b.set(1,dayToCompare);
+      //     dinamicHours.set(x-1,b);
+      //   }
+      //}
 
     //print("\n"+ dinamicHours);
     return dinamicHours;
@@ -173,6 +155,8 @@ public class TimePark{
   /**
  * find the max and min hour in promedio in the month
  */
+ //totalTime
+ //minDate
   public ArrayList<PVector> maxMinHour(){
    print("\nLoading max and min per hour...");
    ArrayList<PVector> MaxMin = new ArrayList(pois.count());
@@ -190,16 +174,17 @@ public class TimePark{
               x++;
            }
          } 
-         for(int c=0; c <occPerDate.size(); c++){
-           ArrayList temporal = (ArrayList) occPerDate.get(c);
-           DateTime date =  (DateTime) temporal.get(0);
-           int dayToCompare = date.dayOfMonth().get();
-           
+         for(int c=0; c <chronometer.size(); c++){
+           int dayToCompare = minDate.dayOfMonth().get();
            if( dayToCompare == i){
-             for(int j = 1; j < temporal.size(); j++){                            
-               parkingPerHour.set(j-1,parkingPerHour.get(j-1)+(int)temporal.get(j));                                 
+             int j=0;
+             for(POI poi:pois.getAll()){ 
+               if(poi.access.equals("publicPark")){
+                 parkingPerHour.set(j,parkingPerHour.get(j)+(int)poi.getCrowd(minDate));                                 
+                  j++;               
+               }
              }
-           }
+           } 
          } 
          for(int k = 0; k < pois.count();k++){
            float maximo = max(MaxMinValor.get(k).x,parkingPerHour.get(k));
@@ -215,7 +200,7 @@ public class TimePark{
   /**
  * make arrays statistics of day media occupancy every days for 7 days and compare everyday statistics to find the max day
  */
- public ArrayList<String> dinamicDay(int indexResume){
+ public ArrayList<String> dinamicDay(int indexResume, DateTime dateToCompare){
    ArrayList<Float> total = new ArrayList();
    ArrayList<String> maxDay = new ArrayList();
    String[] nameDay = {"SAT", "SUN", "MON", "TUE", "WED", "THR", "FRI"};
@@ -230,10 +215,13 @@ public class TimePark{
        parkingPerDay.set(c,0);
      }
      for(int j=i; j<i+96;j++){
-      if(j<occPerDate.size()){
-        ArrayList temporal = (ArrayList) occPerDate.get(j);
-          for(int k = 1; k < temporal.size(); k++){                            
-            parkingPerDay.set(k-1,parkingPerDay.get(k-1)+(int)temporal.get(k));                                 
+      if(j<totalTime){
+        int k=0;
+          for(POI poi:pois.getAll()){
+            if(poi.access.equals("publicPark")){
+              parkingPerDay.set(k,parkingPerDay.get(k)+(int)poi.getCrowd(dateToCompare));
+              k++;
+            }
           } 
        }
      }
@@ -252,38 +240,41 @@ public class TimePark{
  /**
  * make arrays statistics of everyday of the weekend and find the media of the month
  */
- public ArrayList<String>  maxDay(){
-   ArrayList<Float> total = new ArrayList();
-   ArrayList<String> maxDay = new ArrayList();
-   String[] nameDay = {"SAT", "SUN", "MON", "TUE", "WED", "THR", "FRI"};
-   print("\nLoading max per day...");
-   for(int k=0; k <pois.count();k++){
-     total.add(k,-Float.MAX_VALUE);
-     maxDay.add(k, null);
-   }
+ //public ArrayList<String>  maxDay(){
+ //  ArrayList<Float> total = new ArrayList();
+ //  ArrayList<String> maxDay = new ArrayList();
+ //  String[] nameDay = {"SAT", "SUN", "MON", "TUE", "WED", "THR", "FRI"};
+ //  print("\nLoading max per day...");
+ //  for(int k=0; k <pois.count();k++){
+ //    total.add(k,-Float.MAX_VALUE);
+ //    maxDay.add(k, null);
+ //  }
 
-   for(int k = 0; k < 7; k++){
-     FloatList parkingPerDay = new FloatList();
-     for(int c=0; c<pois.count();c++){
-       parkingPerDay.set(c,0);
-     }
-     for(int c = k; c < occPerDate.size(); c=c+28){
-       for(int i=c; i < c+4; i++){
-         ArrayList temporal = (ArrayList) occPerDate.get(c);
-           for(int j = 1; j < temporal.size(); j++){                            
-              parkingPerDay.set(j-1,parkingPerDay.get(j-1)+(int)temporal.get(j));                                 
-            }
-       }
-     }
+ //  for(int k = 0; k < 7; k++){
+ //    FloatList parkingPerDay = new FloatList();
+ //    for(int c=0; c<pois.count();c++){
+ //      parkingPerDay.set(c,0);
+ //    }
+ //    for(int c = k; c < totalTime; c=c+28){
+ //      for(int i=c; i < c+4; i++){
+ //          int j=0;
+ //          for(POI poi: pois.getAll()){ 
+ //            if(poi.access.equals("publicPark")){
+ //               parkingPerDay.set(j-1,parkingPerDay.get(j-1)+(int)poi.getCrowd(dateToCompare));  
+ //               j++;
+ //            }
+ //          }
+ //      }
+ //    }
      
-     for(int j = 0; j < pois.count();j++){
-       float maximo = max(total.get(j),parkingPerDay.get(j));
-       total.set(j,maximo);
-       if(total.get(j) == parkingPerDay.get(j)) maxDay.set(j, nameDay[k]);
-     }
-   }
-  return maxDay; 
- }
+ //    for(int j = 0; j < pois.count();j++){
+ //      float maximo = max(total.get(j),parkingPerDay.get(j));
+ //      total.set(j,maximo);
+ //      if(total.get(j) == parkingPerDay.get(j)) maxDay.set(j, nameDay[k]);
+ //    }
+ //  }
+ // return maxDay; 
+ //}
  
   /**
   * total time in seconds that contain the file

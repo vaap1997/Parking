@@ -30,17 +30,47 @@ public class POIs extends Facade<POI>{
       items.addAll( ((POIFactory)factory).loadPrivateCSV(path, roadmap) );
     }
   }
-  
-  
+
+  /**
+  * fullFit a dictionary with all the occupancies every date
+  */ 
   public void loadED(ArrayList<DateTime> chronometer, ArrayList<TimeP> parks){
-   for (POI poi : pois.getAll()){
-      if(poi.access.equals("publicPark")){
-        poi.getPerDate(chronometer, parks);
+   print("\nLoading occupancy per date...");
+    //print("\nLoading occPerDate...");
+    IntList occPerPoi = new IntList();
+    for(int a = 0; a < chronometer.size(); a++){
+    occPerPoi.set(a,0);
+    }
+    for(int i=0; i <chronometer.size(); i++){ 
+        for(TimeP park:parks){
+          if(park.TIME.equals(chronometer.get(i))){
+            int c=0;
+             for( POI poi:pois.getAll()){
+               if(poi.access.equals("publicPark")){
+                    if( poi.PARKNUMBER == park.CARPARKNUMBER){
+                        if(park.MOVTYPE == 1){
+                          occPerPoi.set(c,occPerPoi.get(c)-park.PASSAGES);
+                        }else{
+                          occPerPoi.set(c,occPerPoi.get(c)+park.PASSAGES);
+                        }
+                    }
+               c++; 
+            }
+          }
+        }
       }
-    } 
+      
+     int k=0;
+     for(POI poi:pois.getAll()){
+       if(poi.access.equals("publicPark")){
+          poi.occupancyPerDate.set( chronometer.get(i).toString(),occPerPoi.get(k));
+          k++;
+        }
+      }   
+    }
+   print("LOADED");
   }
-  
-   
+
   /**
    * Create an array with parking names
   */ 
@@ -305,30 +335,17 @@ public class POI extends Node{
         crowd.remove(agent);
     } 
     
-    
-    public void getPerDate(ArrayList<DateTime> chronometer, ArrayList<TimeP> parks){
-      print("\nLoading occPerDate...");
-      IntDict occPerDate = new IntDict();
-        for(int a = 0; a < chronometer.size(); a++){
-          for(TimeP park: parks){
-            if(poi.PARKNUMBER == park.CARPARKNUMBER){
-              if(occPerDate.hasKey( chronometer.get(a).toString() )){
-                if(park.MOVTYPE == 1){
-                  occPerDate.set( chronometer.get(a).toString() ,occPerDate.get( chronometer.get(a).toString() )-park.PASSAGES);
-                 }else{
-                   occPerDate.set( chronometer.get(a).toString() ,occPerDate.get( chronometer.get(a).toString() )+park.PASSAGES);
-                 }  
-              }else{
-                if(park.MOVTYPE == 1){
-                  occPerDate.set(chronometer.get(a).toString(),-park.PASSAGES);
-                 }else{
-                  occPerDate.set(chronometer.get(a).toString(), park.PASSAGES);
-                 }
-              }
-            }
-          }
-        }
-    }
-    
+    /**
+    * get how crowded is in a moment
+    */
+    public int getCrowd(DateTime date){
+      int crowd;
+      if(occupancyPerDate.hasKey(date.toString())){
+        crowd = occupancyPerDate.get(date.toString());
+      }else{
+        crowd = 0;
+      }
+      return crowd;
+    } 
     
 }
