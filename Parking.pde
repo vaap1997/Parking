@@ -5,6 +5,10 @@
 */
 
 import org.joda.time.*;
+import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
+
 
 Roads roads;
 POIs pois;
@@ -13,9 +17,9 @@ Path path;
 TimePark timePark;
 WarpSurface surface;
 PieChart pieChart;
-Equilibrium equilibrium;
 Agents agents;
-RNCs rncs;
+DateTimeFormatter fmtPark = DateTimeFormat.forPattern("dd/MM/yy HH:mm");
+DateTimeFormatter fmtToShow = DateTimeFormat.forPattern("dd/MM/yy  HH:mm");
 
 boolean showBG = true;
 boolean freeze = true;
@@ -30,10 +34,6 @@ boolean type7 = true;
 boolean type8 = true;
 boolean type9 = true;
 boolean type0 = true;
-boolean trafficEquilibrium = false;
-boolean trafficRNC = false;
-JSONObject links;
-JSONObject hierarchy;
 PGraphics canvas;
 PGraphics legend;
 PGraphics chart;
@@ -82,9 +82,7 @@ ArrayList<String> dinamicDay;
 IntList occupancy = new IntList();
 //ArrayList<Agent> vehicles;
 
-DateTime indiceRnc;
-DateTime maxIndiceRnc;
-StringDict MCC;
+
 
 
 /**
@@ -105,7 +103,7 @@ void setup(){
   simWidth = BG.width;
   simHeight = BG.height;
   surface = new WarpSurface(this, 1500, 550, 20, 10);
-  //surface.loadConfig();
+  surface.loadConfig();
   canvas = new Canvas(this, simWidth, simHeight, orthoBounds ,roi);
   
   roads = new Roads(roadsPath,simWidth,simHeight,orthoBounds);
@@ -141,13 +139,9 @@ void setup(){
  agents.loadVehicles(totalAgent, "vehicle", roads);
  agents.setSpeed(3, 6);
  
- hierarchy= loadJSONObject("equilibrium/roadHierarchy.json");
+
  
- rncs = new RNCs();
- MCC = rncs.loadMCC("RNC/MCC_claves.csv");
- rncs.loadCSV("RNC/20161004T163509.csv",MCC, roads);
- indiceRnc = rncs.getMin();
- maxIndiceRnc = rncs.getMax();
+
  
 }
 
@@ -161,24 +155,18 @@ void setup(){
 * draw a chart with basic parking's statidistics
 */
 void draw(){  
-     indiceRnc.plusSeconds(10);
-  
+
     if(indice > 0) lastIndice = indice-1;
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
       if(indice >= maxIndice){
         indice = 0;
       }
-      datesS = timePark.chronometer.get(indice);
+      datesS = timePark.chronometer.get(indice).toString(fmtToShow);
       actualDate = split(datesS, ' ');
       if(freeze) {
         occupancy = timePark.getOccupancy(datesS);
       }
-      
-      if(indiceRnc.isEqual(maxIndiceRnc)) indiceRnc = rncs.getMin();
-      else indiceRnc = indiceRnc.plusSeconds(1);
-     
-      
       timer = millis();
     }
     //-------------MAP---------------
@@ -187,56 +175,43 @@ void draw(){
     //canvas.background(100);
     if(showBG){
       canvas.image(BG,0,0); 
-    }else if(trafficEquilibrium){
-      links = loadJSONObject("equilibrium/linksCong2016_07_03.json");
-      equilibrium = new Equilibrium(links,hierarchy);
-      equilibrium.draw(currhour);
     }
-      else roads.draw(canvas,3,#cacfd6);  
+    else roads.draw(canvas,3,#cacfd6);  
     pois.draw(occupancy);
-    agents.move();
-    
-    if(!trafficEquilibrium){
-      rncs.draw(canvas, indiceRnc);
-  
-    //agents.draw(canvas);
+    agents.move(); 
+    agents.draw(canvas);
       
-    }
     canvas.endDraw(); 
     surface.draw((Canvas) canvas);
-    ////-------------- LEGEND ----------------------
-    //legend.beginDraw();
-    //pieChart.drawLegend();
-    //legend.endDraw();
-    //image(legend,3025,737);
+    //-------------- LEGEND ----------------------
+    legend.beginDraw();
+    pieChart.drawLegend();
+    legend.endDraw();
+    image(legend,3025,737);
     
-    ////----------- SUMMARY ----------------------
-    //chart.beginDraw();
-    //chart.background(0);
-    //pieChart.drawSummary();
-    //chart.endDraw();
-    //image(chart,1520,0);
+    //----------- SUMMARY ----------------------
+    chart.beginDraw();
+    chart.background(0);
+    pieChart.drawSummary();
+    chart.endDraw();
+    image(chart,1520,0);
     
-    ////------------LINEAR GRAPHIC---------------
-    //linearGraphic.beginDraw();
-    //if(freeze) pieChart.drawLineGraph();
-    //linearGraphic.endDraw();
-    //image(linearGraphic,0,0);
+    //------------LINEAR GRAPHIC---------------
+    linearGraphic.beginDraw();
+    if(freeze) pieChart.drawLineGraph();
+    linearGraphic.endDraw();
+    image(linearGraphic,0,0);
     
-    ////-------------SPEEDOMETER-----------------
-    //individualCanvas.beginDraw();
-    //pieChart.BasicParkingStats();
-    //individualCanvas.endDraw();
-    //image(individualCanvas,0,linearGraphic.height);
+    //-------------SPEEDOMETER-----------------
+    individualCanvas.beginDraw();
+    pieChart.BasicParkingStats();
+    individualCanvas.endDraw();
+    image(individualCanvas,0,linearGraphic.height);
     
     if(freeze){
      indice++; 
-     if((currhour <= maxHourT ) && (indice%4.00==0) && (lastIndice != indice-1)){
-      currhour++; 
-     }else{
-       currhour = 1;
-     }
-    }
+     
+   }
 }
 
 /**
@@ -255,11 +230,7 @@ void keyPressed(KeyEvent e){
     case 'n':
     names = !names;
     break;
-    
-    case 't':
-    trafficEquilibrium = !trafficEquilibrium;
-    break;
-      
+        
     case 'k':
     surface.toggleCalibration();
    // ks.toggleCalibration();
@@ -272,10 +243,6 @@ void keyPressed(KeyEvent e){
     
     case 'g':
     surface.saveConfig();
-    break;
-    
-    case 'r':
-    trafficRNC = !trafficRNC;
     break;
     
     case '+':

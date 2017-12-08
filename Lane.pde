@@ -208,29 +208,13 @@ private class Lane {
    public void draw(PGraphics canvas, int stroke, color c) {  
      //public void draw(PGraphics canvas, int stroke, color c, DateTime indiceRnc) { 
      for(int i = 1; i < vertices.size(); i++) { 
-           if(!trafficRNC){
-            canvas.stroke(co, 127); canvas.strokeWeight(stroke);
-           } else{
-             canvas.colorMode(HSB, 100);
-             float congRatio;
-            if(occupancyRNC.hasKey(indiceRnc.toString())){
-             congRatio = ( occupancyRNC.get(indiceRnc.toString()) / maxCrowd);
-            }else{
-               congRatio = ( 0.00 / maxCrowd);
-            }
-             float hue = 33 - sqrt(congRatio)*33;       
-             canvas.stroke(hue,99,100);
-           }
+            canvas.stroke(co, 127); canvas.strokeWeight(stroke); 
             //canvas.stroke(0, 127); canvas.strokeWeight(stroke);
             PVector prevVertex = vertices.get(i-1);
             PVector vertex = vertices.get(i);
             canvas.line(prevVertex.x, prevVertex.y, vertex.x, vertex.y); 
      }
-     
-     if(trafficRNC){
-       canvas.noStroke();
-       canvas.colorMode(RGB,255); 
-     }
+    
      
    }
    
@@ -259,22 +243,5 @@ private class Lane {
     public void addRncTime(DateTime rncTime){
       occupancyRNC.set(rncTime.toString(), 1);
     }
-
-    /**
-    *For everyLine look if the rnc is on the lane
-    *If it is on the lane add one to the dictionary of occupancy per date
-    */
-    public void OccupancyRNC(RNC rnc){
-      for(int i = 1; i < vertices.size(); i++) {
-        if( Geometry.inLine(rnc.getPosition(), vertices.get(i-1), vertices.get(i)) ){
-          
-          if(occupancyRNC.hasKey(rnc.rncTime.toString())){
-            occupancyRNC.set(rnc.rncTime.toString(), occupancyRNC.get(rnc.rncTime.toString())+1);
-          }else{
-            addRncTime(rnc.rncTime);
-          }
-          
-        }
-      }
-    }   
+ 
 }

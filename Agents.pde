@@ -465,7 +465,10 @@ private class Vehicle extends Agent {
     
     
     /** Do nothing */
-    protected void whenHosted() {}
+    protected void whenHosted() {
+      destination.unhost(this);    // IMPORTANT! Unhost agent from destination
+      destination = findDestination();
+    }
 
 }
 

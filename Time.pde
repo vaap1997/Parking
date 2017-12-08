@@ -5,19 +5,13 @@
 */
 public class TimePark{
   ArrayList <TimeP> park;
-  ArrayList<String> chronometer;
+  ArrayList<DateTime> chronometer;
   IntDict maxMin = new IntDict();
   int totalTime;
-  int dayMin =  Integer.MAX_VALUE;
-  int dayMax = -Integer.MAX_VALUE;
-  int monthMin =  Integer.MAX_VALUE;
-  int monthMax = -Integer.MAX_VALUE;
-  int yearMin =  Integer.MAX_VALUE;
-  int yearMax = -Integer.MAX_VALUE;
-  int hourMin =  Integer.MAX_VALUE;
-  int hourMax = -Integer.MAX_VALUE;
-  int minMin =  Integer.MAX_VALUE;
-  int minMax = -Integer.MAX_VALUE;
+  DateTime minDate = null;
+  DateTime maxDate = null;
+  Period differenceInTime;
+  //private POIs pois;
   
   /**
   * Recognize if the file exist
@@ -33,37 +27,33 @@ public class TimePark{
   * Load CSV file
   */
   public void loadCSV(String path){
-    int a=0;
+    DateTime parkingTime;
      print("Loading time...");
+     
      park = new ArrayList();   
      Table table = loadTable(path,"header");
      for(TableRow row:table.rows()){
        int movType = row.getInt("Movement Type");
        int passages = row.getInt("Passages");
        if( passages != 0){
-         int  carParkNumber = row.getInt("Car Park Number");
+         int carParkNumber = row.getInt("Car Park Number");
          int deviceNum = row.getInt("Device Number");
          for(POI poi:pois.getAll()){
            if(poi.access.equals("publicPark")){
              for(int i=0; i < poi.DEVICENUM.size();i++){
                 if( (deviceNum == poi.DEVICENUM.get(i)) && ( poi.PARKNUMBER == carParkNumber) ){
-                   String time0 = row.getString("DateTime");       
-                   String time1 = time0.replace(" ","/");
-                   String time2 = time1.replace(":","/");
-                   int[] Time = int(time2.split("/")) ;
-                  
-                   dayMin = min(dayMin,Time[0]);
-                   dayMax = max(dayMax,Time[0]);
-                   monthMin = min(monthMin,Time[1]);
-                   monthMax = max(monthMax,Time[1]);
-                   yearMin = min(yearMin,Time[2]);
-                   yearMax = max(yearMax,Time[2]);
-                   hourMin = min(hourMin,Time[3]);
-                   hourMax = max(hourMax,Time[3]);
-                   minMin = min(minMin,Time[4]);
-                   minMax = max(minMax,Time[4]);
-                   a++;
-                   park.add(new TimeP(carParkNumber,deviceNum,movType,time0, passages));         
+                   String timestamp = row.getString("DateTime");
+                   parkingTime = fmtPark.parseDateTime(timestamp);
+                   
+                    if( parkingTime.isAfter(maxDate) || maxDate == null){
+                        maxDate = parkingTime;
+                    }
+                    
+                    if(parkingTime.isBefore(minDate) || minDate == null ){
+                        minDate = parkingTime;
+                    }
+
+                   park.add(new TimeP(carParkNumber,deviceNum,movType, parkingTime, passages));         
                  }
              }   
            } 
@@ -76,36 +66,13 @@ public class TimePark{
   /**
   * Create an array with all the dates in the range
   */
-  public ArrayList<String> Chronometer(){
-    ArrayList<String> chronometer = new ArrayList();
-      for(int year = yearMin; year <= yearMax; year++){
-        
-        for(int month = monthMin; month <= monthMax; month++){
-          String monthstr = str(month);
-          
-            if(monthstr.length() == 1){
-              monthstr = '0' + monthstr;
-            }
-            
-            for(int day = dayMin; day <= dayMax; day++){
-         
-                for(int hour = hourMin; hour <= hourMax; hour++){
-                    String hourstr = str(hour);
-                    if(hourstr.length() == 1){
-                     hourstr = "0" + hourstr; 
-                    }
-                    for(int min = minMin; min <= minMax; min = min + 15){
-                        String minstr = str(min);
-                        if(minstr.length() == 1){
-                         minstr = "0" + minstr; 
-                        }
-                       String dia = str(day) + "/"+monthstr + "/"+str(year) + " "+hourstr + ":" + minstr;
-                       chronometer.add(dia);
-                    } 
-                } 
-            }
-        }
-      }
+  public ArrayList<DateTime> Chronometer(){
+    ArrayList<DateTime> chronometer = new ArrayList();
+    DateTime actualDate = minDate;
+    while(actualDate.isBefore(maxDate) || actualDate.isEqual(maxDate)){
+       chronometer.add(actualDate);
+       actualDate =  actualDate.plusMinutes(15);
+    }
      return chronometer;
   }
   
@@ -122,7 +89,7 @@ public class TimePark{
     }
     for(int i=0; i <chronometer.size(); i++){ 
         for(TimeP park:park){
-          if(park.TIME.equals(chronometer.get(i))){
+          if(park.TIME.isEqual(chronometer.get(i))){
             int c=0;
              for( POI poi:pois.getAll()){
                if(poi.access.equals("publicPark")){
@@ -139,7 +106,7 @@ public class TimePark{
         }
       }
      ArrayList occTemporal = new ArrayList();
-         occTemporal.add(0,chronometer.get(i));
+         occTemporal.add(0,chronometer.get(i).toString(fmtToShow));
          int k=1;
          for(POI poi:pois.getAll()){
            if(poi.access.equals("publicPark")){
@@ -159,11 +126,11 @@ public class TimePark{
       IntList occupancy = new IntList(pois.count());
       for(int i = 0; i < occPerDate.size(); i++){
        ArrayList temporal = (ArrayList) occPerDate.get(i);
-       if(dateS.equals(temporal.get(0))){
+       if(dateS.equals(temporal.get(0) )){
           for(int c = 1; c < temporal.size(); c++){
             occupancy.set(c-1,(int)temporal.get(c));
           }
-       }
+        }
       }
     return occupancy;
   }
@@ -323,7 +290,8 @@ public class TimePark{
   * total time in seconds that contain the file
   */
   public int getmax(){
-    totalTime = (yearMax - yearMin+1) * (monthMax - monthMin +1) * (dayMax - dayMin + 1) * (24) * (4);
+    Minutes minBetween = Minutes.minutesBetween(minDate, maxDate);
+    totalTime = minBetween.getMinutes() / 15;
     return totalTime;
   }
 
@@ -332,13 +300,12 @@ public class TimePark{
 public class TimeP{
   protected final int DEVICENUM;
   protected final int MOVTYPE;
-  protected final String TIME;
+  protected final DateTime TIME;
   protected final int PASSAGES;
   protected final int CARPARKNUMBER;
 
-  
-  
-  public TimeP(int carParkNumber,int deviceNum,int movType,String time, int passages){
+
+  public TimeP(int carParkNumber,int deviceNum,int movType,DateTime time, int passages){
     DEVICENUM = deviceNum;
     MOVTYPE = movType;
     TIME = time;
