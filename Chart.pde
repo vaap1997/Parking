@@ -316,7 +316,7 @@ public class PieChart{
     chart.fill(200); chart.textAlign(CENTER); chart.textSize(20);
     chart.textFont(createFont("Raleway", 20)); chart.textAlign(LEFT); chart.strokeWeight(1);chart.stroke(200);chart.fill(200);
     chart.line(10,77,155,77);
-    chart.text("Total statidistics",10,70);
+    chart.text("Total statidistics",10,90);
     chart.textAlign(CENTER);chart.textSize(13);
     chart.text("8:00",40,195);
     chart.text("12:00",120,195);

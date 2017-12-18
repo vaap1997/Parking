@@ -171,7 +171,7 @@ void setup(){
 * draw summary
 */
 void draw(){  
-
+    background(0);
     if(indice > 0) lastIndice = indice-1;
     if( millis() - timer >= speed){
       int maxIndice = timePark.getmax();
@@ -202,7 +202,7 @@ void draw(){
     legend.beginDraw();
     pieChart.drawLegend();
     legend.endDraw();
-    image(legend,3025,737);
+    image(legend,3025,757);
     
     //----------- SUMMARY ----------------------
     chart.beginDraw();
