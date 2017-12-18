@@ -79,6 +79,15 @@ ArrayList<String> maxDay;
 ArrayList<PVector> lastCoord = new ArrayList();
 ArrayList<ArrayList> dinamicHours;
 ArrayList<String> dinamicDay;
+PImage coche_rojo;
+PImage coche_verde;
+PImage coche_blanco;
+PImage mapa_dAndorra;
+PImage bus;
+PImage pesa;
+PImage pCompras;
+PImage pLaboral;
+PImage radar;
 //IntList occupancy = new IntList();
 
 /**
@@ -115,7 +124,7 @@ void setup(){
   
   legend = createGraphics(700, 80);
   linearGraphic = createGraphics(1520, 520);
-  individualCanvas = createGraphics(1520,height - linearGraphic.height);
+  individualCanvas = createGraphics(1520,height - linearGraphic.height-100);
   chart = createGraphics(500,height);
   pieChart =  new PieChart();
 
@@ -131,6 +140,24 @@ void setup(){
  agents.loadVehicles(totalAgent, "vehicle", roads);
  agents.setSpeed(3, 6);
  
+ coche_rojo = loadImage("coche_rojo.png");
+ coche_rojo.resize(int(coche_rojo.width * 0.3), int(coche_rojo.height * 0.3));
+ coche_verde = loadImage("coche_verde.png");
+ coche_verde.resize(int(coche_verde.width * 0.3), int(coche_verde.height * 0.3));
+ coche_blanco = loadImage("coche_blanco.png");
+ coche_blanco.resize(int(coche_blanco.width * 0.3), int(coche_blanco.height * 0.3));
+ mapa_dAndorra = loadImage("Mapa_d'Andorra2.png");
+ mapa_dAndorra.resize(int(mapa_dAndorra.width*0.12),int(mapa_dAndorra.height*0.12));
+ bus = loadImage("bus.png");
+ bus.resize(int(bus.width*0.25),int(bus.height*0.25));
+ pesa = loadImage("serra.png");
+ pesa.resize(int(pesa.width*0.65),int(pesa.height*0.65));
+ pCompras = loadImage("compras.png");
+ pCompras.resize(int(pCompras.width*0.45),int(pCompras.height*0.45));
+ pLaboral = loadImage("portafolio1.png");
+ pLaboral.resize(int(pLaboral.width*0.16),int(pLaboral.height*0.16));
+ radar = loadImage("radar.png");
+ radar.resize(int(radar.width*0.55),int(radar.height*0.55));
 }
 
 
@@ -182,19 +209,19 @@ void draw(){
     chart.background(0);
     pieChart.drawSummary();
     chart.endDraw();
-    image(chart,1520,0);
+    image(chart,1520,100);
     
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
     if(freeze) pieChart.drawLineGraph(datesS,minDate);
     linearGraphic.endDraw();
-    image(linearGraphic,0,0);
+    image(linearGraphic,0,100);
     
     //-------------SPEEDOMETER-----------------
     individualCanvas.beginDraw();
     pieChart.BasicParkingStats(indice, datesS);
     individualCanvas.endDraw();
-    image(individualCanvas,0,linearGraphic.height);
+    image(individualCanvas,0,linearGraphic.height+100);
     
     if(freeze){
      indice++; 

@@ -13,6 +13,7 @@ public class PieChart{
   //                 {ligh blue, orange, red, blue, water blue, pink, purple, yellow, dark green, pink}
   ArrayList<Line> lines = new ArrayList();
   int repeat = 0;
+
   
   /**
   * Draw the cartesian plane
@@ -284,25 +285,25 @@ public class PieChart{
           
        individualCanvas.fill(255);individualCanvas.textSize(16);
        int use = int(((float)poi.getCrowd(datesS) / (float)poi.CAPACITY)*100);
-       individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,2* individualCanvas.height/8);
-       individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 3* individualCanvas.height/8);
-       individualCanvas.text(poi.PRICE+"€",((i+1)*individualCanvas.width/(pois.count()+1))+40, 4* individualCanvas.height/8);
+       individualCanvas.text(use+"%",((i+1)*individualCanvas.width/(pois.count()+1))+40,3* individualCanvas.height/11 );
+       individualCanvas.text(poi.CAPACITY,((i+1)*individualCanvas.width/(pois.count()+1))+40, 4* individualCanvas.height/11);
+       individualCanvas.text(poi.PRICE+"€",((i+1)*individualCanvas.width/(pois.count()+1))+40, 5* individualCanvas.height/11);
        ArrayList b = (ArrayList) dinamicHours.get(i);
        String tempmax= (String) b.get(0);
        String tempmin= (String) b.get(1);
-       individualCanvas.text( tempmax, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 5* individualCanvas.height/8);
-       individualCanvas.text( tempmin, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 6* individualCanvas.height/8);
-       individualCanvas.text( maxDay.get(i), ((i+1)*individualCanvas.width/(pois.count()+1))+40, 7* individualCanvas.height/8);
+       individualCanvas.text( tempmax, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 6* individualCanvas.height/11);
+       individualCanvas.text( tempmin, ((i+1)*individualCanvas.width/(pois.count()+1))+40, 7* individualCanvas.height/11);
+       individualCanvas.text( maxDay.get(i), ((i+1)*individualCanvas.width/(pois.count()+1))+40, 8* individualCanvas.height/11);
        i++;
      }
    }
    individualCanvas.textAlign(RIGHT);individualCanvas.fill(255);individualCanvas.textSize(11);
-   individualCanvas.text("OCCUPANCY", 90, 2* individualCanvas.height/8);
-   individualCanvas.text("CAPACITY", 90, 3* individualCanvas.height/8);
-   individualCanvas.text("PRICE", 90, 4* individualCanvas.height/8);
-   individualCanvas.text("MAX", 90, 5* individualCanvas.height/8);
-   individualCanvas.text("MIN", 90, 6* individualCanvas.height/8);
-   individualCanvas.text("DAY", 90, 7* individualCanvas.height/8);
+   individualCanvas.text("OCCUPANCY", 90, 3* individualCanvas.height/11);
+   individualCanvas.text("CAPACITY", 90, 4* individualCanvas.height/11);
+   individualCanvas.text("PRICE", 90, 5* individualCanvas.height/11);
+   individualCanvas.text("MAX", 90, 6* individualCanvas.height/11);
+   individualCanvas.text("MIN", 90, 7* individualCanvas.height/11);
+   individualCanvas.text("DAY", 90, 8* individualCanvas.height/11);
 
   }
   
@@ -313,13 +314,6 @@ public class PieChart{
   */
   public void drawSummary(){
     chart.fill(200); chart.textAlign(CENTER); chart.textSize(20);
-    chart.ellipse( 170, 350, 200, 200);
-    chart.ellipse( 250, 620, 200, 200);
-    chart.ellipse( 120, 900, 200, 200);
-    chart.stroke(0);chart.fill(0);
-    chart.text("Busiest parkings \n Fener1 and Fener2",170,330);
-    chart.text("Most free parking \n Antic Cami Ral",250,610);
-    chart.text("Occupancy´s increase\n in the second half",120,900);
     chart.textFont(createFont("Raleway", 20)); chart.textAlign(LEFT); chart.strokeWeight(1);chart.stroke(200);chart.fill(200);
     chart.line(10,77,155,77);
     chart.text("Total statidistics",10,70);
@@ -329,10 +323,11 @@ public class PieChart{
     chart.text("17:00",200,195);
     chart.text("21:00",280,195);
     chart.text("8:00",360,195);
-    chart.triangle(70,165,80,145,90,165);
-    chart.triangle(150,145,160,165,170,145);
-    chart.triangle(230,165,240,145,250,165);
-    chart.triangle(310,145,320,165,330,145);
+    chart.line(40,153,80,145);
+    chart.line(80,145,160,165);
+    chart.line(160,165,240,145);
+    chart.line(240,145,320,165);
+    chart.line(320,165,360,153);
     chart.strokeWeight(3.5);
     chart.line(40,175,360,175);
     chart.ellipseMode(CENTER);
@@ -341,6 +336,46 @@ public class PieChart{
     chart.ellipse(200,175,5,5);
     chart.ellipse(280,175,5,5);
     chart.ellipse(360,175,5,5);
+    chart.image(coche_rojo,50,250);
+    chart.image(coche_rojo,80,250);
+    chart.image(coche_rojo,110,250);
+    chart.image(coche_rojo,50,275);
+    chart.image(coche_rojo,80,275);
+    chart.image(coche_rojo,110,275);
+    chart.image(coche_rojo,50,300);
+    chart.image(coche_rojo,80,300);
+    chart.image(coche_rojo,110,300);
+    chart.image(radar, 260,240);
+    chart.textSize(20);
+    chart.text("Fener1", 200,280);
+    chart.text("Fener2", 200,310);
+    
+    
+    chart.image(coche_blanco,230,370);
+    chart.image(coche_blanco,260,370);
+    chart.image(coche_blanco,290,370);
+    chart.image(coche_blanco,230,395);
+    chart.image(coche_blanco,260,395);
+    chart.image(coche_verde,290,395);
+    chart.image(coche_verde,230,420);
+    chart.image(coche_verde,260,420);
+    chart.image(coche_verde,290,420);
+    chart.text("Antic Cami Ral", 120, 420);
+    
+    chart.image(bus, 70 ,470);
+    chart.text("Prada Casadet", 250,510);
+    chart.text("is a bus parking", 250,530);
+    chart.image(pesa,200,570);
+    chart.text("Serradells", 100, 600);
+    chart.text("seasonality related", 100, 620);
+    chart.text("to sport center", 100, 640);
+    
+    chart.image(pCompras,60,670);
+    chart.text("Close to main street",240,710);
+    chart.text("weekend seasonality",240,730);
+    chart.image(pLaboral,230,770);
+    chart.text("Trilla", 130,800);
+    chart.text("labor seasonality", 130,820);
   }
    
   public void drawIndResume(int indice, DateTime datesS){
