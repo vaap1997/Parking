@@ -179,6 +179,7 @@ public class TimePark{
      for(int c=0; c<pois.count();c++){
        parkingPerDay.set(c,0);
      }
+     print("\n",i);
      for(int j=i; j<i+96;j++){
       if(j<totalTime){
         int k=0;
@@ -189,12 +190,17 @@ public class TimePark{
             }
           } 
        }
+       dateToCompare = dateToCompare.plusMinutes(15); 
      }
-     
-     for(int j = 0; j < pois.count();j++){
-       float maximo = max(total.get(j),parkingPerDay.get(j));
-       total.set(j,maximo);
-       if(total.get(j) == parkingPerDay.get(j)) maxDay.set(j, nameDay[x]);
+
+     int c=0;
+     for(POI poi:pois.getAll()){
+       if(poi.access.equals("publicPark")){
+         float maximo = max(total.get(c),parkingPerDay.get(c));
+         total.set(c,maximo);
+         if(total.get(c) == parkingPerDay.get(c)) maxDay.set(c, nameDay[x]);         
+         c++;
+       }
      }
      x++;
    }

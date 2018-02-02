@@ -123,9 +123,11 @@ void setup(){
   minDate =  timePark.minDate;
   
   legend = createGraphics(700, 80);
-  linearGraphic = createGraphics(1520, 520);
-  individualCanvas = createGraphics(1520,height - linearGraphic.height-100);
-  chart = createGraphics(500,height);
+  linearGraphic = createGraphics(860, 520);
+  //linearGraphic = createGraphics(1520, 520);
+  //individualCanvas = createGraphics(1520,height - linearGraphic.height-100);
+  individualCanvas = createGraphics(1460,height - linearGraphic.height);
+  chart = createGraphics(580,linearGraphic.height+20);
   pieChart =  new PieChart();
 
   int j=0;
@@ -151,7 +153,7 @@ void setup(){
  bus = loadImage("bus.png");
  bus.resize(int(bus.width*0.25),int(bus.height*0.25));
  pesa = loadImage("serra.png");
- pesa.resize(int(pesa.width*0.65),int(pesa.height*0.65));
+ pesa.resize(int(pesa.width*0.60),int(pesa.height*0.60));
  pCompras = loadImage("compras.png");
  pCompras.resize(int(pCompras.width*0.45),int(pCompras.height*0.45));
  pLaboral = loadImage("portafolio1.png");
@@ -204,24 +206,27 @@ void draw(){
     legend.endDraw();
     image(legend,3025,757);
     
-    //----------- SUMMARY ----------------------
-    chart.beginDraw();
-    chart.background(0);
-    pieChart.drawSummary();
-    chart.endDraw();
-    image(chart,1520,100);
-    
     //------------LINEAR GRAPHIC---------------
     linearGraphic.beginDraw();
     if(freeze) pieChart.drawLineGraph(datesS,minDate);
     linearGraphic.endDraw();
-    image(linearGraphic,0,100);
+    //image(linearGraphic,0,100);
+    image(linearGraphic,0,0);
     
     //-------------SPEEDOMETER-----------------
     individualCanvas.beginDraw();
     pieChart.BasicParkingStats(indice, datesS);
     individualCanvas.endDraw();
-    image(individualCanvas,0,linearGraphic.height+100);
+    //image(individualCanvas,0,linearGraphic.height+100);
+    image(individualCanvas,0,linearGraphic.height);
+
+    //----------- SUMMARY ----------------------
+    chart.beginDraw();
+    chart.background(0);
+    pieChart.drawSummary();
+    chart.endDraw();
+    //image(chart,linearGraphic.width,100);
+    image(chart,linearGraphic.width,0);    
     
     if(freeze){
      indice++; 
