@@ -115,9 +115,9 @@ associates every line to a cycle of repetition and to a specific parking. Draw t
 |      0        | Show or hide parking Antic Cami Ral’s line                  | 
  
 ## **Example (preliminary)**
-![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_01.png)
-![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_02.png)
-![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_03.png)
+![first screen](https://github.com/vaap1997/Parking/blob/master/data/Result_01.png)
+![second screen](https://github.com/vaap1997/Parking/blob/master/data/Resultado_02.png)
+![third screen](https://github.com/vaap1997/Parking/blob/master/data/Resultado_03.png)
 
 
 
