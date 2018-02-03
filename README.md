@@ -89,8 +89,35 @@ Creates a dynamic table with all the statistics create in Time. Create a linear 
 while the chronometer is going forward, create a line every hour in the chronometer and
 associates every line to a cycle of repetition and to a specific parking. Draw the final results.
 
+## **Fuctionalities**
+
+|      Key      |                      Funcionality                           |
+| ------------- | ----------------------------------------------------------- |
+|    Space      | Change between Andorra’s image map and Andorra’s roads map  |
+|      f        | Stop the chronometer and all the visualization              |
+|      n        | Show parking’s names                                        |
+|      k        | Calibrate Andorra's surface                                 |
+|      g        | Safe new warp calibratiton                                  |
+|      UP       | Move Andorra’s surface up once in the surface mode          |
+|     DOWN      | Move Andorra’s surface down once in the surface mode        | 
+|     RIGHT     | Move Andorra’s surface right once in the surface mode       |
+|     LEFT      | Move Andorra’s surface left once in the surface mode        |
+|     + / -     | Increase / decrease visualization’s speed                   |
+|      1        | Show or hide parking Fener 1’s line                         |
+|      2        | Show or hide parking Fener 2’s line                         |
+|      3        | Show or hide parking Parc Central’s line                    |
+|      4        | Show or hide parking Parc Central’s 2 line                  |
+|      5        | Show or hide parking Centre Historic’s line                 |
+|      6        | Show or hide parking Prada Casadet’s line                   | 
+|      7        | Show or hide parking Prat de la Creu’s line                 |
+|      7        | Show or hide parking Trilla’s line                          |
+|      9        | Show or hide parking Serradells’s line                      |
+|      0        | Show or hide parking Antic Cami Ral’s line                  | 
+ 
 ## **Example (preliminary)**
-![alt text](https://github.com/vaap1997/Matrix/blob/master/data/img/Result-03.png)
+![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_01.png)
+![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_02.png)
+![alt text](https://github.com/vaap1997/Parking/blob/master/data/Result_03.png)
 
 
 
