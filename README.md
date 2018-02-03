@@ -45,12 +45,14 @@ inside the final and initial node and access.
 
 ### **Parking**
 1. Constructors
+Pois with multiples entries
 ```java
 POI(Roads roads, int parkNumber, String name, String type, PVector position, int capacity, ArrayList<Integer> deviceNum, String price, PVector[] coords)
-```: Pois with multiples entries
+```
+Pois with just one entry
 ```java
 POI(Roads roads, int id, String type, String name, PVector position, int capacity)
-```: Pois with just one entrie
+```
 
 2. Description
 This class place the different Parking (points of interest – POIs) in the canvas and
