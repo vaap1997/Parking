@@ -68,7 +68,7 @@ public class PieChart {
         }
         linearGraphic.background(0);
         linearGraphic.line(borderX, linearGraphic.height-borderY, borderX, borderY*2);
-        linearGraphic.line(borderX, linearGraphic.height-borderY, timePark.chronometer.size()/2+borderX, linearGraphic.height-borderY);
+        linearGraphic.line(borderX, linearGraphic.height-borderY, timePark.chronometer.size()/4+borderX, linearGraphic.height-borderY);
         linearGraphic.textFont(createFont("Raleway", 20)); 
         linearGraphic.textAlign(LEFT); 
         linearGraphic.fill(200); 
